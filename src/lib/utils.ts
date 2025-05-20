@@ -1,4 +1,3 @@
-
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -27,4 +26,14 @@ export function createSlug(text: string): string {
     .toLowerCase()
     .replace(/[^\w\s]/g, '')
     .replace(/\s+/g, '-');
+}
+
+export function getImageUrl(path: string): string {
+  // Check if the path is already a full URL
+  if (path.startsWith('http') || path.startsWith('/')) {
+    return path;
+  }
+  
+  // Otherwise, assume it's a local path
+  return `/${path}`;
 }

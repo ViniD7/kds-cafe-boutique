@@ -1,7 +1,9 @@
 
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Product, Kit } from "@/data/products";
-import { formatCurrency, truncateText, calculateDiscount } from "@/lib/utils";
+import { formatCurrency, truncateText, calculateDiscount, getImageUrl } from "@/lib/utils";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface ProductCardProps {
   item: Product | Kit;
@@ -13,24 +15,36 @@ const ProductCard = ({ item, isKit = false }: ProductCardProps) => {
   const kit = isKit ? item as Kit : null;
   const discount = kit ? calculateDiscount(kit.originalPrice, kit.price) : 0;
   
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const mainImage = images[0];
+  
   return (
     <Link 
       to={isKit ? `/kits/${id}` : `/produtos/${id}`}
       className="group"
     >
       <div className="bg-white border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-        <div className="relative aspect-square bg-muted">
-          <img 
-            src={images[0]} 
-            alt={name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          
-          {isKit && discount > 0 && (
-            <div className="absolute top-3 right-3 bg-gold text-white text-xs font-bold px-2 py-1 rounded">
-              {discount}% OFF
-            </div>
-          )}
+        <div className="product-image-container">
+          <AspectRatio ratio={1/1}>
+            {mainImage && (
+              <>
+                <div className={`image-placeholder absolute inset-0 ${imageLoaded ? 'hidden' : 'block'}`}></div>
+                <img 
+                  src={getImageUrl(mainImage)} 
+                  alt={name}
+                  className={`product-image group-hover:scale-105 ${imageLoaded ? 'image-loaded' : 'image-loading'}`}
+                  onLoad={() => setImageLoaded(true)}
+                  loading="lazy"
+                />
+              </>
+            )}
+            
+            {isKit && discount > 0 && (
+              <div className="absolute top-3 right-3 bg-gold text-white text-xs font-bold px-2 py-1 rounded z-10">
+                {discount}% OFF
+              </div>
+            )}
+          </AspectRatio>
         </div>
         
         <div className="p-4">

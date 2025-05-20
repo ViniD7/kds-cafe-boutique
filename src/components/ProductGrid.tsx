@@ -1,6 +1,7 @@
 
 import ProductCard from "./ProductCard";
 import { Product, Kit } from "@/data/products";
+import { AspectRatio } from "./ui/aspect-ratio";
 
 interface ProductGridProps {
   products?: Product[];
