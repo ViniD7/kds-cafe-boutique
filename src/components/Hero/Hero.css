@@ -1,0 +1,164 @@
+/* Hero Container */
+.hero-container {
+  position: relative;
+  color: white;
+  width: 100%;
+  height: 100vh; 
+  overflow: hidden;
+  /* margin-top: 8vh; */
+}
+
+/* Video Container */
+.hero-video-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(39, 16, 0, 0.274); 
+  mix-blend-mode: multiply;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.hero-text {
+  max-width: 48rem;
+}
+
+.hero-title {
+  font-family: serif;
+  font-size: 2.25rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.text-gold {
+  color: #d4a017;
+}
+
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: #e2c6b0;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.hero-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 4rem;
+}
+
+@media (min-width: 640px) {
+  .hero-buttons {
+    flex-direction: row;
+  }
+}
+
+.hero-button {
+  display: block;
+  text-align: center;
+  padding: 0.75rem 2rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.hero-button.primary {
+  background-color: #d4a017;
+  color: white;
+}
+
+.hero-button.primary:hover {
+  background-color: rgba(212, 160, 23, 0.9);
+}
+
+.hero-button.secondary {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+}
+
+.hero-button.secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-title {
+    font-size: 3.75rem;
+    margin-bottom: 2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.25rem;
+  }
+}
+
+.music-control {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.music-button {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.music-button:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+@media (max-width: 768px) {
+  .music-control {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .music-button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}

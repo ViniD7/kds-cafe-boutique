@@ -1,3 +1,11 @@
+import canFront from "../Assets/images/canFront.jpeg";
+import canDiagonal from "../Assets/images/canDiagonal.jpeg";
+import canTriple from "../Assets/images/canTriple.jpeg";
+import sacheBk from "../Assets/images/sacheBk.jpeg";
+import sacheBkBack from "../Assets/images/sacheBkBack.jpeg";
+import sacheFront from "../Assets/images/sacheFront.jpeg";
+import sacheBack from "../Assets/images/sacheBack.jpeg";
+import dripCoffe from "../Assets/images/dripCoffe.jpeg";
 
 export interface ProductVariant {
   id: string;
@@ -33,85 +41,134 @@ export interface Kit {
 export const categories = [
   "Cafés Torrados",
   "Cafés Moídos",
-  "Kits"
+  "Kits",
+  "Cookie Cups"
 ];
 
 export const products: Product[] = [
   {
     id: "prod_001",
-    name: "Café Especial Bourbon Amarelo",
-    description: "Um café de torra média, com notas de chocolate ao leite, caramelo e finalização cítrica suave. Produzido nas montanhas de Minas Gerais, o Bourbon Amarelo é conhecido pelo seu equilíbrio perfeito entre doçura e acidez, ideal para ser apreciado a qualquer hora do dia.",
-    shortDescription: "Café especial com notas de chocolate e caramelo.",
-    price: 49.90,
+    name: "KDS Café Especial Lata",
+    description: "Café especial com notas de chocolate, caramelo, frutas amarelas e um toque cítrico de maracujá. Processo natural secado em terreno suspenso, cultivado em Piuma - Caparaó ES, entre 1100 e 1400 metros de altitude. Pontuação 88.",
+    shortDescription: "Café especial em lata com notas de chocolate, caramelo e frutas amarelas.",
+    price: 42.90,
     images: [
-      "/placeholder.svg",
-      "/placeholder.svg",
-      "/placeholder.svg"
+      canFront,
+      canDiagonal,
+      canTriple
     ],
     variants: [
-      { id: "var_001", name: "250g", price: 49.90, stock: 20 },
-      { id: "var_002", name: "500g", price: 89.90, stock: 15 },
-      { id: "var_003", name: "1kg", price: 169.90, stock: 10 }
+      { id: "var_001", name: "250g", price: 42.90, stock: 10 }
     ],
     category: "Cafés Torrados",
     featured: true
   },
   {
     id: "prod_002",
-    name: "Café Especial Catuaí Vermelho",
-    description: "Um café de torra clara, destacando notas florais, frutadas e uma acidez pronunciada e agradável. Cultivado em altitude acima de 1200m, este café proporciona uma experiência sensorial única com seu corpo leve e aroma intenso.",
-    shortDescription: "Café especial com notas florais e frutadas.",
-    price: 54.90,
+    name: "KDS Café Especial",
+    description: "Café especial da variedade Arara Amarelo com notas de chocolate, caramelo, frutas amarelas e um toque cítrico de maracujá. Processo natural secado em terreno suspenso, cultivado em Piuma - Caparaó ES, entre 1100 e 1400 metros de altitude. Pontuação 88.",
+    shortDescription: "Café especial com notas de chocolate, caramelo e frutas amarelas.",
+    price: 32.90,
     images: [
-      "/placeholder.svg", 
-      "/placeholder.svg", 
-      "/placeholder.svg"
+      sacheFront, 
+      sacheBack
     ],
     variants: [
-      { id: "var_004", name: "250g", price: 54.90, stock: 18 },
-      { id: "var_005", name: "500g", price: 99.90, stock: 12 },
-      { id: "var_006", name: "1kg", price: 189.90, stock: 8 }
+      { id: "var_002", name: "250g", price: 32.90, stock: 18 }
     ],
     category: "Cafés Torrados",
     featured: true
   },
   {
     id: "prod_003",
-    name: "Café Especial Topázio - Moído",
-    description: "Um café moído na hora, preservando todos os aromas e sabores. Com torra média-escura, apresenta notas de chocolate amargo, nozes e caramelo. Moagem média, ideal para métodos como Hario V60, Chemex e Kalita Wave.",
-    shortDescription: "Café especial moído com notas de chocolate e nozes.",
-    price: 44.90,
+    name: "KDS Café Gourmet",
+    description: "Café gourmet da variedade 25L Amarelo com notas de chocolate, caramelo e frutas amarelas. Processo natural secado em terreno suspenso, cultivado em Piuma - Caparaó ES, entre 1100 e 1400 metros de altitude. Pontuação 85.",
+    shortDescription: "Café gourmet com notas de chocolate, caramelo e frutas amarelas.",
+    price: 24.90,
     images: [
-      "/placeholder.svg", 
-      "/placeholder.svg", 
-      "/placeholder.svg"
+      sacheBk, 
+      sacheBkBack
     ],
     variants: [
-      { id: "var_007", name: "250g", price: 44.90, stock: 25 },
-      { id: "var_008", name: "500g", price: 79.90, stock: 20 },
-      { id: "var_009", name: "1kg", price: 149.90, stock: 15 }
+      { id: "var_003", name: "250g", price: 24.90, stock: 25 }
     ],
-    category: "Cafés Moídos",
-    featured: false
+    category: "Cafés Torrados",
+    featured: true
   },
   {
     id: "prod_004",
-    name: "Café Especial Acaiá - Moído",
-    description: "Café de origem única, moído com precisão para preparos em cafeteira italiana ou espresso. Torra média com notas de frutas vermelhas, chocolate e um toque de especiarias. Um café complexo e elegante.",
-    shortDescription: "Café especial moído com notas de frutas vermelhas.",
-    price: 47.90,
+    name: "KDS Drip Coffee",
+    description: "Café em sachês da variedade Arara Amarelo com notas de chocolate, rapadura e mel. Processo natural secado em terreno suspenso, cultivado em Piuma - Caparaó ES, entre 1100 e 1400 metros de altitude. Pontuação 86,5. Contém 10 sachês de 10g cada (total 100g).",
+    shortDescription: "Café em sachês com notas de chocolate, rapadura e mel.",
+    price: 29.80,
     images: [
-      "/placeholder.svg", 
-      "/placeholder.svg", 
-      "/placeholder.svg"
+      dripCoffe
     ],
     variants: [
-      { id: "var_010", name: "250g", price: 47.90, stock: 22 },
-      { id: "var_011", name: "500g", price: 85.90, stock: 18 },
-      { id: "var_012", name: "1kg", price: 159.90, stock: 12 }
+      { id: "var_004", name: "10 sachês (100g)", price: 29.80, stock: 22 }
     ],
     category: "Cafés Moídos",
     featured: true
+  },
+  {
+    id: "prod_005",
+    name: "Cookie Cup Baunilha",
+    description: "Copinho comestível feito com massa de biscoito de cookie sabor baunilha com raspas de chocolate ao leite, banhado internamente com chocolate belga. Pode receber bebidas ou recheios frios e quentes.",
+    shortDescription: "Copinho comestível sabor baunilha com chocolate.",
+    price: 15.60,
+    images: [
+      "/placeholder.svg"
+    ],
+    variants: [
+      { id: "var_005", name: "1 unidade", price: 15.60, stock: 30 }
+    ],
+    category: "Cookie Cups",
+    featured: false
+  },
+  {
+    id: "prod_006",
+    name: "Cookie Cup Cacau",
+    description: "Copinho comestível feito com massa de cacau alcalino, banhado internamente com chocolate belga. Pode receber bebidas ou recheios frios e quentes.",
+    shortDescription: "Copinho comestível sabor cacau.",
+    price: 15.60,
+    images: [
+      "/placeholder.svg"
+    ],
+    variants: [
+      { id: "var_006", name: "1 unidade", price: 15.60, stock: 30 }
+    ],
+    category: "Cookie Cups",
+    featured: false
+  },
+  {
+    id: "prod_007",
+    name: "Cookie Cup Coco",
+    description: "Copinho comestível feito com leite e óleo de coco (massa sem proteína), banhado internamente com chocolate belga. Pode receber bebidas ou recheios frios e quentes.",
+    shortDescription: "Copinho comestível sabor coco.",
+    price: 15.80,
+    images: [
+      "/placeholder.svg"
+    ],
+    variants: [
+      { id: "var_007", name: "1 unidade", price: 15.80, stock: 30 }
+    ],
+    category: "Cookie Cups",
+    featured: false
+  },
+  {
+    id: "prod_008",
+    name: "Cookie Cup Aveia",
+    description: "Copinho comestível feito com farinha de aveia e integral, banhado internamente com chocolate belga. Pode receber bebidas ou recheios frios e quentes.",
+    shortDescription: "Copinho comestível sabor aveia.",
+    price: 15.80,
+    images: [
+      "/placeholder.svg"
+    ],
+    variants: [
+      { id: "var_008", name: "1 unidade", price: 15.80, stock: 30 }
+    ],
+    category: "Cookie Cups",
+    featured: false
   }
 ];
 
@@ -119,13 +176,11 @@ export const kits: Kit[] = [
   {
     id: "kit_001",
     name: "Kit Degustação KDS",
-    description: "O Kit Degustação KDS é perfeito para os amantes de café que desejam explorar diferentes perfis de sabor. Contém 250g de cada um dos nossos cafés mais populares: Bourbon Amarelo, Catuaí Vermelho, Topázio e Acaiá.",
+    description: "O Kit Degustação KDS é perfeito para os amantes de café que desejam explorar diferentes perfis de sabor. Contém nossos cafés mais populares: Especial Lata, Especial, Gourmet e Drip Coffee.",
     shortDescription: "Kit com 4 variedades de cafés especiais.",
-    price: 179.90,
-    originalPrice: 197.60,
+    price: 130.50,
+    originalPrice: 150.50,
     images: [
-      "/placeholder.svg", 
-      "/placeholder.svg", 
       "/placeholder.svg"
     ],
     products: ["prod_001", "prod_002", "prod_003", "prod_004"],
@@ -133,18 +188,16 @@ export const kits: Kit[] = [
   },
   {
     id: "kit_002",
-    name: "Kit Presente Premium",
-    description: "Um presente sofisticado para os verdadeiros apreciadores de café. Este kit contém 500g dos nossos cafés premiados Bourbon Amarelo e Catuaí Vermelho, acompanhado de uma caneca exclusiva KDS Cafés Especiais.",
-    shortDescription: "Kit premium com 2 cafés especiais e caneca exclusiva.",
-    price: 209.90,
-    originalPrice: 239.80,
+    name: "Kit Café + Cookie Cup",
+    description: "Um presente sofisticado para os verdadeiros apreciadores de café. Este kit contém o café Especial Lata acompanhado de um Cookie Cup de sua escolha.",
+    shortDescription: "Kit com café especial e cookie cup.",
+    price: 55.50,
+    originalPrice: 58.50,
     images: [
-      "/placeholder.svg", 
-      "/placeholder.svg", 
       "/placeholder.svg"
     ],
-    products: ["prod_001", "prod_002"],
-    featured: false
+    products: ["prod_001", "prod_005"],
+    featured: true
   }
 ];
 
