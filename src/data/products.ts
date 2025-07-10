@@ -1,11 +1,14 @@
-import canFront from "../Assets/images/canFront.jpeg";
-import canDiagonal from "../Assets/images/canDiagonal.jpeg";
-import canTriple from "../Assets/images/canTriple.jpeg";
-import sacheBk from "../Assets/images/sacheBk.jpeg";
-import sacheBkBack from "../Assets/images/sacheBkBack.jpeg";
-import sacheFront from "../Assets/images/sacheFront.jpeg";
-import sacheBack from "../Assets/images/sacheBack.jpeg";
-import dripCoffe from "../Assets/images/dripCoffe.jpeg";
+import canFront from "../Assets/images/canFront.webp";
+import canDiagonal from "../Assets/images/canDiagonal.webp";
+import canTriple from "../Assets/images/canTriple.webp";
+import sacheBk from "../Assets/images/sacheBk.webp";
+import sacheBkBack from "../Assets/images/sacheBkBack.webp";
+import sacheFront from "../Assets/images/sacheFront.webp";
+import sacheBack from "../Assets/images/sacheBack.webp";
+import dripCoffe from "../Assets/images/dripCoffe.webp";
+import cupCacau from "../Assets/images/cupCacau.webp";
+import cupCookie from "../Assets/images/cupCookie.webp";
+import cupCoco from "../Assets/images/cupCoco.webp";
 
 export interface ProductVariant {
   id: string;
@@ -34,15 +37,19 @@ export interface Kit {
   price: number;
   originalPrice: number;
   images: string[];
-  products: string[]; // Product IDs
+  products: string[]; 
   featured?: boolean;
 }
 
 export const categories = [
-  "Cafés Torrados",
-  "Cafés Moídos",
+  "Café especial",
+  "Café gourmet",
   "Kits",
-  "Cookie Cups"
+  "Cookie Cups",
+  "Drip coffee",
+  "Cápsulas",
+  "Acessórios",
+
 ];
 
 export const products: Product[] = [
@@ -60,7 +67,7 @@ export const products: Product[] = [
     variants: [
       { id: "var_001", name: "250g", price: 42.90, stock: 10 }
     ],
-    category: "Cafés Torrados",
+    category: "Café especial",
     featured: true
   },
   {
@@ -76,7 +83,7 @@ export const products: Product[] = [
     variants: [
       { id: "var_002", name: "250g", price: 32.90, stock: 18 }
     ],
-    category: "Cafés Torrados",
+    category: "Café especial",
     featured: true
   },
   {
@@ -92,7 +99,7 @@ export const products: Product[] = [
     variants: [
       { id: "var_003", name: "250g", price: 24.90, stock: 25 }
     ],
-    category: "Cafés Torrados",
+    category: "Café gourmet",
     featured: true
   },
   {
@@ -107,17 +114,17 @@ export const products: Product[] = [
     variants: [
       { id: "var_004", name: "10 sachês (100g)", price: 29.80, stock: 22 }
     ],
-    category: "Cafés Moídos",
+    category: "Drip coffee",
     featured: true
   },
   {
     id: "prod_005",
-    name: "Cookie Cup Baunilha",
+    name: "Cookie Cup Cookie",
     description: "Copinho comestível feito com massa de biscoito de cookie sabor baunilha com raspas de chocolate ao leite, banhado internamente com chocolate belga. Pode receber bebidas ou recheios frios e quentes.",
     shortDescription: "Copinho comestível sabor baunilha com chocolate.",
     price: 15.60,
     images: [
-      "/placeholder.svg"
+      cupCookie
     ],
     variants: [
       { id: "var_005", name: "1 unidade", price: 15.60, stock: 30 }
@@ -132,7 +139,7 @@ export const products: Product[] = [
     shortDescription: "Copinho comestível sabor cacau.",
     price: 15.60,
     images: [
-      "/placeholder.svg"
+      cupCacau
     ],
     variants: [
       { id: "var_006", name: "1 unidade", price: 15.60, stock: 30 }
@@ -147,7 +154,7 @@ export const products: Product[] = [
     shortDescription: "Copinho comestível sabor coco.",
     price: 15.80,
     images: [
-      "/placeholder.svg"
+      cupCoco
     ],
     variants: [
       { id: "var_007", name: "1 unidade", price: 15.80, stock: 30 }
@@ -155,21 +162,6 @@ export const products: Product[] = [
     category: "Cookie Cups",
     featured: false
   },
-  {
-    id: "prod_008",
-    name: "Cookie Cup Aveia",
-    description: "Copinho comestível feito com farinha de aveia e integral, banhado internamente com chocolate belga. Pode receber bebidas ou recheios frios e quentes.",
-    shortDescription: "Copinho comestível sabor aveia.",
-    price: 15.80,
-    images: [
-      "/placeholder.svg"
-    ],
-    variants: [
-      { id: "var_008", name: "1 unidade", price: 15.80, stock: 30 }
-    ],
-    category: "Cookie Cups",
-    featured: false
-  }
 ];
 
 export const kits: Kit[] = [
@@ -178,13 +170,13 @@ export const kits: Kit[] = [
     name: "Kit Degustação KDS",
     description: "O Kit Degustação KDS é perfeito para os amantes de café que desejam explorar diferentes perfis de sabor. Contém nossos cafés mais populares: Especial Lata, Especial, Gourmet e Drip Coffee.",
     shortDescription: "Kit com 4 variedades de cafés especiais.",
-    price: 130.50,
+    price: 75.50,
     originalPrice: 150.50,
     images: [
       "/placeholder.svg"
     ],
     products: ["prod_001", "prod_002", "prod_003", "prod_004"],
-    featured: true
+    featured: false
   },
   {
     id: "kit_002",
@@ -197,7 +189,7 @@ export const kits: Kit[] = [
       "/placeholder.svg"
     ],
     products: ["prod_001", "prod_005"],
-    featured: true
+    featured: false
   }
 ];
 

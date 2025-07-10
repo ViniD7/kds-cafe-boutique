@@ -3,70 +3,104 @@ import FeaturedProducts from "@/components/FeaturedProducts";
 import { Link } from "react-router-dom";
 import { Coffee, Package, Award, Truck } from "lucide-react";
 import Images from "@/Constants/Images/images";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import "./Index.css";
 
+// Variantes de animação
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+};
+
 const Index = () => {
+  const [featuresRef, featuresInView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+  const [aboutRef, aboutInView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+  const [newsletterRef, newsletterInView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
+  const features = [
+    {
+      icon: <Coffee size={28} className="icon-gold" />,
+      title: "Cafés Selecionados",
+      description:
+        "Selecionamos os melhores grãos das regiões produtoras do Brasil.",
+    },
+    {
+      icon: <Package size={28} className="icon-gold" />,
+      title: "Embalagem Protetora",
+      description:
+        "Nossos cafés são embalados logo após a torra, preservando o aroma e sabor.",
+    },
+    {
+      icon: <Award size={28} className="icon-gold" />,
+      title: "Qualidade Premiada",
+      description:
+        "Cafés premiados nacional e internacionalmente por sua excelência.",
+    },
+    {
+      icon: <Truck size={28} className="icon-gold" />,
+      title: "Entrega Rápida",
+      description:
+        "Enviamos seu pedido em até 24 horas após a confirmação do pagamento.",
+    },
+  ];
+
   return (
     <div className="index-container">
       <Hero />
-
-      {/* Features Section */}
-      <section className="features-section">
+      <motion.section
+        ref={featuresRef}
+        initial="hidden"
+        animate={featuresInView ? "visible" : "hidden"}
+        variants={staggerContainer}
+        className="features-section"
+      >
         <div className="container-custom">
-          <div className="features-grid">
-            <div className="feature-item">
-              <div className="feature-icon">
-                <Coffee size={28} className="icon-gold" />
-              </div>
-              <h3>Cafés Selecionados</h3>
-              <p className="feature-description">
-                Selecionamos os melhores grãos das regiões produtoras do Brasil.
-              </p>
-            </div>
-
-            <div className="feature-item">
-              <div className="feature-icon">
-                <Package size={28} className="icon-gold" />
-              </div>
-              <h3>Embalagem Protetora</h3>
-              <p className="feature-description">
-                Nossos cafés são embalados logo após a torra, preservando o
-                aroma e sabor.
-              </p>
-            </div>
-
-            <div className="feature-item">
-              <div className="feature-icon">
-                <Award size={28} className="icon-gold" />
-              </div>
-              <h3>Qualidade Premiada</h3>
-              <p className="feature-description">
-                Cafés premiados nacional e internacionalmente por sua
-                excelência.
-              </p>
-            </div>
-
-            <div className="feature-item">
-              <div className="feature-icon">
-                <Truck size={28} className="icon-gold" />
-              </div>
-              <h3>Entrega Rápida</h3>
-              <p className="feature-description">
-                Enviamos seu pedido em até 24 horas após a confirmação do
-                pagamento.
-              </p>
-            </div>
-          </div>
+          <motion.div className="features-grid" variants={staggerContainer}>
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                variants={fadeInUp}
+                className="feature-item"
+              >
+                <div className="feature-icon">{feature.icon}</div>
+                <h3>{feature.title}</h3>
+                <p className="feature-description">{feature.description}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
-      </section>
-
+      </motion.section>
       <FeaturedProducts />
-
-      {/* About Section */}
-      <section className="about-section">
+      <motion.section
+        ref={aboutRef}
+        initial="hidden"
+        animate={aboutInView ? "visible" : "hidden"}
+        variants={fadeInUp}
+        className="about-section"
+      >
         <div className="container-custom">
           <div className="about-grid">
-            <div className="about-content">
+            <motion.div className="about-content" variants={fadeInUp}>
               <h2>
                 Nossa <span className="text-gold">História</span>
               </h2>
@@ -83,16 +117,22 @@ const Index = () => {
               <Link to="/sobre" className="about-button">
                 Conheça mais
               </Link>
-            </div>
-            <div className="about-image">
+            </motion.div>
+            <motion.div className="about-image" variants={fadeInUp}>
               <img src={Images.kdsIndex} alt="KDS Cafés Especiais" />
-            </div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* Newsletter */}
-      <section className="newsletter-section">
+      {/* Newsletter Section */}
+      <motion.section
+        ref={newsletterRef}
+        initial="hidden"
+        animate={newsletterInView ? "visible" : "hidden"}
+        variants={fadeInUp}
+        className="newsletter-section"
+      >
         <div className="container-custom">
           <div className="newsletter-content">
             <h2>
@@ -116,7 +156,7 @@ const Index = () => {
             </form>
           </div>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 };

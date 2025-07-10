@@ -16,7 +16,7 @@
 .hero-background {
   position: absolute;
   inset: 0;
-  background-image: url('./../../Assets/images/sobre.jpg');
+  background-image: url('./../../Assets/images/sobre.webp');
   background-size: cover;
   background-position: center;
   opacity: 0.4;
@@ -96,7 +96,7 @@
 }
 
 .story-image {
-  background-image: url('./../../Assets/images/colheita1.png');
+  background-image: url('./../../Assets/images/colheita1.webp');
   height: 25rem;
   border-top-right-radius: 3rem;
   border-bottom-right-radius: 0.3rem;

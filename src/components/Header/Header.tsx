@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { ShoppingCart, Menu, X } from "lucide-react";
+import { motion } from "framer-motion";
 import Images from "@/Constants/Images/images";
 import "./Header.css";
 import CartDrawer from "../CartDrawer";
@@ -13,12 +14,10 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
-  // Fechar menu ao mudar de rota
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location]);
 
-  // Efeito de scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -36,8 +35,25 @@ const Header = () => {
     { name: "CONTATOS", path: "/contato" },
   ];
 
+  const headerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delay: 1.8, // Atraso aumentado para 1.8 segundos
+        duration: 1.5, // Duração mais longa
+        ease: "easeInOut",
+      },
+    },
+  };
+
   return (
-    <header className={`header ${isScrolled ? "scrolled" : ""}`}>
+    <motion.header
+      className={`header ${isScrolled ? "scrolled" : ""}`}
+      initial="hidden"
+      animate="visible"
+      variants={headerVariants}
+    >
       <div className="header-container">
         <div className="header-content">
           <Link to="/" className="logo" aria-label="Ir para página inicial">
@@ -117,7 +133,7 @@ const Header = () => {
       </div>
 
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-    </header>
+    </motion.header>
   );
 };
 

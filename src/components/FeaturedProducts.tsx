@@ -38,7 +38,7 @@ const FeaturedProducts = () => {
           </p>
         </div>
 
-        <div className="tab-buttons">
+        {/* <div className="tab-buttons">
           <button
             onClick={() => setActiveTab("all")}
             className={`tab-button ${activeTab === "all" ? "active" : ""}`}
@@ -55,7 +55,7 @@ const FeaturedProducts = () => {
               {category}
             </button>
           ))}
-        </div>
+        </div> */}
 
         <ProductGrid products={filteredProducts} kits={filteredKits} />
 

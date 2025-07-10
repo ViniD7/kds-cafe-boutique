@@ -1,6 +1,11 @@
 .featured-products {
   padding: 4rem 0;
-  background-color: rgba(245, 245, 245, 0.3); /* bg-secondary/30 equivalent */
+    background: 
+    linear-gradient(rgba(255, 255, 255, 0.879),rgba(255, 255, 255, 0.266),rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0)),
+    url('../../Assets/images/cafe-background.webp') center/cover fixed;
+  z-index: -1;
+  border-top-right-radius: 6rem;
+  border-top-left-radius: 6rem;
 }
 
 .container-custom {

@@ -18,16 +18,23 @@
 
 .empty-state {
   text-align: center;
-  padding: 3rem 0;
 }
 
 .empty-state-text {
-  color: #6b7280; /* muted-foreground */
+  color: #6b7280; 
+  font-size: 1.4rem;
+  position: relative;
+  bottom: 3rem;
+}
+.empty-state-lottie {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .grid-layout {
   display: grid;
-  grid-template-columns: 1fr;
+   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
 }
 
