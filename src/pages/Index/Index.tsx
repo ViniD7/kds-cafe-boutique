@@ -91,13 +91,7 @@ const Index = () => {
         </div>
       </motion.section>
       <FeaturedProducts />
-      <motion.section
-        ref={aboutRef}
-        initial="hidden"
-        animate={aboutInView ? "visible" : "hidden"}
-        variants={fadeInUp}
-        className="about-section"
-      >
+      <div className="about-section">
         <div className="container-custom">
           <div className="about-grid">
             <motion.div className="about-content" variants={fadeInUp}>
@@ -123,7 +117,7 @@ const Index = () => {
             </motion.div>
           </div>
         </div>
-      </motion.section>
+      </div>
 
       {/* Newsletter Section */}
       <motion.section

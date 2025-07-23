@@ -19,10 +19,10 @@ const ProductDetail = () => {
 
   if (!product) {
     return (
-      <div className="min-h-screen py-12 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-serif mb-4">Produto não encontrado</h1>
-          <Link to="/produtos" className="text-gold hover:underline">
+      <div className="not-found">
+        <div className="not-found-content">
+          <h1 className="not-found-title">Produto não encontrado</h1>
+          <Link to="/produtos" className="not-found-link">
             Voltar para a lista de produtos
           </Link>
         </div>
@@ -47,42 +47,32 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="min-h-screen py-40">
+    <div className="product-detail-container">
       <div className="container-custom">
         {/* Back button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center text-muted-foreground hover:text-foreground mb-8"
-        >
+        <button onClick={() => navigate(-1)} className="back-button">
           <ArrowLeft size={18} className="mr-2" />
           Voltar
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="product-grid">
           {/* Product images */}
           <div>
-            <div className="bg-muted aspect-square mb-4 rounded-lg overflow-hidden">
-              <img
-                src={product.images[selectedImage]}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
+            <div className="product-image-main">
+              <img src={product.images[selectedImage]} alt={product.name} />
             </div>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="product-thumbnails">
               {product.images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`aspect-square bg-muted rounded overflow-hidden border-2 ${
-                    selectedImage === index
-                      ? "border-gold"
-                      : "border-transparent"
+                  className={`product-thumbnail ${
+                    selectedImage === index ? "active" : ""
                   }`}
                 >
                   <img
                     src={image}
                     alt={`${product.name} - Imagem ${index + 1}`}
-                    className="w-full h-full object-cover"
                   />
                 </button>
               ))}
@@ -91,30 +81,26 @@ const ProductDetail = () => {
 
           {/* Product info */}
           <div>
-            <h1 className="text-3xl font-serif mb-2">{product.name}</h1>
-            <div className="mb-6">
-              <span className="text-2xl font-medium">
-                {formatCurrency(currentPrice)}
-              </span>
+            <h1 className="product-title">{product.name}</h1>
+            <div className="product-price">
+              <span>{formatCurrency(currentPrice)}</span>
             </div>
 
-            <div className="mb-6">
-              <h3 className="font-medium mb-2">Descrição</h3>
-              <p className="text-muted-foreground">{product.description}</p>
+            <div className="product-description-container">
+              <h3 className="section-title">Descrição</h3>
+              <p className="product-description">{product.description}</p>
             </div>
 
             {/* Variants */}
-            <div className="mb-6">
-              <h3 className="font-medium mb-2">Tamanho</h3>
-              <div className="flex flex-wrap gap-3">
+            <div className="variants-container">
+              <h3 className="section-title">Tamanho</h3>
+              <div className="variants-list">
                 {product.variants.map((variant) => (
                   <button
                     key={variant.id}
                     onClick={() => setSelectedVariant(variant.id)}
-                    className={`border rounded-md px-4 py-2 transition-colors ${
-                      selectedVariant === variant.id
-                        ? "bg-gold text-white border-gold"
-                        : "border-border hover:border-gold"
+                    className={`variant-button ${
+                      selectedVariant === variant.id ? "active" : ""
                     }`}
                   >
                     {variant.name}
@@ -124,12 +110,12 @@ const ProductDetail = () => {
             </div>
 
             {/* Quantity */}
-            <div className="mb-8">
-              <h3 className="font-medium mb-2">Quantidade</h3>
-              <div className="flex items-center">
+            <div className="quantity-container">
+              <h3 className="section-title">Quantidade</h3>
+              <div className="quantity-control">
                 <button
                   onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-                  className="w-10 h-10 border rounded-l-md flex items-center justify-center hover:bg-muted"
+                  className="quantity-button"
                 >
                   -
                 </button>
@@ -137,11 +123,11 @@ const ProductDetail = () => {
                   type="number"
                   value={quantity}
                   onChange={handleQuantityChange}
-                  className="w-16 h-10 border-t border-b text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="quantity-input"
                 />
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-10 h-10 border rounded-r-md flex items-center justify-center hover:bg-muted"
+                  className="quantity-button"
                 >
                   +
                 </button>
@@ -149,22 +135,19 @@ const ProductDetail = () => {
             </div>
 
             {/* Add to cart */}
-            <button
-              onClick={handleAddToCart}
-              className="w-full bg-gold text-white py-3 rounded-md font-medium hover:bg-gold/90 transition-colors mb-4"
-            >
+            <button onClick={handleAddToCart} className="add-to-cart">
               Adicionar ao Carrinho
             </button>
 
             {/* Additional info */}
-            <div className="border-t border-border pt-6 mt-6">
-              <div className="mb-3">
-                <h4 className="font-medium mb-1">Categoria</h4>
-                <p className="text-muted-foreground">{product.category}</p>
+            <div className="additional-info">
+              <div className="info-item">
+                <h4 className="info-title">Categoria</h4>
+                <p className="info-value">{product.category}</p>
               </div>
-              <div>
-                <h4 className="font-medium mb-1">Disponibilidade</h4>
-                <p className="text-muted-foreground">
+              <div className="info-item">
+                <h4 className="info-title">Disponibilidade</h4>
+                <p className="info-value">
                   {selectedVariantObj && selectedVariantObj.stock > 0
                     ? "Em estoque"
                     : "Esgotado"}

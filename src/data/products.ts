@@ -4,6 +4,7 @@ import canTriple from "../Assets/images/canTriple.webp";
 import sacheBk from "../Assets/images/sacheBk.webp";
 import sacheBkBack from "../Assets/images/sacheBkBack.webp";
 import sacheFront from "../Assets/images/sacheFront.webp";
+import sacheDest from "../Assets/images/sacheDest.webp";
 import sacheBack from "../Assets/images/sacheBack.webp";
 import dripCoffe from "../Assets/images/dripCoffe.webp";
 import cupCacau from "../Assets/images/cupCacau.webp";
@@ -78,7 +79,7 @@ export const products: Product[] = [
     price: 32.90,
     images: [
       sacheFront, 
-      sacheBack
+      sacheBack,
     ],
     variants: [
       { id: "var_002", name: "250g", price: 32.90, stock: 18 }
@@ -130,7 +131,7 @@ export const products: Product[] = [
       { id: "var_005", name: "1 unidade", price: 15.60, stock: 30 }
     ],
     category: "Cookie Cups",
-    featured: false
+    featured: true
   },
   {
     id: "prod_006",
@@ -160,7 +161,7 @@ export const products: Product[] = [
       { id: "var_007", name: "1 unidade", price: 15.80, stock: 30 }
     ],
     category: "Cookie Cups",
-    featured: false
+    featured: true
   },
 ];
 

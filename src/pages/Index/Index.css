@@ -57,11 +57,11 @@ import
 /* About Section */
 .about-section {
   padding: 4rem 0;
-  background: 
+  background:  
     linear-gradient(135deg, 
-      rgba(66, 66, 66, 0.9) 0%, 
-      rgba(65, 28, 10, 0.9) 100%),
-    url('../../Assets/images/kdsIndex.webp');
+      rgba(36, 15, 1, 0.848) 0%, 
+        rgba(36, 15, 1, 0.681)  100%),
+    url('../../Assets/images/fundoFeature.jpg'); 
   background-blend-mode: multiply;
   color: white;
   background-size: cover;
@@ -205,6 +205,70 @@ import
 @media (min-width: 1024px) {
   .features-grid {
     grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* --- NOVAS MELHORIAS MOBILE --- */
+@media (max-width: 600px) {
+  .container-custom {
+    padding: 0 8px;
+  }
+  .features-section,
+  .about-section,
+  .newsletter-section {
+    padding: 2rem 0;
+  }
+  .features-grid,
+  .about-grid {
+    gap: 1.2rem;
+  }
+  .feature-item h3,
+  .about-content h2,
+  .newsletter-content h2 {
+    font-size: 1.1rem;
+  }
+  .about-content h2 {
+    font-size: 1.3rem;
+  }
+  .about-image {
+    height: 12rem;
+  }
+  .about-button,
+  .newsletter-button {
+    width: 100%;
+    padding: 0.75rem 0;
+    font-size: 1rem;
+  }
+  .newsletter-content {
+    padding: 0 4px;
+  }
+  .newsletter-form {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .newsletter-input {
+    width: 100%;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 900px) and (min-width: 601px) {
+  .container-custom {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 400px) {
+  .about-image {
+    height: 8rem;
+  }
+  .feature-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  .about-content h2,
+  .newsletter-content h2 {
+    font-size: 1rem;
   }
 }
 /* Animações */
