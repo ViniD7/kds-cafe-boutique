@@ -4,6 +4,7 @@ import { getProductById } from "@/data/products";
 import { formatCurrency } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import { ArrowLeft } from "lucide-react";
+import "./ProductsDetails/ProductsDetails.css";
 
 const ProductDetail = () => {
   const { id } = useParams();

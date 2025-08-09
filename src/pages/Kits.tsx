@@ -41,7 +41,7 @@ const Kits = () => {
             suas preferências. Entre em contato conosco para mais informações.
           </p>
           <motion.a
-            href="https://wa.me/5511999999999"
+            href="https://wa.me/5528999921033"
             target="_blank"
             rel="noopener noreferrer"
             className="contact-button"

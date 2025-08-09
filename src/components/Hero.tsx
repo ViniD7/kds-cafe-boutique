@@ -1,10 +1,32 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import "./Hero/Hero.css";
-import heroVideoMp4 from "../Assets/video/bgCafe.mp4";
-import heroVideoWebm from "../Assets/video/bgCafe.webm";
 
 const Hero = () => {
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoSrc, setVideoSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Carregar vídeo apenas quando o componente estiver visível
+    const loadVideo = async () => {
+      try {
+        const { default: webmSrc } = await import(
+          "../Assets/video/bgCafe.webm"
+        );
+        const { default: mp4Src } = await import("../Assets/video/bgCafe.mp4");
+        setVideoSrc(webmSrc);
+        setVideoLoaded(true);
+      } catch (error) {
+        console.log("Failed to load video:", error);
+      }
+    };
+
+    // Carregar vídeo após um pequeno delay para não bloquear o carregamento inicial
+    const timer = setTimeout(loadVideo, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -22,7 +44,7 @@ const Hero = () => {
       y: 0,
       opacity: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         damping: 10,
         stiffness: 100,
       },
@@ -32,11 +54,18 @@ const Hero = () => {
   return (
     <div className="hero-container">
       <div className="hero-video-container">
-        <video autoPlay loop muted playsInline className="hero-video">
-          <source src={heroVideoWebm} type="video/webm" />
-          <source src={heroVideoMp4} type="video/mp4" />
-          Seu navegador não suporta vídeos HTML5
-        </video>
+        {videoLoaded && videoSrc ? (
+          <video autoPlay loop muted playsInline className="hero-video">
+            <source src={videoSrc} type="video/webm" />
+            <source src={videoSrc.replace(".webm", ".mp4")} type="video/mp4" />
+            Seu navegador não suporta vídeos HTML5
+          </video>
+        ) : (
+          // Placeholder enquanto o vídeo carrega
+          <div className="hero-video-placeholder">
+            <div className="hero-video-skeleton"></div>
+          </div>
+        )}
         <div className="video-overlay"></div>
       </div>
 

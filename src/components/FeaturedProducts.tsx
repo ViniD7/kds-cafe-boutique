@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { getFeaturedProducts, getFeaturedKits } from "@/data/products";
 import "./FeaturedProducts/FeacturedProducts.css";
@@ -8,29 +8,47 @@ const FeaturedProducts = () => {
   const projectsRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const [headerVisible, setHeaderVisible] = useState(false);
 
-  // Combine products and kits
-  const products = [...getFeaturedProducts(), ...getFeaturedKits()];
+  // Combine products and kits - memoizado para evitar re-criação
+  const products = useMemo(
+    () => [...getFeaturedProducts(), ...getFeaturedKits()],
+    []
+  );
+
+  // Otimizar o intervalo do carrossel
+  const nextProject = useCallback(() => {
+    setActiveProject((prev) => (prev + 1) % products.length);
+  }, [products.length]);
+
+  const prevProject = useCallback(() => {
+    setActiveProject((prev) => (prev - 1 + products.length) % products.length);
+  }, [products.length]);
 
   useEffect(() => {
     if (isInView && !isHovering) {
-      const interval = setInterval(() => {
-        setActiveProject((prev) => (prev + 1) % products.length);
-      }, 4000);
+      const interval = setInterval(nextProject, 4000);
       return () => clearInterval(interval);
     }
-  }, [isInView, isHovering, products.length]);
+  }, [isInView, isHovering, nextProject]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries[0].isIntersecting && !hasAnimated) {
           setIsInView(true);
-        } else {
+          setHasAnimated(true);
+          setHeaderVisible(true);
+        } else if (entries[0].isIntersecting && hasAnimated) {
+          setHeaderVisible(true);
+        } else if (!entries[0].isIntersecting && !hasAnimated) {
           setIsInView(false);
+          setHeaderVisible(false);
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.1, rootMargin: "100px" }
     );
 
     if (projectsRef.current) {
@@ -38,16 +56,32 @@ const FeaturedProducts = () => {
     }
 
     return () => observer.disconnect();
+  }, [hasAnimated]);
+
+  // Lazy load images com debounce
+  const handleImageLoad = useCallback((imageSrc: string) => {
+    setLoadedImages((prev) => new Set(prev).add(imageSrc));
   }, []);
 
-  const getCardAnimationClass = (index: number) => {
-    if (index === activeProject) return "featured-card-active";
-    if (index === (activeProject + 1) % products.length)
-      return "featured-card-next";
-    if (index === (activeProject - 1 + products.length) % products.length)
-      return "featured-card-prev";
-    return "featured-card-hidden";
-  };
+  const getCardAnimationClass = useCallback(
+    (index: number) => {
+      if (index === activeProject) return "featured-card-active";
+      if (index === (activeProject + 1) % products.length)
+        return "featured-card-next";
+      if (index === (activeProject - 1 + products.length) % products.length)
+        return "featured-card-prev";
+      return "featured-card-hidden";
+    },
+    [activeProject, products.length]
+  );
+
+  const handleMouseEnter = useCallback(() => {
+    setIsHovering(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHovering(false);
+  }, []);
 
   return (
     <section
@@ -58,7 +92,7 @@ const FeaturedProducts = () => {
       <div className="featured-products-container">
         <div
           className={`featured-products-header ${
-            isInView ? "header-visible" : "header-hidden"
+            headerVisible ? "header-visible" : "header-hidden"
           }`}
         >
           <h2 className="featured-products-title">
@@ -72,8 +106,8 @@ const FeaturedProducts = () => {
 
         <div
           className="featured-products-carousel"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
           <div className="featured-products-inner">
             {products.map((product, index) => (
@@ -82,15 +116,26 @@ const FeaturedProducts = () => {
                 className={`featured-product-card ${getCardAnimationClass(
                   index
                 )}`}
-                style={{ transitionDelay: `${index * 50}ms` }}
               >
                 <div className="product-card">
                   <div
                     className="product-card-image"
                     style={{
-                      backgroundImage: `url(${product.images[0]})`,
+                      backgroundImage: loadedImages.has(product.images[0])
+                        ? `url(${product.images[0]})`
+                        : "none",
                     }}
                   >
+                    {!loadedImages.has(product.images[0]) && (
+                      <div className="product-image-skeleton"></div>
+                    )}
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="product-image-lazy"
+                      onLoad={() => handleImageLoad(product.images[0])}
+                      loading="lazy"
+                    />
                     <div className="product-image-overlay"></div>
                     <div className="product-image-content">
                       <h3 className="product-category">
@@ -105,7 +150,7 @@ const FeaturedProducts = () => {
                     <div className="product-text-content">
                       <h3 className="product-title">{product.name}</h3>
                       <p className="product-category-text">
-                        {product.category}
+                        {"category" in product ? product.category : "Kit"}
                       </p>
                     </div>
 
@@ -116,24 +161,19 @@ const FeaturedProducts = () => {
 
                     <div className="product-footer">
                       <div className="product-tags">
-                        {product.tags?.map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className="product-tag"
-                            style={{ animationDelay: `${idx * 300}ms` }}
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        {!product.tags && (
+                        {"tags" in product &&
+                          Array.isArray(product.tags) &&
+                          product.tags.map((tag, idx) => (
+                            <span key={idx} className="product-tag">
+                              {tag}
+                            </span>
+                          ))}
+                        {(!("tags" in product) ||
+                          !Array.isArray(product.tags) ||
+                          !product.tags.length) && (
                           <>
                             <span className="product-tag">Premium</span>
-                            <span
-                              className="product-tag"
-                              style={{ animationDelay: "300ms" }}
-                            >
-                              Especial
-                            </span>
+                            <span className="product-tag">Especial</span>
                           </>
                         )}
                       </div>
@@ -151,24 +191,46 @@ const FeaturedProducts = () => {
 
           <button
             className="carousel-buttons carousel-button-prevs"
-            onClick={() =>
-              setActiveProject(
-                (prev) => (prev - 1 + products.length) % products.length
-              )
-            }
+            onClick={prevProject}
             aria-label="Previous product"
           >
-            &lt;
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 18L9 12L15 6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
 
           <button
             className="carousel-buttons carousel-button-nexts"
-            onClick={() =>
-              setActiveProject((prev) => (prev + 1) % products.length)
-            }
+            onClick={nextProject}
             aria-label="Next product"
           >
-            &gt;
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9 6L15 12L9 18"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
 
           <div className="carousel-indication">

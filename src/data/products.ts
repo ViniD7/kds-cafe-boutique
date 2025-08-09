@@ -85,7 +85,7 @@ export const products: Product[] = [
       { id: "var_002", name: "250g", price: 32.90, stock: 18 }
     ],
     category: "Café especial",
-    featured: true
+    featured: false
   },
   {
     id: "prod_003",
@@ -101,7 +101,7 @@ export const products: Product[] = [
       { id: "var_003", name: "250g", price: 24.90, stock: 25 }
     ],
     category: "Café gourmet",
-    featured: true
+    featured: false
   },
   {
     id: "prod_004",
@@ -146,7 +146,7 @@ export const products: Product[] = [
       { id: "var_006", name: "1 unidade", price: 15.60, stock: 30 }
     ],
     category: "Cookie Cups",
-    featured: false
+    featured: true
   },
   {
     id: "prod_007",
@@ -161,7 +161,7 @@ export const products: Product[] = [
       { id: "var_007", name: "1 unidade", price: 15.80, stock: 30 }
     ],
     category: "Cookie Cups",
-    featured: true
+    featured: false
   },
 ];
 

@@ -15,8 +15,7 @@ import Contact from "./pages/Contact";
 import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 import Footer from "./components/Footer";
-import { useEffect, useRef, useState } from "react";
-import backgroundMusic from "../src/Assets/audio/fundoMusic.mp3";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -32,73 +31,27 @@ const ScrollToTop = () => {
   return null;
 };
 
+// Lazy load do áudio
+const AudioPlayer = lazy(() => import("./components/AudioPlayer"));
+
 const App = () => {
-  const audioRef = useRef(null);
-  const [isMuted, setIsMuted] = useState(true);
   const [showMusicControl, setShowMusicControl] = useState(false);
-  const [audioReady, setAudioReady] = useState(false);
-
-  // Configuração inicial do áudio
-  useEffect(() => {
-    const savedPreference = localStorage.getItem("musicPreference");
-    const shouldMute = savedPreference === "muted";
-
-    if (audioRef.current) {
-      audioRef.current.volume = 0.3;
-      audioRef.current.muted = shouldMute;
-      setIsMuted(shouldMute);
-
-      // Tentar tocar o áudio após interação do usuário
-      const handleUserInteraction = () => {
-        if (!audioReady) {
-          audioRef.current
-            .play()
-            .then(() => {
-              setAudioReady(true);
-              document.removeEventListener("click", handleUserInteraction);
-            })
-            .catch((error) => {
-              console.log("Autoplay prevented:", error);
-            });
-        }
-      };
-
-      document.addEventListener("click", handleUserInteraction);
-
-      return () => {
-        document.removeEventListener("click", handleUserInteraction);
-      };
-    }
-  }, [audioReady]);
-
-  const toggleMute = () => {
-    if (audioRef.current) {
-      // Se estiver muted, tentar tocar novamente
-      if (isMuted) {
-        audioRef.current.play().catch((error) => {
-          console.log("Play failed:", error);
-        });
-      }
-
-      audioRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-      localStorage.setItem("musicPreference", !isMuted ? "muted" : "unmuted");
-    }
-  };
 
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <CartProvider>
-          <audio ref={audioRef} src={backgroundMusic} loop muted={isMuted} />
+          <Suspense fallback={null}>
+            <AudioPlayer />
+          </Suspense>
 
           <div
             className={`music-control ${showMusicControl ? "visible" : ""}`}
             onMouseEnter={() => setShowMusicControl(true)}
             onMouseLeave={() => setShowMusicControl(false)}
           >
-            <button onClick={toggleMute}>
-              {isMuted ? <span>🔇</span> : <span>🔊</span>}
+            <button onClick={() => (window as any).toggleAudioMute?.()}>
+              <span>{(window as any).isAudioMuted?.() ? "🔇" : "🔊"}</span>
             </button>
           </div>
 
