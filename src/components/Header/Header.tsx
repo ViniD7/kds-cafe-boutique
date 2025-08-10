@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { ShoppingCart, Menu, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Images from "@/Constants/Images/images";
 import "./Header.css";
 import CartDrawer from "../CartDrawer";
@@ -19,10 +19,24 @@ const Header = () => {
   }, [location]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    const updateScroll = () => {
+      setIsScrolled(lastScrollY > 10);
+      ticking = false;
     };
-    window.addEventListener("scroll", handleScroll);
+
+    const handleScroll = () => {
+      lastScrollY = window.scrollY;
+
+      if (!ticking) {
+        window.requestAnimationFrame(updateScroll);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -40,8 +54,8 @@ const Header = () => {
     visible: {
       opacity: 1,
       transition: {
-        delay: 1.8, // Atraso aumentado para 1.8 segundos
-        duration: 1.5, // Duração mais longa
+        delay: 1.8,
+        duration: 1.5,
         ease: "easeInOut",
       },
     },
@@ -104,32 +118,99 @@ const Header = () => {
               aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
               aria-expanded={isMenuOpen}
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {isMenuOpen ? (
+                <X size={24} className="menu-icon" />
+              ) : (
+                <Menu size={24} className="menu-icon" />
+              )}
             </button>
           </div>
         </div>
 
-        <nav
-          className={`mobile-nav ${isMenuOpen ? "open" : ""}`}
-          aria-label="Navegação mobile"
-          aria-hidden={!isMenuOpen}
-        >
-          <ul className="mobile-nav-list">
-            {menuItems.map((item) => (
-              <li key={item.path} className="mobile-nav-item">
-                <Link
-                  to={item.path}
-                  className={`mobile-nav-link ${
-                    location.pathname === item.path ? "active" : ""
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <AnimatePresence>
+          {isMenuOpen && (
+            <>
+              <motion.div
+                className="mobile-nav-overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                onClick={() => setIsMenuOpen(false)}
+              />
+
+              <motion.nav
+                className="mobile-nav"
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                aria-label="Navegação mobile"
+              >
+                <div className="mobile-nav-content">
+                  <div className="mobile-nav-header">
+                    <Link
+                      to="/"
+                      className="mobile-nav-logo"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <img
+                        src={Images.logoKDS}
+                        alt="KDS Cafés Especiais"
+                        width="50"
+                        height="62"
+                      />
+                    </Link>
+                    <button
+                      className="mobile-nav-close"
+                      onClick={() => setIsMenuOpen(false)}
+                      aria-label="Fechar menu"
+                    >
+                      <X size={24} />
+                    </button>
+                  </div>
+
+                  <ul className="mobile-nav-list">
+                    {menuItems.map((item, index) => (
+                      <motion.li
+                        key={item.path}
+                        className="mobile-nav-item"
+                        initial={{ x: 50, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{
+                          delay: 0.1 + index * 0.05,
+                          type: "spring",
+                          stiffness: 200,
+                        }}
+                      >
+                        <Link
+                          to={item.path}
+                          className={`mobile-nav-link ${
+                            location.pathname === item.path ? "active" : ""
+                          }`}
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <span className="link-text">{item.name}</span>
+                          <span className="link-hover"></span>
+                        </Link>
+                      </motion.li>
+                    ))}
+                  </ul>
+
+                  <div className="mobile-nav-footer">
+                    <a
+                      href="https://wa.me/5528999921033?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20Caf%C3%A9s%20da%20KDS."
+                      className="mobile-contact-link"
+                    >
+                      <span>Contato Rápido</span>
+                      <span>+55 (28) 99992-1033</span>
+                    </a>
+                  </div>
+                </div>
+              </motion.nav>
+            </>
+          )}
+        </AnimatePresence>
       </div>
 
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

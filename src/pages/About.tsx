@@ -7,6 +7,7 @@ const About = () => {
   const valuesRef = useRef<HTMLElement>(null);
   const teamRef = useRef<HTMLElement>(null);
   const videosRef = useRef<HTMLElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
   const [openVideo, setOpenVideo] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const About = () => {
       });
     }, observerOptions);
 
+    if (heroRef.current) observer.observe(heroRef.current);
     if (storyRef.current) observer.observe(storyRef.current);
     if (valuesRef.current) observer.observe(valuesRef.current);
     if (teamRef.current) observer.observe(teamRef.current);
@@ -31,10 +33,10 @@ const About = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Dados dos vídeos - SUBSTITUA OS IDs PELOS SEUS VÍDEOS REAIS
+  // Dados dos vídeos
   const videos = [
     {
-      id: "f-wjJs6FjLg", // Troque pelo ID real (após v= na URL do YouTube)
+      id: "f-wjJs6FjLg",
       title: "UNBOXING ÉPICO com KDS Cafés Especiais! ☕🔥- Café Especial",
       thumb: "hqdefault.jpg",
       key: "video1",
@@ -55,7 +57,7 @@ const About = () => {
 
   return (
     <div className="about-container">
-      <div className="hero-section">
+      <div className="hero-section" ref={heroRef}>
         <div className="hero-background"></div>
         <div className="hero-content">
           <div className="hero-text">
@@ -162,9 +164,10 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      {/* Seção Vídeos */}
       <section ref={videosRef} className="videos-section">
         <div className="videos-container">
-          {/* <h2 className="videos-title">Nossos Vídeos</h2> */}
           <div className="videos-grid">
             {videos.map((video) => (
               <div key={video.id} className="video-card">
