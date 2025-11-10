@@ -40,13 +40,13 @@ export function getImageUrl(path: string): string {
 }
 
 export function formatWhatsAppMessage(items: CartItemDetail[], total: number): string {
-  let message = "Olá! Gostaria de fazer o pedido dos seguintes itens:%0A%0A";
+  let message = "KDS CAFÉS ESPECIAIS%0A%0AOlá! Gostaria de fazer o pedido dos seguintes itens:%0A-----------------------------------------------------------------------%0A";
   
   items.forEach(item => {
-    message += `- ${item.name}${item.variantName ? ` (${item.variantName})` : ''} (${item.quantity}x) - ${formatCurrency(item.price * item.quantity)}%0A`;
+    message += `- ${item.name}${item.variantName ? ` (${item.variantName})` : ''} %0A     (${item.quantity}x) - ${formatCurrency(item.price * item.quantity)}%0A%0A`;
   });
   
-  message += `%0AValor total: ${formatCurrency(total)}%0A%0AAguardo confirmação do pedido.`;
+  message += `Valor total: ${formatCurrency(total)}%0A%0AAguardo confirmação do pedido.`;
   
   return message;
 }

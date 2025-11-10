@@ -1,6 +1,11 @@
-
 import { createContext, useState, useContext, ReactNode } from "react";
-import { Product, ProductVariant, Kit, getProductById, getKitById } from "../data/products";
+import {
+  Product,
+  ProductVariant,
+  Kit,
+  getProductById,
+  getKitById,
+} from "../data/products";
 import { useToast } from "@/components/ui/use-toast";
 
 interface CartItem {
@@ -13,7 +18,12 @@ interface CartItem {
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (productId: string, quantity: number, variantId?: string, isKit?: boolean) => void;
+  addToCart: (
+    productId: string,
+    quantity: number,
+    variantId?: string,
+    isKit?: boolean
+  ) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -38,9 +48,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const { toast } = useToast();
 
-  const addToCart = (productId: string, quantity: number, variantId?: string, isKit: boolean = false) => {
+  const addToCart = (
+    productId: string,
+    quantity: number,
+    variantId?: string,
+    isKit: boolean = false
+  ) => {
     const existingItemIndex = cartItems.findIndex(
-      item => item.productId === productId && item.variantId === variantId && item.isKit === isKit
+      (item) =>
+        item.productId === productId &&
+        item.variantId === variantId &&
+        item.isKit === isKit
     );
 
     if (existingItemIndex > -1) {
@@ -55,8 +73,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           productId,
           variantId,
           quantity,
-          isKit
-        }
+          isKit,
+        },
       ]);
     }
 
@@ -67,7 +85,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeFromCart = (id: string) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
+    setCartItems(cartItems.filter((item) => item.id !== id));
   };
 
   const updateQuantity = (id: string, quantity: number) => {
@@ -75,11 +93,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       removeFromCart(id);
       return;
     }
-    
+
     setCartItems(
-      cartItems.map(item => 
-        item.id === id ? { ...item, quantity } : item
-      )
+      cartItems.map((item) => (item.id === id ? { ...item, quantity } : item))
     );
   };
 
@@ -95,12 +111,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       } else {
         const product = getProductById(item.productId);
         if (!product) return total;
-        
+
         if (item.variantId) {
-          const variant = product.variants.find(v => v.id === item.variantId);
+          const variant = product.variants.find((v) => v.id === item.variantId);
           return total + (variant ? variant.price * item.quantity : 0);
         }
-        
+
         return total + product.price * item.quantity;
       }
     }, 0);
@@ -111,34 +127,34 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const getCartItemDetails = (): CartItemDetail[] => {
-    return cartItems.map(item => {
+    return cartItems.map((item) => {
       if (item.isKit) {
         const kit = getKitById(item.productId);
         if (!kit) return {} as CartItemDetail;
-        
+
         return {
           id: item.id,
           name: kit.name,
           price: kit.price,
           quantity: item.quantity,
           image: kit.images[0],
-          isKit: true
+          isKit: true,
         };
       } else {
         const product = getProductById(item.productId);
         if (!product) return {} as CartItemDetail;
-        
+
         let price = product.price;
         let variantName;
-        
+
         if (item.variantId) {
-          const variant = product.variants.find(v => v.id === item.variantId);
+          const variant = product.variants.find((v) => v.id === item.variantId);
           if (variant) {
             price = variant.price;
             variantName = variant.name;
           }
         }
-        
+
         return {
           id: item.id,
           name: product.name,
@@ -146,23 +162,25 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           quantity: item.quantity,
           image: product.images[0],
           variantName,
-          isKit: false
+          isKit: false,
         };
       }
     });
   };
 
   return (
-    <CartContext.Provider value={{
-      cartItems,
-      addToCart,
-      removeFromCart,
-      updateQuantity,
-      clearCart,
-      getCartTotal,
-      getCartItemsCount,
-      getCartItemDetails
-    }}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        getCartTotal,
+        getCartItemsCount,
+        getCartItemDetails,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
@@ -171,7 +189,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 export const useCart = () => {
   const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new Error("useCart must be used within a CartProvider");
   }
   return context;
 };

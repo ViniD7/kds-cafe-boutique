@@ -1,9 +1,7 @@
 .product-detail-container {
   min-height: 100vh;
-  padding: 160px 0;
-   background: 
-    linear-gradient(rgba(255, 255, 255, 0.79), rgba(157, 82, 7, 0)),
-    url('../../Assets/images/cafe-background.webp') center/cover fixed;
+  padding: 100px 0;
+   background: linear-gradient(135deg, #ffffff 0%, #bdbdbd 100%);
   z-index: -1;
 }
 
@@ -232,6 +230,7 @@
 
 .info-item {
   margin-bottom: 12px;
+  gap: 6px;
 }
 
 .info-title {

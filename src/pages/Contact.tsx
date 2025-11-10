@@ -250,7 +250,7 @@ const Contact = () => {
                         href="mailto:contato@kdscafes.com.br"
                         className="info-link"
                       >
-                        contato@kdscafes.com.br
+                        kdscafesespeciais@gmail.com
                       </a>
                     </p>
                     <p className="info-detail">
@@ -268,11 +268,11 @@ const Contact = () => {
                   <div className="info-content">
                     <h3>Endereço</h3>
                     <p>
-                      Rua dos Cafés Especiais, 123
+                      KdsCafésEspeciais
                       <br />
-                      Centro, São Paulo - SP
+                      Pequiá, Iúna - ES
                       <br />
-                      CEP: 01234-567
+                      CEP: 29390-000
                     </p>
                   </div>
                 </div>

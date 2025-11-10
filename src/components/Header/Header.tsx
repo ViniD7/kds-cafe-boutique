@@ -61,27 +61,6 @@ const Header = () => {
     },
   };
 
-  // Cart drawer animation variants
-  const cartVariants = {
-    hidden: { x: "100%", opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        damping: 25,
-        stiffness: 300,
-      },
-    },
-    exit: {
-      x: "100%",
-      opacity: 0,
-      transition: {
-        duration: 0.3,
-      },
-    },
-  };
-
   return (
     <motion.header
       className={`header ${isScrolled ? "scrolled" : ""}`}
@@ -262,7 +241,7 @@ const Header = () => {
         </AnimatePresence>
       </div>
 
-      {/* Improved Cart Drawer with animations */}
+      {/* Cart Drawer */}
       <AnimatePresence>
         {isCartOpen && (
           <CartDrawer
