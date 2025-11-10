@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Truck, RefreshCcw, FileText } from "lucide-react";
 import "./Policies/Policies.css";
+import SectionHeader from "@/components/SectionHeader/SectionHeader";
 
 const Policies = () => {
   const [activeTab, setActiveTab] = useState("shipping");
@@ -14,9 +15,11 @@ const Policies = () => {
   return (
     <div className="policies-container">
       <div className="container-custom">
-        <h1 className="policies-title">
-          Políticas da <span>KDS Cafés Especiais</span>
-        </h1>
+        <SectionHeader
+          title="Políticas da"
+          highlightedText="KDS Cafés Especiais"
+          subtitle=""
+        />
 
         <div className="tabs-container">
           {tabs.map((tab) => {

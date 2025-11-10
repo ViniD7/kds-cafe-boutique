@@ -1,12 +1,20 @@
-
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
-import { formatCurrency } from "@/lib/utils";
-import { Plus, Minus, Trash2, ShoppingCart } from "lucide-react";
+import { formatCurrency, formatWhatsAppMessage } from "@/lib/utils";
+import { Plus, Minus, Trash2, ShoppingCart, MessageCircle } from "lucide-react";
 
 const Cart = () => {
   const { getCartItemDetails, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
   const cartItems = getCartItemDetails();
+  
+  const handleWhatsAppOrder = () => {
+    // Create message with cart items using the utility function
+    const message = formatWhatsAppMessage(cartItems, getCartTotal());
+    
+    // WhatsApp link with pre-filled message
+    const whatsappUrl = `https://wa.me/5528999921033?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+  };
   
   if (cartItems.length === 0) {
     return (
@@ -164,6 +172,15 @@ const Cart = () => {
                   </div>
                 </div>
               </div>
+              
+              {/* WhatsApp Purchase Button */}
+              <button 
+                onClick={handleWhatsAppOrder}
+                className="flex items-center justify-center w-full bg-green-500 text-white py-3 rounded-md text-center font-medium hover:bg-green-600 transition-colors mb-3"
+              >
+                <MessageCircle size={20} className="mr-2" />
+                Comprar via WhatsApp
+              </button>
               
               <Link 
                 to="/checkout"

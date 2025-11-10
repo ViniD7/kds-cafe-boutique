@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { getProductById } from "@/data/products";
 import { formatCurrency } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessageCircle } from "lucide-react";
 import "./ProductsDetails/ProductsDetails.css";
 
 const ProductDetail = () => {
@@ -38,6 +38,16 @@ const ProductDetail = () => {
 
   const handleAddToCart = () => {
     addToCart(product.id, quantity, selectedVariant);
+  };
+
+  const handleWhatsAppOrder = () => {
+    // Create message with product details
+    const variantName = selectedVariantObj ? ` (${selectedVariantObj.name})` : "";
+    const message = `Olá! Gostaria de comprar: ${product.name}${variantName}%0AQuantidade: ${quantity}%0APreço unitário: ${formatCurrency(currentPrice)}%0APreço total: ${formatCurrency(currentPrice * quantity)}%0A%0AAguardo confirmação do pedido.`;
+    
+    // WhatsApp link with pre-filled message
+    const whatsappUrl = `https://wa.me/5528999921033?text=${message}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,10 +145,18 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            {/* Add to cart */}
-            <button onClick={handleAddToCart} className="add-to-cart">
-              Adicionar ao Carrinho
-            </button>
+            {/* Action buttons */}
+            <div className="action-buttons">
+              <button onClick={handleAddToCart} className="add-to-cart">
+                Adicionar ao Carrinho
+              </button>
+              
+              {/* WhatsApp Purchase Button */}
+              <button onClick={handleWhatsAppOrder} className="whatsapp-purchase">
+                <MessageCircle size={20} className="mr-2" />
+                Comprar via WhatsApp
+              </button>
+            </div>
 
             {/* Additional info */}
             <div className="additional-info">

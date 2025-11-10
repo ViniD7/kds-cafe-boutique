@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { CartItemDetail } from "@/context/CartContext"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -36,4 +37,16 @@ export function getImageUrl(path: string): string {
   
   // Otherwise, assume it's a local path
   return `/${path}`;
+}
+
+export function formatWhatsAppMessage(items: CartItemDetail[], total: number): string {
+  let message = "Olá! Gostaria de fazer o pedido dos seguintes itens:%0A%0A";
+  
+  items.forEach(item => {
+    message += `- ${item.name}${item.variantName ? ` (${item.variantName})` : ''} (${item.quantity}x) - ${formatCurrency(item.price * item.quantity)}%0A`;
+  });
+  
+  message += `%0AValor total: ${formatCurrency(total)}%0A%0AAguardo confirmação do pedido.`;
+  
+  return message;
 }

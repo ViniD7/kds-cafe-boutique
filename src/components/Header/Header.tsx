@@ -56,7 +56,28 @@ const Header = () => {
       transition: {
         delay: 1.8,
         duration: 1.5,
-        ease: "easeInOut",
+        ease: "easeInOut" as const,
+      },
+    },
+  };
+
+  // Cart drawer animation variants
+  const cartVariants = {
+    hidden: { x: "100%", opacity: 0 },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        damping: 25,
+        stiffness: 300,
+      },
+    },
+    exit: {
+      x: "100%",
+      opacity: 0,
+      transition: {
+        duration: 0.3,
       },
     },
   };
@@ -111,6 +132,16 @@ const Header = () => {
                 )}
               </div>
             </button>
+
+            {/* Botões de autenticação */}
+            {/* <div className="auth-links">
+              <Link to="/login" className="auth-button">
+                Entrar
+              </Link>
+              <Link to="/register" className="auth-button register">
+                Criar Conta
+              </Link>
+            </div> */}
 
             <button
               className="mobile-menu-button"
@@ -198,6 +229,24 @@ const Header = () => {
                   </ul>
 
                   <div className="mobile-nav-footer">
+                    {/* Botões de autenticação no mobile */}
+                    <div className="mobile-auth-links">
+                      <Link
+                        to="/login"
+                        className="mobile-auth-button"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Entrar
+                      </Link>
+                      <Link
+                        to="/register"
+                        className="mobile-auth-button register"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Criar Conta
+                      </Link>
+                    </div>
+
                     <a
                       href="https://wa.me/5528999921033?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20Caf%C3%A9s%20da%20KDS."
                       className="mobile-contact-link"
@@ -213,7 +262,15 @@ const Header = () => {
         </AnimatePresence>
       </div>
 
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      {/* Improved Cart Drawer with animations */}
+      <AnimatePresence>
+        {isCartOpen && (
+          <CartDrawer
+            isOpen={isCartOpen}
+            onClose={() => setIsCartOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 };

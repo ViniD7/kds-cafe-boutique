@@ -15,7 +15,7 @@
     linear-gradient(rgba(255, 255, 255, 0.79), rgba(157, 82, 7, 0)),
     url('../../Assets/images/cafe-background.webp') center/cover fixed;
   z-index: -1;
-  transform: translateZ(-1px) scale(1.02);
+  /* Removido transform 3D pesado */
 }
 
 .container-custom {
@@ -24,12 +24,6 @@
   margin: 0 auto;
   padding: 0 15px;
 }
-
-
-
-
-
-
 
 .categories-wrapper {
   width: 100%;
@@ -57,7 +51,7 @@
   font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease; /* Transição mais rápida */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -97,12 +91,12 @@
   border-radius: 50%;
   background: rgba(186, 164, 96, 0.3);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease; /* Transição mais rápida */
 }
 
 .indicator.active {
   background: #baa460;
-  transform: scale(1.2);
+  transform: scale(1.1); /* Efeito mais sutil */
 }
 
 .carousel-controls {
@@ -123,26 +117,14 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease; /* Transição mais rápida */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.9);
-  z-index: 9999;
-}
-
-.coffee-loader {
-  font-size: 4rem;
-  color: #baa460;
+/* Otimizações de performance */
+.carousel-container * {
+  transform-style: flat; /* Evita criação de layers 3D */
+  backface-visibility: hidden; /* Melhora performance em mobile */
 }
 
 @media (max-width: 768px) {
@@ -151,7 +133,6 @@
     padding-bottom: 2rem;
   }
   
-
   .categories-scroller {
     padding: 0.5rem;
   }
@@ -166,7 +147,6 @@
     height: 40px;
   }
 }
-
 
 @media (min-width: 1024px) {
   .categories-scroller {

@@ -21,72 +21,68 @@ const Products = () => {
     triggerOnce: false,
   });
 
-  // Animation variants
-  const parallaxVariants = {
-    hidden: { opacity: 0, y: 50 },
+  // Variantes de animação LEVES
+  const fadeUpVariants = {
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 1,
+        duration: 0.4,
         ease: "easeOut",
       },
     },
   };
 
-  const containerVariants = {
+  const staggerContainer = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
-        ease: [0.16, 1, 0.3, 1],
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
       },
     },
   };
 
-  const itemVariants = {
-    hidden: { y: 40, opacity: 0 },
+  const fadeInItem = {
+    hidden: { opacity: 0, y: 10 },
     visible: {
-      y: 0,
       opacity: 1,
+      y: 0,
       transition: {
-        duration: 0.8,
-        ease: [0.16, 1, 0.3, 1],
+        duration: 0.3,
+        ease: "easeOut",
       },
     },
   };
 
-  const carouselVariants = {
+  // Animação de slide mais leve
+  const slideVariants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
+      x: direction > 0 ? 50 : -50,
       opacity: 0,
-      scale: 0.95,
     }),
     center: {
       x: 0,
       opacity: 1,
-      scale: 1,
       transition: {
-        x: { type: "spring", stiffness: 300, damping: 30 },
-        opacity: { duration: 0.6 },
-        scale: { duration: 0.5 },
+        x: { duration: 0.3, ease: "easeOut" },
+        opacity: { duration: 0.3 },
       },
     },
     exit: (direction: number) => ({
-      x: direction > 0 ? -300 : 300,
+      x: direction > 0 ? -50 : 50,
       opacity: 0,
-      scale: 0.95,
       transition: {
-        x: { type: "spring", stiffness: 300, damping: 30 },
-        opacity: { duration: 0.4 },
+        x: { duration: 0.3, ease: "easeOut" },
+        opacity: { duration: 0.2 },
       },
     }),
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500);
+    const timer = setTimeout(() => setIsLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -136,8 +132,8 @@ const Products = () => {
     <motion.div
       className="products-parallax-container"
       initial="hidden"
-      animate="visible"
-      variants={parallaxVariants}
+      animate={controls}
+      variants={fadeUpVariants}
       ref={ref}
     >
       <div className="parallax-background" />
@@ -147,13 +143,13 @@ const Products = () => {
           highlightedText="Cafés Especiais"
           subtitle="Descubra nossa seleção de cafés especiais, torrados com precisão para destacar suas características únicas e proporcionar uma experiência sensorial completa."
         />
+
         {/* Category Filter */}
-        <motion.div className="categories-wrapper" variants={itemVariants}>
+        <motion.div className="categories-wrapper" variants={fadeInItem}>
           <motion.div
             className="categories-scroller"
             drag={isMobile ? "x" : false}
             dragConstraints={isMobile ? { right: 0, left: -510 } : undefined}
-            whileTap={isMobile ? { cursor: "grabbing" } : undefined}
             style={{
               justifyContent: isMobile ? "flex-start" : "center",
               padding: isMobile ? "0.5rem 1rem" : "0.5rem",
@@ -167,22 +163,16 @@ const Products = () => {
                     activeCategory === category ? "active" : ""
                   }`}
                   onClick={() => setActiveCategory(category)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  variants={fadeInItem}
                 >
                   {category === "all" ? "Todos" : category}
                   {activeCategory === category && (
                     <motion.div
                       className="active-indicator"
                       layoutId="activePill"
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 30,
-                      }}
+                      transition={{ type: "tween", duration: 0.2 }}
                     />
                   )}
                 </motion.div>
@@ -192,18 +182,15 @@ const Products = () => {
         </motion.div>
 
         {/* Product Carousel */}
-        <motion.div className="carousel-container" variants={itemVariants}>
+        <motion.div className="carousel-container" variants={fadeInItem}>
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentIndex}
               custom={direction}
-              variants={carouselVariants}
+              variants={slideVariants}
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{
-                ease: [0.16, 1, 0.3, 1],
-              }}
             >
               <ProductGrid products={visibleProducts} />
             </motion.div>
@@ -222,35 +209,19 @@ const Products = () => {
                       setDirection(index > currentIndex ? 1 : -1);
                       setCurrentIndex(index);
                     }}
-                    whileHover={{ scale: 1.2 }}
+                    whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                   />
                 ))}
               </motion.div>
 
-              <motion.div
-                className="carousel-controls"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.6,
-                  duration: 0.8,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-              >
+              <motion.div className="carousel-controls" variants={fadeInItem}>
                 <motion.button
                   onClick={prevSlide}
                   className="carousel-button"
                   aria-label="Produtos anteriores"
-                  whileHover={{
-                    scale: 1.05,
-                    backgroundColor: "#a9925d",
-                    transition: { duration: 0.3 },
-                  }}
-                  whileTap={{
-                    scale: 0.95,
-                    transition: { duration: 0.2 },
-                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   <FaChevronLeft />
                 </motion.button>
@@ -258,15 +229,8 @@ const Products = () => {
                   onClick={nextSlide}
                   className="carousel-button"
                   aria-label="Próximos produtos"
-                  whileHover={{
-                    scale: 1.05,
-                    backgroundColor: "#a9925d",
-                    transition: { duration: 0.3 },
-                  }}
-                  whileTap={{
-                    scale: 0.95,
-                    transition: { duration: 0.2 },
-                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   <FaChevronRight />
                 </motion.button>
