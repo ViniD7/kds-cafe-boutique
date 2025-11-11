@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, ReactNode } from "react";
+import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import {
   Product,
   ProductVariant,
@@ -7,6 +7,7 @@ import {
   getKitById,
 } from "../data/products";
 import { useToast } from "@/components/ui/use-toast";
+import { saveCart, loadCart, clearCartStorage } from "../lib/syncStorage";
 
 interface CartItem {
   id: string;
@@ -45,8 +46,16 @@ export interface CartItemDetail {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    // Load cart items from localStorage on initial render
+    return loadCart();
+  });
   const { toast } = useToast();
+
+  // Save cart items to localStorage whenever they change
+  useEffect(() => {
+    saveCart(cartItems);
+  }, [cartItems]);
 
   const addToCart = (
     productId: string,
@@ -101,6 +110,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const clearCart = () => {
     setCartItems([]);
+    clearCartStorage();
   };
 
   const getCartTotal = () => {
