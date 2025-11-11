@@ -209,7 +209,7 @@ const Header = () => {
 
                   <div className="mobile-nav-footer">
                     {/* Botões de autenticação no mobile */}
-                    <div className="mobile-auth-links">
+                    {/* <div className="mobile-auth-links">
                       <Link
                         to="/login"
                         className="mobile-auth-button"
@@ -224,7 +224,7 @@ const Header = () => {
                       >
                         Criar Conta
                       </Link>
-                    </div>
+                    </div> */}
 
                     <a
                       href="https://wa.me/5528999921033?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20Caf%C3%A9s%20da%20KDS."

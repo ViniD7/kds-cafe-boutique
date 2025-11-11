@@ -151,13 +151,13 @@ const About = () => {
         <div className="team-container">
           <h2 className="team-title">Nossa Equipe</h2>
           <div className="team-grid">
-            {[1, 2, 3].map((member) => (
+            {[1].map((member) => (
               <div key={member} className="team-member">
                 <div className="member-photo">
                   <img src="/placeholder.svg" alt={`Membro ${member}`} />
                 </div>
-                <h3 className="member-name">Nome do Fundador {member}</h3>
-                <p className="member-role">Cargo na Empresa</p>
+                <h3 className="member-name">Kallebe Dutra</h3>
+                <p className="member-role">CEO</p>
                 <p className="member-bio">Breve descrição sobre esta pessoa.</p>
               </div>
             ))}

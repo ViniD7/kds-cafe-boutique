@@ -3,7 +3,13 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { getProductById } from "@/data/products";
 import { formatCurrency } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
-import { ArrowLeft, MessageCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  MessageCircle,
+  ShoppingCart,
+  Minus,
+  Plus,
+} from "lucide-react";
 import "./ProductsDetails/ProductsDetails.css";
 
 const ProductDetail = () => {
@@ -17,14 +23,19 @@ const ProductDetail = () => {
     product?.variants[0].id || ""
   );
   const [quantity, setQuantity] = useState(1);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   if (!product) {
     return (
       <div className="not-found">
         <div className="not-found-content">
+          <div className="not-found-icon">😔</div>
           <h1 className="not-found-title">Produto não encontrado</h1>
+          <p className="not-found-description">
+            O produto que você está procurando não existe ou foi removido.
+          </p>
           <Link to="/produtos" className="not-found-link">
-            Voltar para a lista de produtos
+            Explorar Produtos
           </Link>
         </div>
       </div>
@@ -35,13 +46,18 @@ const ProductDetail = () => {
     (v) => v.id === selectedVariant
   );
   const currentPrice = selectedVariantObj?.price || product.price;
+  const isOutOfStock = selectedVariantObj && selectedVariantObj.stock <= 0;
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    setIsAddingToCart(true);
     addToCart(product.id, quantity, selectedVariant);
+
+    // Feedback visual
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    setIsAddingToCart(false);
   };
 
   const handleWhatsAppOrder = () => {
-    // Create message with product details
     const variantName = selectedVariantObj
       ? ` (${selectedVariantObj.name})`
       : "";
@@ -53,138 +69,223 @@ const ProductDetail = () => {
       currentPrice * quantity
     )}%0A%0AAguardo confirmação do pedido.`;
 
-    // WhatsApp link with pre-filled message
     const whatsappUrl = `https://wa.me/5528999921033?text=${message}`;
     window.open(whatsappUrl, "_blank");
   };
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
-    if (value > 0) {
+    if (value > 0 && value <= 99) {
       setQuantity(value);
     }
+  };
+
+  const incrementQuantity = () => {
+    if (quantity < 99) setQuantity(quantity + 1);
+  };
+
+  const decrementQuantity = () => {
+    if (quantity > 1) setQuantity(quantity - 1);
   };
 
   return (
     <div className="product-detail-container">
       <div className="container-custom">
-        {/* Back button */}
-        <button onClick={() => navigate(-1)} className="back-button">
-          <ArrowLeft size={18} className="mr-2" />
-          Voltar
-        </button>
+        {/* Navigation */}
+        <nav className="breadcrumb">
+          <button onClick={() => navigate(-1)} className="back-button">
+            <ArrowLeft size={20} />
+            <span>Voltar</span>
+          </button>
+          <div className="breadcrumb-links">
+            <span>Produtos</span>
+            <span className="breadcrumb-divider">/</span>
+            <span className="breadcrumb-current">{product.category}</span>
+            <span className="breadcrumb-divider">/</span>
+            <span className="breadcrumb-current">{product.name}</span>
+          </div>
+        </nav>
 
         <div className="product-grid">
-          {/* Product images */}
-          <div>
-            <div className="product-image-main">
-              <img src={product.images[selectedImage]} alt={product.name} />
+          {/* Product Images */}
+          <div className="images-section">
+            <div className="image-main-container">
+              <div className="product-image-main">
+                <img
+                  src={product.images[selectedImage]}
+                  alt={product.name}
+                  loading="lazy"
+                />
+                {isOutOfStock && (
+                  <div className="out-of-stock-badge">Esgotado</div>
+                )}
+              </div>
             </div>
-            <div className="product-thumbnails">
+
+            <div className="thumbnails-container">
               {product.images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`product-thumbnail ${
+                  className={`thumbnail-item ${
                     selectedImage === index ? "active" : ""
                   }`}
+                  aria-label={`Visualizar imagem ${index + 1}`}
                 >
                   <img
                     src={image}
                     alt={`${product.name} - Imagem ${index + 1}`}
+                    loading="lazy"
                   />
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Product info */}
-          <div>
-            <h1 className="product-title">{product.name}</h1>
-            <div className="product-price">
-              <span>{formatCurrency(currentPrice)}</span>
+          {/* Product Info */}
+          <div className="info-section">
+            <div className="product-header">
+              <h1 className="product-title">{product.name}</h1>
+              <div className="product-price">
+                <span className="price-current">
+                  {formatCurrency(currentPrice)}
+                </span>
+                {product.originalPrice &&
+                  product.originalPrice > currentPrice && (
+                    <span className="price-original">
+                      {formatCurrency(product.originalPrice)}
+                    </span>
+                  )}
+              </div>
             </div>
 
-            <div className="product-description-container">
-              <h3 className="section-title">Descrição</h3>
+            {/* Description */}
+            <div className="description-section">
               <p className="product-description">{product.description}</p>
             </div>
 
             {/* Variants */}
-            <div className="variants-container">
-              <h3 className="section-title">Tamanho</h3>
-              <div className="variants-list">
-                {product.variants.map((variant) => (
-                  <button
-                    key={variant.id}
-                    onClick={() => setSelectedVariant(variant.id)}
-                    className={`variant-button ${
-                      selectedVariant === variant.id ? "active" : ""
-                    }`}
-                  >
-                    {variant.name}
-                  </button>
-                ))}
+            {product.variants.length > 0 && (
+              <div className="variants-section">
+                <h3 className="section-title">
+                  Tamanho <span className="required-asterisk">*</span>
+                </h3>
+                <div className="variants-grid">
+                  {product.variants.map((variant) => (
+                    <button
+                      key={variant.id}
+                      onClick={() => setSelectedVariant(variant.id)}
+                      className={`variant-option ${
+                        selectedVariant === variant.id ? "active" : ""
+                      } ${variant.stock <= 0 ? "out-of-stock" : ""}`}
+                      disabled={variant.stock <= 0}
+                    >
+                      <span className="variant-name">{variant.name}</span>
+                      {variant.stock <= 0 && (
+                        <span className="stock-label">Esgotado</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Quantity */}
-            <div className="quantity-container">
+            {/* Quantity Selector */}
+            <div className="quantity-section">
               <h3 className="section-title">Quantidade</h3>
-              <div className="quantity-control">
+              <div className="quantity-selector">
                 <button
-                  onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-                  className="quantity-button"
+                  onClick={decrementQuantity}
+                  className="quantity-btn"
+                  disabled={quantity <= 1}
+                  aria-label="Reduzir quantidade"
                 >
-                  -
+                  <Minus size={16} />
                 </button>
                 <input
                   type="number"
                   value={quantity}
                   onChange={handleQuantityChange}
                   className="quantity-input"
+                  min="1"
+                  max="99"
+                  aria-label="Quantidade"
                 />
                 <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="quantity-button"
+                  onClick={incrementQuantity}
+                  className="quantity-btn"
+                  disabled={quantity >= 99}
+                  aria-label="Aumentar quantidade"
                 >
-                  +
+                  <Plus size={16} />
                 </button>
               </div>
             </div>
 
-            {/* Action buttons */}
-            <div className="action-buttons">
-              <button onClick={handleAddToCart} className="add-to-cart">
-                Adicionar ao Carrinho
+            {/* Action Buttons */}
+            <div className="actions-section">
+              <button
+                onClick={handleAddToCart}
+                className={`add-to-cart-btn ${isAddingToCart ? "adding" : ""} ${
+                  isOutOfStock ? "disabled" : ""
+                }`}
+                disabled={isOutOfStock || isAddingToCart}
+              >
+                <div className="btn-content">
+                  {isAddingToCart ? (
+                    <div className="loading-spinner"></div>
+                  ) : (
+                    <ShoppingCart size={20} />
+                  )}
+                  <span>
+                    {isOutOfStock
+                      ? "Esgotado"
+                      : isAddingToCart
+                      ? "Adicionando..."
+                      : "Adicionar ao Carrinho"}
+                  </span>
+                </div>
               </button>
 
-              {/* WhatsApp Purchase Button */}
               <button
                 onClick={handleWhatsAppOrder}
-                className="whatsapp-purchase"
+                className="whatsapp-btn"
+                disabled={isOutOfStock}
               >
-                <MessageCircle size={20} className="mr-2" />
-                Comprar via WhatsApp
+                <MessageCircle size={20} />
+                <span>Comprar via WhatsApp</span>
               </button>
             </div>
 
-            {/* Additional info */}
-            <div className="additional-info">
-              <div className="info-item">
-                <h4 className="info-title">Categoria</h4>
-                <p className="info-value">
-                  {""}
-                  {product.category}
-                </p>
-              </div>
-              <div className="info-item">
-                <h4 className="info-title">Disponibilidade</h4>
-                <p className="info-value">
-                  {selectedVariantObj && selectedVariantObj.stock > 0
-                    ? "Em estoque"
-                    : "Esgotado"}
-                </p>
+            {/* Product Meta */}
+            <div className="meta-section">
+              <div className="meta-grid">
+                <div className="meta-item">
+                  <span className="meta-label">Categoria</span>
+                  <span className="meta-value">{product.category}</span>
+                </div>
+                <div className="meta-item">
+                  <span className="meta-label">Disponibilidade</span>
+                  <span
+                    className={`meta-value ${
+                      selectedVariantObj && selectedVariantObj.stock > 0
+                        ? "in-stock"
+                        : "out-of-stock"
+                    }`}
+                  >
+                    {selectedVariantObj && selectedVariantObj.stock > 0
+                      ? "Em estoque"
+                      : "Esgotado"}
+                  </span>
+                </div>
+                {/* {selectedVariantObj && selectedVariantObj.stock > 0 && (
+                  <div className="meta-item">
+                    <span className="meta-label">Estoque</span>
+                    <span className="meta-value">
+                      {selectedVariantObj.stock} unidades
+                    </span>
+                  </div>
+                )} */}
               </div>
             </div>
           </div>

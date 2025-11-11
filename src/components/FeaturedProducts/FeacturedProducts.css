@@ -1,13 +1,17 @@
 /* Featured Products Section */
 .featured-products-section {
-  width: 100%;
+  width: 98%;
   padding: 4rem 0;
   background: 
-    linear-gradient(rgba(255, 255, 255, 0.79), rgba(2, 75, 23, 0)),
-    url('../../Assets/images/cafe-background.webp') center/cover;
+    linear-gradient(rgba(24, 23, 23, 0.79), rgba(0, 0, 0, 0.603)),
+    url('../../Assets/images/coffeDetails.webp') center/cover;
   z-index: -1;
-  border-top-left-radius: 5rem;
-  border-top-right-radius: 5rem;
+  border-top-left-radius: 0rem;
+  border-top-right-radius: 6rem;
+  border-bottom-left-radius: 0rem;
+  border-bottom-right-radius: 6rem;
+  margin-bottom: 5rem;
+  margin-right: 2rem;
 }
 
 .featured-products-container {
@@ -43,7 +47,7 @@
   margin-bottom: 0.5rem;
   padding: 0.25rem 0.75rem;
   background-color: #f3f4f6;
-  color: #4b5563;
+  color: #84878b;
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -54,15 +58,15 @@
   line-height: 1.2;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: #1f2937;
+  color: #66686b;
 }
 
 .featured-products-title span {
-  color: #6b7280;
+  color: #8a94a7;
 }
 
 .featured-products-subtitle {
-  color: #4b5563;
+  color: #ffffff;
   line-height: 1.5;
 }
 
@@ -318,7 +322,6 @@
 }
 
 .carousel-buttons:hover {
-  /* background-color: white; */
   transform: translateY(-50%) scale(1.1);
 }
 
@@ -372,7 +375,7 @@
 .view-all-button {
   display: inline-block;
   padding: 0.75rem 1.5rem;
-  background-color: #1f2937;
+  background-color: #8a7a3d;
   color: white;
   border-radius: 0.375rem;
   font-weight: 500;
@@ -381,14 +384,29 @@
 }
 
 .view-all-button:hover {
-  background-color: #374151;
+  background-color: #b6a457;
   transform: translateY(-1px);
 }
 
 /* Responsive Design */
+@media (max-width: 1028px) {
+  .featured-products-container {
+    padding: 0 10px;
+  }
+}
+
 @media (max-width: 768px) {
   .featured-products-container {
     padding: 0 10px;
+  }
+  
+  .featured-products-section {
+    border-top-left-radius: 0rem;
+    border-top-right-radius: 0rem;
+    border-bottom-left-radius: 0rem;
+    border-bottom-right-radius: 0rem;
+    margin-right: 0;
+    width: 100%;
   }
   
   .featured-products-title {
@@ -415,6 +433,11 @@
 
 @media (max-width: 480px) {
   .featured-products-section {
+    border-top-left-radius: 0rem;
+    border-top-right-radius: 0rem;
+    border-bottom-left-radius: 0rem;
+    border-bottom-right-radius: 0rem;
+    margin-right: 0;
     padding: 2rem 0;
   }
   

@@ -3,9 +3,9 @@
 .footer {
    background: 
      linear-gradient(135deg, 
-      rgba(185, 176, 169, 0) 0%, 
-      rgba(63, 32, 17, 0.514) 100%),
-    url('../../Assets/images/bgFooter.webp') no-repeat center center / cover;
+      rgba(0, 0, 0, 0.74) 0%, 
+      rgba(0, 0, 0, 0.89) 100%),
+    url('../../Assets/images/fundoCafe.webp') no-repeat center center / cover;
   color: white;
   padding-top: 3rem;
   padding-bottom: 1.5rem;

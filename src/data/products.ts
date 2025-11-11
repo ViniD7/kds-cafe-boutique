@@ -66,7 +66,7 @@ export const products: Product[] = [
       canTriple
     ],
     variants: [
-      { id: "var_001", name: "250g", price: 42.90, stock: 10 }
+      { id: "var_001", name: "250g", price: 42.90, stock: 0 }
     ],
     category: "Café especial",
     featured: true
@@ -82,7 +82,7 @@ export const products: Product[] = [
       sacheBack,
     ],
     variants: [
-      { id: "var_002", name: "250g", price: 32.90, stock: 18 }
+      { id: "var_002", name: "250g", price: 32.90, stock: 1 }
     ],
     category: "Café especial",
     featured: false
@@ -98,7 +98,7 @@ export const products: Product[] = [
       sacheBkBack
     ],
     variants: [
-      { id: "var_003", name: "250g", price: 24.90, stock: 25 }
+      { id: "var_003", name: "250g", price: 24.90, stock: 1 }
     ],
     category: "Café gourmet",
     featured: false
@@ -113,7 +113,7 @@ export const products: Product[] = [
       dripCoffe
     ],
     variants: [
-      { id: "var_004", name: "10 sachês (100g)", price: 29.80, stock: 22 }
+      { id: "var_004", name: "10 sachês (100g)", price: 29.80, stock: 1 }
     ],
     category: "Drip coffee",
     featured: true
@@ -143,7 +143,7 @@ export const products: Product[] = [
       cupCacau
     ],
     variants: [
-      { id: "var_006", name: "1 unidade", price: 15.60, stock: 30 }
+      { id: "var_006", name: "1 unidade", price: 15.60, stock: 1 }
     ],
     category: "Cookie Cups",
     featured: true
@@ -158,7 +158,7 @@ export const products: Product[] = [
       cupCoco
     ],
     variants: [
-      { id: "var_007", name: "1 unidade", price: 15.80, stock: 30 }
+      { id: "var_007", name: "1 unidade", price: 15.80, stock: 0 }
     ],
     category: "Cookie Cups",
     featured: false

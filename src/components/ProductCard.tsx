@@ -1,4 +1,9 @@
-import { motion, useAnimation, AnimatePresence } from "framer-motion";
+import {
+  motion,
+  useAnimation,
+  AnimatePresence,
+  type Variants,
+} from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Product, Kit } from "@/data/products";
@@ -9,6 +14,8 @@ import {
   getImageUrl,
 } from "@/lib/utils";
 import { FaShoppingCart, FaEye, FaHeart } from "react-icons/fa";
+import { useCart } from "@/context/CartContext";
+import { useToast } from "@/components/ui/use-toast";
 import "./ProductCard/ProductCard.css";
 
 interface ProductCardProps {
@@ -20,11 +27,19 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
   const { id, name, shortDescription, price, images } = item;
   const kit = isKit ? (item as Kit) : null;
   const discount = kit ? calculateDiscount(kit.originalPrice, kit.price) : 0;
+
+  // Check if product is available (has stock)
+  const isAvailable = isKit
+    ? true
+    : (item as Product).variants.some((variant) => variant.stock > 0);
+
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const controls = useAnimation();
   const [isMobile, setIsMobile] = useState(false);
+  const { addToCart } = useCart();
+  const { toast } = useToast();
 
   // Detecta se é mobile
   useEffect(() => {
@@ -52,7 +67,7 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
   }, [isHovered, images.length, isMobile]);
 
   // Variantes de animação premium
-  const cardVariants = {
+  const cardVariants: Variants = {
     hidden: { opacity: 0, y: 20, scale: 0.98 },
     visible: {
       opacity: 1,
@@ -70,13 +85,13 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
     },
   };
 
-  const imageVariants = {
+  const imageVariants: Variants = {
     enter: { opacity: 0, zIndex: 1 },
     center: { opacity: 1, zIndex: 1 },
     exit: { opacity: 0, zIndex: 0 },
   };
 
-  const actionButtonVariants = {
+  const actionButtonVariants: Variants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
@@ -97,6 +112,53 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    // Check if product is a kit
+    if (isKit) {
+      addToCart(id, 1, undefined, true);
+      toast({
+        title: "Adicionado ao Carrinho",
+        description: `${name} foi adicionado ao seu carrinho.`,
+      });
+      return;
+    }
+
+    // For products, check availability
+    if (!isAvailable) {
+      toast({
+        title: "Produto Indisponível",
+        description:
+          "Este produto está esgotado e não pode ser adicionado ao carrinho.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // For available products, add the first variant with stock to the cart
+    const product = item as Product;
+    const availableVariant = product.variants.find(
+      (variant) => variant.stock > 0
+    );
+
+    if (availableVariant) {
+      addToCart(id, 1, availableVariant.id, false);
+      toast({
+        title: "Adicionado ao Carrinho",
+        description: `${name} (${availableVariant.name}) foi adicionado ao seu carrinho.`,
+      });
+    } else {
+      // This shouldn't happen if isAvailable is true, but just in case
+      toast({
+        title: "Produto Indisponível",
+        description:
+          "Este produto está esgotado e não pode ser adicionado ao carrinho.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -166,6 +228,23 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
             </motion.div>
           )}
 
+          {/* Indisponível tag */}
+          {!isKit && !isAvailable && (
+            <motion.div
+              className="premium-unavailable-badge"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{
+                type: "spring",
+                delay: 0.3,
+                stiffness: 500,
+                damping: 15,
+              }}
+            >
+              Indisponível
+            </motion.div>
+          )}
+
           {images.length > 1 && (
             <div className="image-nav-dots">
               {images.map((_, index) => (
@@ -207,7 +286,7 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
               variants={actionButtonVariants}
               whileHover={isMobile ? undefined : "hover"}
               whileTap="tap"
-              onClick={(e) => e.preventDefault()}
+              onClick={handleAddToCart}
               aria-label="Add to cart"
             >
               <FaShoppingCart />
