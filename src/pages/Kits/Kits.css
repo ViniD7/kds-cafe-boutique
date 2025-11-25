@@ -5,8 +5,7 @@
   padding: 3rem 0;
   padding-top: 10vh;
   background: 
-    linear-gradient(rgba(255, 255, 255, 0.79), rgba(157, 82, 7, 0)),
-    url('../../Assets/images/cafe-background.webp') center/cover fixed;
+    linear-gradient(rgba(255, 255, 255, 0.79), rgba(0, 0, 0, 0.062));
   z-index: -1;
 }
 
@@ -46,7 +45,7 @@
 
 .custom-kits-info {
   margin-top: 4rem;
-  background-color: rgba(245, 245, 245, 0.3); /* bg-secondary/30 */
+  background-color: rgb(255, 255, 255); /* bg-secondary/30 */
   border-radius: 0.5rem;
   padding: 1.5rem;
   text-align: center;

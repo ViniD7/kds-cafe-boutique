@@ -247,7 +247,7 @@ const Contact = () => {
                     <h3>E-mail</h3>
                     <p>
                       <a
-                        href="mailto:contato@kdscafes.com.br"
+                        href="mailto:kdscafesespeciais@gmail.com"
                         className="info-link"
                       >
                         kdscafesespeciais@gmail.com

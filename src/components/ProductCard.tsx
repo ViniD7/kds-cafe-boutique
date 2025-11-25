@@ -6,7 +6,7 @@ import {
 } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Product, Kit } from "@/data/products";
+import { Product, Kit, getProductById } from "@/data/products";
 import {
   formatCurrency,
   truncateText,
@@ -29,9 +29,19 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
   const discount = kit ? calculateDiscount(kit.originalPrice, kit.price) : 0;
 
   // Check if product is available (has stock)
-  const isAvailable = isKit
-    ? true
-    : (item as Product).variants.some((variant) => variant.stock > 0);
+  const isProductAvailable = !isKit
+    ? (item as Product).variants.some((variant) => variant.stock > 0)
+    : true;
+
+  // Check if kit is available (all products in kit are available)
+  const isKitAvailable = isKit
+    ? kit?.products.every((productId) => {
+        const product = getProductById(productId);
+        return product?.variants.some((variant) => variant.stock > 0) ?? false;
+      })
+    : true;
+
+  const isAvailable = isKit ? isKitAvailable : isProductAvailable;
 
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -116,9 +126,21 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Add this to prevent event bubbling
 
     // Check if product is a kit
     if (isKit) {
+      // Check kit availability
+      if (!isAvailable) {
+        toast({
+          title: "Kit Indisponível",
+          description:
+            "Este kit contém produtos esgotados e não pode ser adicionado ao carrinho.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
       addToCart(id, 1, undefined, true);
       toast({
         title: "Adicionado ao Carrinho",
@@ -229,7 +251,7 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
           )}
 
           {/* Indisponível tag */}
-          {!isKit && !isAvailable && (
+          {!isAvailable && (
             <motion.div
               className="premium-unavailable-badge"
               initial={{ scale: 0 }}
@@ -255,6 +277,7 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
                   }`}
                   onClick={(e) => {
                     e.preventDefault();
+                    e.stopPropagation(); // Add this to prevent event bubbling
                     setCurrentImageIndex(index);
                   }}
                   aria-label={`Go to image ${index + 1}`}

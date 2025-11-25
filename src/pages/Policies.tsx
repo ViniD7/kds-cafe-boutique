@@ -114,8 +114,8 @@ const Policies = () => {
                 </h3>
                 <p className="subsection-text">
                   Para solicitar uma troca ou devolução, entre em contato
-                  conosco através do e-mail contato@kdscafes.com.br ou pelo
-                  WhatsApp (11) 99999-9999, informando o número do pedido e o
+                  conosco através do e-mail kdscafesespeciais@gmail.com ou pelo
+                  WhatsApp (28) 99992-1033, informando o número do pedido e o
                   motivo da solicitação.
                 </p>
                 <p className="subsection-text">

@@ -118,9 +118,9 @@ const Index = () => {
       },
       {
         icon: <Truck size={28} className="icon-gold" aria-hidden="true" />,
-        title: "Entrega Rápida",
+        title: "Entrega Confiável",
         description:
-          "Enviamos seu pedido em até 24 horas após a confirmação do pagamento.",
+          "Fale conosco e enviaremos seu pedido após a confirmação do pagamento.",
       },
     ],
     []

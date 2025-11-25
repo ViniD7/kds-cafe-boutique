@@ -55,6 +55,31 @@ const About = () => {
     },
   ];
 
+  // Dados da equipe
+  const teamMembers = [
+    {
+      id: 1,
+      image: "/team/diego.jpg",
+      name: "Diego Santos",
+      position: "Head de Torrefação",
+      description: "",
+    },
+    {
+      id: 2,
+      image: "../../Assets/images/colheita1.webp",
+      name: "Kallebe Dutra",
+      position: "CEO & Fundador",
+      description: "",
+    },
+    {
+      id: 3,
+      image: "/team/sophia.jpg",
+      name: "Sophia Oliveira",
+      position: "Gerente de Relacionamento",
+      description: "",
+    },
+  ];
+
   return (
     <div className="about-container">
       <div className="hero-section" ref={heroRef}>
@@ -151,14 +176,20 @@ const About = () => {
         <div className="team-container">
           <h2 className="team-title">Nossa Equipe</h2>
           <div className="team-grid">
-            {[1].map((member) => (
-              <div key={member} className="team-member">
+            {teamMembers.map((member) => (
+              <div key={member.id} className="team-member">
                 <div className="member-photo">
-                  <img src="/placeholder.svg" alt={`Membro ${member}`} />
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg";
+                    }}
+                  />
                 </div>
-                <h3 className="member-name">Kallebe Dutra</h3>
-                <p className="member-role">CEO</p>
-                <p className="member-bio">Breve descrição sobre esta pessoa.</p>
+                <h3 className="member-name">{member.name}</h3>
+                <p className="member-position">{member.position}</p>
+                <p className="member-description">{member.description}</p>
               </div>
             ))}
           </div>

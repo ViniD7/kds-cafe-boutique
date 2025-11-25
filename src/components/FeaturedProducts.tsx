@@ -162,26 +162,29 @@ const FeaturedProducts = () => {
                     <div className="product-footer">
                       <div className="product-tags">
                         {"tags" in product &&
-                          Array.isArray(product.tags) &&
-                          product.tags.map((tag, idx) => (
-                            <span key={idx} className="product-tag">
-                              {tag}
-                            </span>
-                          ))}
-                        {(!("tags" in product) ||
-                          !Array.isArray(product.tags) ||
-                          !product.tags.length) && (
-                          <>
-                            <span className="product-tag">Premium</span>
-                            <span className="product-tag">Especial</span>
-                          </>
-                        )}
+                            Array.isArray(product.tags) &&
+                            product.tags.map((tag, idx) => (
+                              <span key={idx} className="product-tag">
+                                {tag}
+                              </span>
+                            ))}
+                          {(!("tags" in product) ||
+                            !Array.isArray(product.tags) ||
+                            !product.tags.length) && (
+                            <>
+                              <span className="product-tag">Premium</span>
+                              <span className="product-tag">Especial</span>
+                            </>
+                          )}
                       </div>
 
-                      <div className="product-details-link">
+                      <Link 
+                        to={"category" in product ? `/produtos/${product.id}` : `/kits/${product.id}`}
+                        className="product-details-link"
+                      >
                         <span>Ver detalhes</span>
                         <span className="link-underline"></span>
-                      </div>
+                      </Link>
                     </div>
                   </div>
                 </div>

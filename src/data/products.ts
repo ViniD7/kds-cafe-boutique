@@ -10,6 +10,11 @@ import dripCoffe from "../Assets/images/dripCoffe.webp";
 import cupCacau from "../Assets/images/cupCacau.webp";
 import cupCookie from "../Assets/images/cupCookie.webp";
 import cupCoco from "../Assets/images/cupCoco.webp";
+import sacodecafe from "../Assets/images/sacodecafe.webp";
+import sacodecafe2 from "../Assets/images/sacodecafe2.webp";
+import sacodecafe3 from "../Assets/images/sacodecafe3.webp";
+import capsulaFront from "../Assets/images/capsulaFront.webp";
+import capsulaBack from "../Assets/images/capsulaBack.webp";
 
 export interface ProductVariant {
   id: string;
@@ -49,7 +54,8 @@ export const categories = [
   "Cookie Cups",
   "Drip coffee",
   "Cápsulas",
-  "Acessórios",
+  // "Acessórios",
+  "Sacas de Café",
 
 ];
 
@@ -158,9 +164,42 @@ export const products: Product[] = [
       cupCoco
     ],
     variants: [
-      { id: "var_007", name: "1 unidade", price: 15.80, stock: 0 }
+      { id: "var_007", name: "1 unidade", price: 15.80, stock: 1 }
     ],
     category: "Cookie Cups",
+    featured: false
+  },
+  {
+    id: "prod_008",
+    name: "Cápsulas",
+    description: "Contem 10 cápsulas 100% arábica de 5g cada (total 50g). - Intensidade 8",
+    shortDescription: "Contem 10 cápsulas 100% arábica de 5g cada (total 50g). - Intensidade 8",
+    price: 24.90,
+    images: [
+      capsulaFront,
+      capsulaBack
+    ],
+    variants: [
+      { id: "var_007", name: "50g (5g por cápsula - 10 unidades)", price: 24.90, stock: 0 }
+    ],
+    category: "Cápsulas",
+    featured: false
+  },
+  {
+    id: "prod_009",
+    name: "Saca de Café Verde",
+    description: "VARIEDADE:Arara Amarelo, ALTITUDE:1200/1400 METROS - REGIÃO DO CAPARAÓ",
+    shortDescription: "Copinho comestível sabor coco.",
+    price: 1800.00,
+    images: [
+      sacodecafe,
+      sacodecafe2,
+      sacodecafe3
+    ],
+    variants: [
+      { id: "var_008", name: "30Kg", price: 1800.00, stock: 1 }
+    ],
+    category: "Sacas de Café",
     featured: false
   },
 ];
@@ -191,7 +230,7 @@ export const kits: Kit[] = [
     ],
     products: ["prod_001", "prod_005"],
     featured: false
-  }
+  },
 ];
 
 export const getProductById = (id: string): Product | undefined => {

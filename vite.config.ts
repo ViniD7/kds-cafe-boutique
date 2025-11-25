@@ -8,6 +8,13 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: true, // ou host: "0.0.0.0"
     port: 8080,
+    // Add this to handle client-side routing
+    historyApiFallback: {
+      rewrites: [
+        { from: /^\/$/, to: '/index.html' },
+        { from: /^\/[^.]*$/, to: '/index.html' }
+      ]
+    }
   },
   plugins: [
     react(),
