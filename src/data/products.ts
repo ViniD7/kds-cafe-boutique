@@ -173,7 +173,7 @@ export const products: Product[] = [
     id: "prod_008",
     name: "Cápsulas",
     description: "Contem 10 cápsulas 100% arábica de 5g cada (total 50g). - Intensidade 8",
-    shortDescription: "Contem 10 cápsulas 100% arábica de 5g cada (total 50g). - Intensidade 8",
+    shortDescription: "Contem 10 cápsulas 100% arábica",
     price: 24.90,
     images: [
       capsulaFront,
@@ -188,8 +188,8 @@ export const products: Product[] = [
   {
     id: "prod_009",
     name: "Saca de Café Verde",
-    description: "VARIEDADE:Arara Amarelo, ALTITUDE:1200/1400 METROS - REGIÃO DO CAPARAÓ",
-    shortDescription: "Copinho comestível sabor coco.",
+    description: "VARIEDADE - Arara Amarelo, ALTITUDE:1200/1400 METROS - REGIÃO DO CAPARAÓ",
+    shortDescription: "VARIEDADE - Arara Amarelo",
     price: 1800.00,
     images: [
       sacodecafe,
