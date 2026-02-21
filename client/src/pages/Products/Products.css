@@ -1,0 +1,256 @@
+/* Products.css atualizado */
+
+.products-parallax-container {
+  position: relative;
+  min-height: 100vh;
+  padding: 10vh 0 3rem;
+  overflow: hidden;
+}
+
+.parallax-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120%;
+  background: 
+    linear-gradient(rgba(255, 255, 255, 0.79), rgba(157, 82, 7, 0));
+  z-index: -1;
+}
+
+.container-custom {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Animações CSS otimizadas */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.fade-in-delayed {
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out 0.2s forwards;
+}
+
+.slide-container {
+  animation: slideIn 0.4s ease-out;
+}
+
+.categories-wrapper {
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 3rem;
+}
+
+.categories-scroller {
+  display: flex;
+  gap: 0.8rem;
+  padding: 0.5rem 1rem;
+  cursor: grab;
+  max-width: 100%;
+  flex-wrap: nowrap;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-pill {
+  position: relative;
+  padding: 0.8rem 1.8rem;
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(186, 164, 96, 0.2);
+  color: #555;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transform: translateZ(0); /* Aceleração por hardware */
+}
+
+.category-pill:hover {
+  transform: scale(1.02);
+}
+
+.category-pill:active {
+  transform: scale(0.98);
+}
+
+.category-pill.active {
+  color: #fff;
+  background: #baa460;
+  box-shadow: 0 4px 12px rgba(186, 164, 96, 0.3);
+}
+
+.active-indicator {
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background: #fff;
+  border-radius: 3px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.carousel-container {
+  position: relative;
+  min-height: 400px;
+  margin-top: 2rem;
+}
+
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 2rem;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(186, 164, 96, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  transform: translateZ(0);
+}
+
+.indicator:hover {
+  transform: scale(1.1);
+}
+
+.indicator.active {
+  background: #baa460;
+  transform: scale(1.1);
+}
+
+.carousel-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.carousel-button {
+  background-color: #baa460;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateZ(0);
+}
+
+.carousel-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-button:active {
+  transform: scale(0.95);
+}
+
+/* Otimizações de performance */
+.carousel-container * {
+  transform-style: flat;
+  backface-visibility: hidden;
+  will-change: auto; /* Deixe o browser decidir o que otimizar */
+}
+
+/* Scroll suave para mobile */
+@media (max-width: 768px) {
+  .products-parallax-container {
+    padding-top: 6.9rem;
+    padding-bottom: 2rem;
+  }
+  
+  .categories-scroller {
+    padding: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  
+  .categories-scroller::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+  
+  .category-pill {
+    padding: 0.6rem 1.4rem;
+    font-size: 0.9rem;
+    flex-shrink: 0; /* Impede que os itens encolham no scroll */
+  }
+  
+  .carousel-button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .categories-scroller {
+    cursor: default;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0.5rem;
+    overflow-x: visible;
+  }
+  
+  .categories-wrapper {
+    overflow: visible;
+  }
+}
+
+/* Estados de loading */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
