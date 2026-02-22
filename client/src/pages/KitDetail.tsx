@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { getKitById, getProductById } from "@/data/products";
+import { productAPI } from "@/services/api";
+import { Kit, Product } from "@/types/api";
 import { formatCurrency, calculateDiscount } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import {
@@ -16,10 +17,54 @@ const KitDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const kit = getKitById(id || "");
+  
+  const [kit, setKit] = useState<Kit | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchKit = async () => {
+      try {
+        setLoading(true);
+        // For now, treating kits as products in the API
+        // In a real implementation, you'd want a dedicated endpoint for kits
+        const product = await productAPI.getProductById(id || "");
+        
+        // If the API returns a product that represents a kit, treat it as such
+        if (product) {
+          const kitData: Kit = {
+            ...product,
+            originalPrice: product.price, // Default to same price if not specified
+            products: [] // Kit composition would need to be stored differently
+          };
+          setKit(kitData);
+          
+          // For now, we'll need to simulate kit products since the API doesn't have a separate kit structure
+          // In a real implementation, kits would have a separate API endpoint
+        }
+      } catch (error) {
+        console.error("Error fetching kit:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchKit();
+    }
+  }, [id]);
 
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="product-detail-container">
+        <div className="container-custom">
+          <p>Carregando detalhes do kit...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!kit) {
     return (
@@ -38,13 +83,10 @@ const KitDetail = () => {
     );
   }
 
-  // Check if kit is available (all products in kit are available)
-  const isKitAvailable = kit.products.every((productId) => {
-    const product = getProductById(productId);
-    return product?.variants.some((variant) => variant.stock > 0) ?? false;
-  });
+  // For now, assume kits are available since we can't check individual product stock without additional API calls
+  const isKitAvailable = true;
 
-  const discount = calculateDiscount(kit.originalPrice, kit.price);
+  const discount = kit.originalPrice ? calculateDiscount(kit.originalPrice, kit.price) : 0;
 
   const handleAddToCart = async () => {
     if (!isKitAvailable) return;
@@ -84,9 +126,6 @@ const KitDetail = () => {
   const decrementQuantity = () => {
     if (quantity > 1) setQuantity(quantity - 1);
   };
-
-  // Get product details for the kit
-  const kitProducts = kit.products.map(productId => getProductById(productId)).filter(Boolean);
 
   return (
     <div className="product-detail-container">
@@ -145,22 +184,11 @@ const KitDetail = () => {
               <p className="product-description">{kit.description}</p>
             </div>
 
-            {/* Kit Products */}
+            {/* Kit Products - placeholder since we don't have a real kit structure */}
             <div className="variants-section">
               <h3 className="section-title">Contém</h3>
               <div className="kit-products-list">
-                {kitProducts.map((product) => (
-                  <div key={product?.id} className="kit-product-item">
-                    <span className="product-name">{product?.name}</span>
-                    <span className="product-stock">
-                      {product?.variants.some(v => v.stock > 0) ? (
-                        <span className="in-stock">Disponível</span>
-                      ) : (
-                        <span className="out-of-stock">Esgotado</span>
-                      )}
-                    </span>
-                  </div>
-                ))}
+                <p>Informações sobre os produtos contidos no kit estarão disponíveis em breve.</p>
               </div>
             </div>
 

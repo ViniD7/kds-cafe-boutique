@@ -1,5 +1,5 @@
 import ProductCard from "./ProductCard";
-import { Product, Kit } from "@/data/products";
+import { Product, Kit } from "@/types/api";
 import { AspectRatio } from "./ui/aspect-ratio";
 import "./ProductGrid/ProductGrid.css";
 import Lottie from "lottie-react";

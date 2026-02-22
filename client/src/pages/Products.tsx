@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ProductGrid from "../components/ProductGrid";
-import { categories } from "../data/products";
 import { productAPI } from "../services/api";
 import { Product } from "../types/api";
 import SectionHeader from "../components/SectionHeader/SectionHeader";
@@ -90,7 +89,7 @@ const Products = () => {
               padding: isMobile ? "0.5rem 1rem" : "0.5rem",
             }}
           >
-            {["all", ...categories.filter((c) => c !== "Kits")].map(
+            {["all", ...Array.from(new Set(allProducts.map(p => p.category))).filter((c: string) => c !== "Kits")].map(
               (category) => (
                 <div
                   key={category}

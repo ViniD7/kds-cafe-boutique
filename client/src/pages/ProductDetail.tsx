@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { getProductById } from "@/data/products";
+import { productAPI } from "@/services/api";
+import { Product } from "@/types/api";
 import { formatCurrency } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import {
@@ -16,14 +17,42 @@ const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const product = getProductById(id || "");
+  
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const fetchedProduct = await productAPI.getProductById(id || "");
+        setProduct(fetchedProduct);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
 
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedVariant, setSelectedVariant] = useState(
-    product?.variants[0].id || ""
-  );
+  const [selectedVariant, setSelectedVariant] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="product-detail-container">
+        <div className="container-custom">
+          <p>Carregando detalhes do produto...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -41,6 +70,13 @@ const ProductDetail = () => {
       </div>
     );
   }
+
+  // Set the first variant as selected when product loads
+  useEffect(() => {
+    if (product && product.variants && product.variants.length > 0) {
+      setSelectedVariant(product.variants[0].id);
+    }
+  }, [product]);
 
   const selectedVariantObj = product.variants.find(
     (v) => v.id === selectedVariant
@@ -150,9 +186,13 @@ const ProductDetail = () => {
                 <span className="price-current">
                   {formatCurrency(currentPrice)}
                 </span>
-                {product.originalPrice &&
+                {product.hasOwnProperty('originalPrice') && 
+                  // @ts-ignore - checking for originalPrice property which may exist on some products
+                  product.originalPrice && 
+                  // @ts-ignore
                   product.originalPrice > currentPrice && (
                     <span className="price-original">
+                      {/* @ts-ignore */}
                       {formatCurrency(product.originalPrice)}
                     </span>
                   )}

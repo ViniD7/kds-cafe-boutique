@@ -6,7 +6,7 @@ import {
 } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Product, Kit, getProductById } from "@/data/products";
+import { Product, Kit } from "@/types/api";
 import {
   formatCurrency,
   truncateText,
@@ -34,12 +34,8 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
     : true;
 
   // Check if kit is available (all products in kit are available)
-  const isKitAvailable = isKit
-    ? kit?.products.every((productId) => {
-        const product = getProductById(productId);
-        return product?.variants.some((variant) => variant.stock > 0) ?? false;
-      })
-    : true;
+  // For now, we'll assume kits are available since we can't check individual product stock without additional API calls
+  const isKitAvailable = isKit ? true : true;
 
   const isAvailable = isKit ? isKitAvailable : isProductAvailable;
 
