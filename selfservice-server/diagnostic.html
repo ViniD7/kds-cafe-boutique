@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagnóstico - KDS Autoatendimento</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, rgb(245, 245, 245) 0%, rgb(235, 235, 235) 100%);
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, rgb(189, 169, 105) 0%, rgb(151, 130, 68) 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 16px;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h2 {
+      color: rgb(88, 79, 51);
+      margin-bottom: 1rem;
+      font-size: 1.75rem;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .status.ok {
+      background: rgb(71, 206, 102);
+      color: white;
+    }
+
+    .status.error {
+      background: #dc3545;
+      color: white;
+    }
+
+    .status.pending {
+      background: #ffc107;
+      color: #333;
+    }
+
+    button {
+      background: rgb(189, 169, 105);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .info {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      font-family: monospace;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+
+    .checklist li {
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      background: #f9f9f9;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+    }
+
+    .checklist li::before {
+      content: '☐';
+      margin-right: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .checklist li.done::before {
+      content: '✅';
+    }
+
+    code {
+      background: #f0f0f0;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>☕ KDS Café - Diagnóstico</h1>
+      <p>Verifique se tudo está funcionando corretamente</p>
+    </header>
+
+    <div class="card">
+      <h2>1️⃣ Status do Servidor</h2>
+      <button onclick="checkServer()">Verificar Servidor</button>
+      <div id="server-status"></div>
+    </div>
+
+    <div class="card">
+      <h2>2️⃣ Teste de Envio de Pedido</h2>
+      <button onclick="sendTestOrder()">Enviar Pedido de Teste</button>
+      <div id="order-status"></div>
+    </div>
+
+    <div class="card">
+      <h2>3️⃣ Informações da Rede</h2>
+      <div class="info" id="network-info"></div>
+    </div>
+
+    <div class="card">
+      <h2>4️⃣ Checklist de Configuração</h2>
+      <ul class="checklist" id="checklist">
+        <li>Servidor Node.js instalado</li>
+        <li>Dependências instaladas (npm install)</li>
+        <li>Servidor rodando na porta 3000</li>
+        <li>Firewall liberado na porta 3000</li>
+        <li>Tablet e notebook na mesma rede</li>
+        <li>IP configurado no config.ts</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>🔗 Links Úteis</h2>
+      <button onclick="window.open('http://localhost:5173/autoatendimento', '_blank')">
+        📱 Abrir Autoatendimento
+      </button>
+      <button onclick="window.open('http://localhost:3000/dashboard', '_blank')">
+        💻 Abrir Dashboard
+      </button>
+      <button onclick="window.open('http://localhost:3000/health', '_blank')">
+        🔍 Health Check
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Mostrar informações da rede
+    document.getElementById('network-info').innerHTML = `
+      <strong>URL do App:</strong> ${window.location.origin}<br>
+      <strong>Hostname:</strong> ${window.location.hostname}<br>
+      <strong>Protocolo:</strong> ${window.location.protocol}<br>
+      <br>
+      <strong>Para acessar do tablet:</strong><br>
+      http://SEU_IP:5173/autoatendimento<br>
+      <br>
+      <strong>Para descobrir seu IP:</strong><br>
+      Execute: get-ip.bat na raiz do projeto
+    `;
+
+    async function checkServer() {
+      const statusDiv = document.getElementById('server-status');
+      statusDiv.innerHTML = '<span class="status pending">⏳ Verificando...</span>';
+
+      try {
+        const response = await fetch('http://localhost:3000/health');
+        const data = await response.json();
+
+        if (data.status === 'ok') {
+          statusDiv.innerHTML = `
+            <span class="status ok">✅ Servidor Online</span>
+            <div class="info">
+              Pedidos armazenados: ${data.ordersCount}<br>
+              Timestamp: ${data.timestamp}
+            </div>
+          `;
+          document.querySelectorAll('.checklist li')[2].classList.add('done');
+        } else {
+          statusDiv.innerHTML = '<span class="status error">❌ Servidor com erro</span>';
+        }
+      } catch (error) {
+        statusDiv.innerHTML = `
+          <span class="status error">❌ Servidor Offline</span>
+          <div class="info">
+            Execute:<br>
+            cd selfservice-server<br>
+            npm start
+          </div>
+        `;
+      }
+    }
+
+    function sendTestOrder() {
+      const orderDiv = document.getElementById('order-status');
+      orderDiv.innerHTML = '<span class="status pending">⏳ Enviando...</span>';
+
+      const testMessage = `Pedido:
+
+• 2x KDS Café Especial Lata - R$85,80
+• 1x Cookie Cup Cookie - R$15,60
+
+Cliente: Teste Diagnóstico
+Pagamento: Pix
+Total: R$101,40`;
+
+      const encoded = encodeURIComponent(testMessage);
+      const url = `http://localhost:3000/pedido?data=${encoded}`;
+
+      try {
+        window.open(url, '_blank');
+        orderDiv.innerHTML = `
+          <span class="status ok">✅ Pedido Enviado!</span>
+          <div class="info">
+            Verifique o dashboard em:<br>
+            <a href="http://localhost:3000/dashboard" target="_blank">
+              http://localhost:3000/dashboard
+            </a>
+          </div>
+        `;
+      } catch (error) {
+        orderDiv.innerHTML = '<span class="status error">❌ Erro ao enviar</span>';
+      }
+    }
+
+    // Verificar servidor automaticamente ao carregar
+    window.addEventListener('load', () => {
+      setTimeout(checkServer, 1000);
+    });
+  </script>
+</body>
+</html>

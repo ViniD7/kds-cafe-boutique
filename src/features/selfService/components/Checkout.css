@@ -1,0 +1,157 @@
+.selfservice-checkout {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.selfservice-checkout-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.selfservice-checkout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.selfservice-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.selfservice-form-group label {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.selfservice-input {
+  padding: 1rem;
+  border: 2px solid;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.selfservice-input:focus {
+  border-color: rgb(189, 169, 105);
+  box-shadow: 0 0 0 3px rgba(189, 169, 105, 0.1);
+}
+
+.selfservice-payment-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.selfservice-payment-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border: 2px solid;
+  border-radius: 12px;
+  font-size: 1.25rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.selfservice-payment-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.selfservice-payment-option.selected {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.selfservice-payment-icon {
+  font-size: 2.5rem;
+}
+
+.selfservice-order-summary {
+  padding: 1.5rem;
+  border: 2px solid;
+  border-radius: 12px;
+}
+
+.selfservice-order-summary h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+
+.selfservice-summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.selfservice-summary-item:last-of-type {
+  border-bottom: none;
+}
+
+.selfservice-summary-total {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: 2px solid;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.selfservice-checkout-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.selfservice-cancel-button {
+  padding: 1.25rem;
+  border: 2px solid;
+  border-radius: 12px;
+  font-size: 1.25rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.selfservice-cancel-button:hover {
+  background: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+.selfservice-send-button {
+  color: white;
+  border: 2px solid;
+  padding: 1.25rem;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.selfservice-send-button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.selfservice-send-button:active {
+  transform: translateY(0);
+}

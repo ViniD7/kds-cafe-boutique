@@ -1,0 +1,100 @@
+.selfservice-container {
+  min-height: 100vh;
+  position: relative;
+}
+
+.selfservice-top-subtotal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 101;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0 0 0 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.selfservice-top-subtotal-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.selfservice-top-subtotal-items {
+  font-size: 1rem;
+  font-weight: bold;
+  opacity: 0.9;
+}
+
+.selfservice-top-subtotal-value {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.selfservice-header {
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.selfservice-header-title {
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.selfservice-back-button {
+  color: white;
+  background: transparent;
+  border: 2px solid white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.selfservice-back-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.selfservice-content {
+  padding-bottom: 2rem;
+}
+
+/* Otimização para tablets landscape (Elgin M10) */
+@media (max-width: 1280px) and (orientation: landscape) {
+  .selfservice-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .selfservice-header-title {
+    font-size: 1.75rem;
+  }
+
+  .selfservice-back-button {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    min-height: 50px; /* Touch-friendly */
+  }
+
+  .selfservice-top-subtotal {
+    padding: 0.6rem 1.25rem;
+  }
+
+  .selfservice-top-subtotal-items {
+    font-size: 0.9rem;
+  }
+
+  .selfservice-top-subtotal-value {
+    font-size: 1.1rem;
+  }
+}

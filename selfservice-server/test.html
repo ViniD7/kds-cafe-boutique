@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste - Envio de Pedido KDS</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: rgb(189, 169, 105);
+    }
+    button {
+      background: rgb(189, 169, 105);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 4px solid rgb(189, 169, 105);
+      border-radius: 4px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>☕ Teste de Envio de Pedido</h1>
+    <p>Clique no botão para enviar um pedido de teste para o servidor:</p>
+    
+    <button onclick="sendTestOrder()">📨 Enviar Pedido de Teste</button>
+    <button onclick="checkServer()">🔍 Verificar Servidor</button>
+    
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function sendTestOrder() {
+      const testMessage = `Pedido:
+
+• 2x KDS Café Especial Lata - R$85,80
+• 1x Cookie Cup Cookie - R$15,60
+
+Cliente: Teste
+Pagamento: Pix
+Total: R$101,40`;
+
+      const encoded = encodeURIComponent(testMessage);
+      const url = `http://localhost:3000/pedido?data=${encoded}`;
+      
+      document.getElementById('result').innerHTML = `
+        <div class="result">
+          <strong>✅ Pedido enviado!</strong>
+          <br><br>
+          URL: ${url}
+          <br><br>
+          <a href="http://localhost:3000/dashboard" target="_blank">Abrir Dashboard →</a>
+        </div>
+      `;
+      
+      window.open(url, '_blank');
+    }
+
+    async function checkServer() {
+      try {
+        const response = await fetch('http://localhost:3000/health');
+        const data = await response.json();
+        
+        document.getElementById('result').innerHTML = `
+          <div class="result">
+            <strong>✅ Servidor online!</strong>
+            <br><br>
+            Status: ${data.status}
+            <br>
+            Pedidos armazenados: ${data.ordersCount}
+            <br>
+            Timestamp: ${data.timestamp}
+          </div>
+        `;
+      } catch (error) {
+        document.getElementById('result').innerHTML = `
+          <div class="result" style="border-left-color: #dc3545;">
+            <strong>❌ Servidor offline!</strong>
+            <br><br>
+            Execute: cd selfservice-server && npm start
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>

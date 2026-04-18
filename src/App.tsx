@@ -19,6 +19,9 @@ import Footer from "./components/Footer";
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import "./App.css";
 
+// Lazy load do autoatendimento para melhor desempenho
+const SelfService = lazy(() => import("./features/selfService/SelfService"));
+
 const queryClient = new QueryClient();
 
 // Componente para rolar para o topo quando a rota mudar
@@ -34,6 +37,30 @@ const ScrollToTop = () => {
 
 // Lazy load do áudio
 const AudioPlayer = lazy(() => import("./components/AudioPlayer"));
+
+// Header condicional - não exibe no autoatendimento
+const HeaderConditional = () => {
+  const location = useLocation();
+  const isSelfService = location.pathname === '/autoatendimento';
+  
+  if (isSelfService) {
+    return null; // Não exibe header no autoatendimento
+  }
+  
+  return <Header />;
+};
+
+// Footer condicional - não exibe no autoatendimento
+const FooterConditional = () => {
+  const location = useLocation();
+  const isSelfService = location.pathname === '/autoatendimento';
+  
+  if (isSelfService) {
+    return null; // Não exibe footer no autoatendimento
+  }
+  
+  return <Footer />;
+};
 
 const App = () => {
   const [showMusicControl, setShowMusicControl] = useState(false);
@@ -60,7 +87,7 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <ScrollToTop />
-            <Header />
+            <HeaderConditional />
             <main>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -72,10 +99,18 @@ const App = () => {
                 <Route path="/politicas" element={<Policies />} />
                 <Route path="/contato" element={<Contact />} />
                 <Route path="/cart" element={<Cart />} />
+                <Route 
+                  path="/autoatendimento" 
+                  element={
+                    <Suspense fallback={<div>Carregando...</div>}>
+                      <SelfService />
+                    </Suspense>
+                  } 
+                />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
-            <Footer />
+            <FooterConditional />
           </BrowserRouter>
         </CartProvider>
       </TooltipProvider>
