@@ -15,8 +15,39 @@ app.use(cors({
   credentials: true
 }));
 
+// Middleware para parser JSON
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Rota raiz informativa
+app.get('/', (req, res) => {
+  res.json({
+    service: 'KDS Café Boutique - Self-Service Server',
+    status: 'running',
+    version: '2.0.0',
+    endpoints: {
+      dashboard: '/dashboard',
+      health: '/health',
+      api_orders: '/api/orders',
+      receive_order: '/pedido?data=...'
+    },
+    documentation: 'https://github.com/seu-usuario/kds-cafe-boutique'
+  });
+});
+
 let orders = [];
 
+// API para buscar pedidos (usada pelo polling do dashboard)
+app.get('/api/orders', (req, res) => {
+  res.json({
+    success: true,
+    count: orders.length,
+    orders: orders
+  });
+});
+
+// API para receber pedido (usado pelo frontend do autoatendimento)
+// API para receber pedido (usado pelo frontend do autoatendimento)
 app.get('/pedido', (req, res) => {
   const { data } = req.query;
   
@@ -49,7 +80,7 @@ app.get('/pedido', (req, res) => {
       orders = orders.slice(0, 50);
     }
     
-    res.redirect(`/dashboard`);
+    res.json({ success: true, orderId: order.id });
   } catch (error) {
     console.error('Erro ao processar pedido:', error);
     res.status(500).send('Erro ao processar pedido');
@@ -279,10 +310,92 @@ app.get('/dashboard', (req, res) => {
   </div>
 
   <script>
-    // Auto-refresh a cada 3 segundos
-    setTimeout(() => {
-      window.location.reload();
-    }, 3000);
+    // Polling via API - sem reload da página
+    let lastOrderCount = 0;
+    
+    async function fetchOrders() {
+      try {
+        const response = await fetch('/api/orders');
+        const data = await response.json();
+        
+        // Verificar se tem pedido novo
+        if (data.success && data.orders.length > lastOrderCount && lastOrderCount > 0) {
+          showNotification();
+        }
+        
+        lastOrderCount = data.orders.length;
+        updateDashboard(data.orders);
+      } catch (error) {
+        console.error('Erro ao buscar pedidos:', error);
+      }
+    }
+    
+    function updateDashboard(orders) {
+      const ordersGrid = document.querySelector('.orders-grid');
+      const emptyState = document.querySelector('.empty-state');
+      const statsCards = document.querySelectorAll('.stat-card');
+      
+      if (orders.length === 0) {
+        if (!emptyState) {
+          const container = document.querySelector('.container');
+          const emptyHTML = `
+            <div class="empty-state">
+              <h2>Nenhum pedido ainda</h2>
+              <p>Os pedidos aparecerão aqui quando forem feitos pelo tablet</p>
+            </div>
+          `;
+          container.insertAdjacentHTML('beforeend', emptyHTML);
+        }
+        return;
+      }
+      
+      // Remover empty state se existir
+      if (emptyState) emptyState.remove();
+      
+      // Atualizar stats
+      if (statsCards[0]) {
+        statsCards[0].querySelector('.stat-number').textContent = orders.length;
+      }
+      if (statsCards[1] && orders[0]) {
+        statsCards[1].querySelector('.stat-number').textContent = orders[0].timestamp.split(' ')[1] || '';
+      }
+      
+      // Atualizar grid de pedidos
+      if (!ordersGrid) {
+        const container = document.querySelector('.container');
+        const gridHTML = '<div class="orders-grid"></div>';
+        container.insertAdjacentHTML('beforeend', gridHTML);
+      }
+      
+      const grid = document.querySelector('.orders-grid');
+      grid.innerHTML = orders.map((order, index) => `
+        <div class="order-card" style="${index === 0 ? 'animation: slideIn 0.5s ease-out;' : ''}">
+          <div class="order-header">
+            <div>
+              <span class="order-number">Pedido #${order.id.toString().slice(-6)}</span>
+              ${index === 0 ? '<span class="badge">NOVO</span>' : ''}
+            </div>
+            <div class="order-time">🕒 ${order.timestamp}</div>
+          </div>
+          <div class="order-message">${order.message}</div>
+        </div>
+      `).join('');
+    }
+    
+    function showNotification() {
+      // Notificação visual
+      const header = document.querySelector('header');
+      if (header) {
+        header.style.boxShadow = '0 0 30px rgba(71, 206, 102, 0.8)';
+        setTimeout(() => {
+          header.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.15)';
+        }, 2000);
+      }
+    }
+    
+    // Buscar pedidos a cada 3 segundos
+    fetchOrders();
+    setInterval(fetchOrders, 3000);
   </script>
 </body>
 </html>
