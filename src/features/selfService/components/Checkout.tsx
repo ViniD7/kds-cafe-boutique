@@ -56,25 +56,52 @@ const Checkout: React.FC<CheckoutProps> = ({ onSuccess, onCancel }) => {
     // Obter URL do servidor (funciona em dev e produção)
     const serverURL = SELFSERVICE_CONFIG.serverURL;
     
+    console.log('🔍 Debug - Server URL:', serverURL);
+    console.log('🔍 Debug - VITE_BACKEND_URL:', import.meta.env.VITE_BACKEND_URL);
+    
     // Enviar pedido de forma silenciosa via fetch
     try {
       const orderURL = `${serverURL}/pedido?data=${encodedMessage}`;
       
-      await fetch(orderURL, {
+      console.log('📤 Enviando pedido para:', orderURL);
+      
+      // Criar AbortController para timeout de 15 segundos
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      
+      const response = await fetch(orderURL, {
         method: 'GET',
-        mode: 'no-cors' // Permite envio sem esperar resposta
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
+      
+      console.log('✅ Resposta recebida:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
       // Limpar carrinho e notificar sucesso
       clearCart();
       onSuccess(order);
-    } catch (error) {
-      console.error('Erro ao enviar pedido:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível enviar o pedido. Tente novamente.",
-        variant: "destructive"
-      });
+    } catch (error: any) {
+      console.error('Erro ao enviar pedido:', error?.message || error);
+      
+      // Se for erro de rede/timeout, ainda assim tenta salvar localmente
+      if (error?.name === 'AbortError' || error?.message?.includes('fetch')) {
+        toast({
+          title: "Timeout",
+          description: "Servidor demorando para responder. Tente novamente em alguns segundos.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Não foi possível enviar o pedido. Verifique sua conexão.",
+          variant: "destructive"
+        });
+      }
     }
   };
 

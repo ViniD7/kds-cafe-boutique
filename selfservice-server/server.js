@@ -6,7 +6,9 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
@@ -33,7 +35,10 @@ app.get('/api/orders', (req, res) => {
 app.get('/pedido', (req, res) => {
   const { data } = req.query;
 
+  console.log('📦 Pedido recebido:', new Date().toISOString());
+
   if (!data) {
+    console.log('⚠️ Pedido sem dados');
     return res.status(400).send('Sem pedido');
   }
 
@@ -47,13 +52,16 @@ app.get('/pedido', (req, res) => {
     };
 
     orders.unshift(order);
+    
+    console.log(`✅ Pedido #${order.id.toString().slice(-5)} armazenado. Total: ${orders.length} pedidos`);
 
     if (orders.length > 50) {
       orders = orders.slice(0, 50);
     }
 
-    res.json({ success: true });
+    res.json({ success: true, orderId: order.id });
   } catch (e) {
+    console.error('❌ Erro ao processar pedido:', e.message);
     res.status(500).send('Erro');
   }
 });
