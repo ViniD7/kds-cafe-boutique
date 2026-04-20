@@ -340,7 +340,7 @@ app.get('/dashboard', (req, res) => {
           const container = document.querySelector('.container');
           const emptyHTML = `
             <div class="empty-state">
-              <h2>Nenhum pedido ainda</h2>
+              <h2>Nenhum pedido aindaaa</h2>
               <p>Os pedidos aparecerão aqui quando forem feitos pelo tablet</p>
             </div>
           `;
