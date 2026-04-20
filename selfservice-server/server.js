@@ -9,10 +9,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-// Armazenar pedidos em memória (em produção, usar banco de dados)
 let orders = [];
 
-// Rota principal - recebe pedidos
 app.get('/pedido', (req, res) => {
   const { data } = req.query;
   
@@ -21,10 +19,8 @@ app.get('/pedido', (req, res) => {
   }
 
   try {
-    // Decodificar mensagem
     const decodedMessage = decodeURIComponent(data);
     
-    // Criar objeto do pedido com timestamp formatado
     const now = new Date();
     const order = {
       id: Date.now(),
@@ -41,15 +37,12 @@ app.get('/pedido', (req, res) => {
       raw: data
     };
     
-    // Adicionar à lista de pedidos
     orders.unshift(order);
     
-    // Manter apenas os últimos 50 pedidos
     if (orders.length > 50) {
       orders = orders.slice(0, 50);
     }
     
-    // Redirecionar para página de exibição
     res.redirect(`/dashboard`);
   } catch (error) {
     console.error('Erro ao processar pedido:', error);
@@ -57,7 +50,6 @@ app.get('/pedido', (req, res) => {
   }
 });
 
-// Dashboard para exibir pedidos
 app.get('/dashboard', (req, res) => {
   const html = `
 <!DOCTYPE html>
@@ -302,7 +294,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Iniciar servidor
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`
 ╔═══════════════════════════════════════════════════════════╗

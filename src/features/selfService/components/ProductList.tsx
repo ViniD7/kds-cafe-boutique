@@ -6,7 +6,6 @@ import Colors from "@/Constants/Colors/Colors";
 import "./ProductList.css";
 import Images from "@/Constants/Images/images";
 
-// Componente Modal para detalhes do produto
 const ProductModal: React.FC<{
   product: any;
   isOpen: boolean;
@@ -99,11 +98,9 @@ const ProductList: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Memoizar produtos para melhor desempenho
   const productList = useMemo(() => products, []);
 
-  // Configurações de paginação
-  const itemsPerPage = 8; // 2 linhas x 4 colunas
+  const itemsPerPage = 8; 
   const totalPages = Math.ceil(productList.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
   const visibleProducts = useMemo(
@@ -304,8 +301,6 @@ const ProductList: React.FC = () => {
           </article>
         ))}
       </div>
-
-      {/* Modal de detalhes do produto */}
       <ProductModal
         product={selectedProduct}
         isOpen={isModalOpen}

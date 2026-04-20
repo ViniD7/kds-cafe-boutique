@@ -73,7 +73,7 @@ const App = () => {
             <AudioPlayer />
           </Suspense>
 
-          <div
+      {/* <div
             className={`music-control ${showMusicControl ? "visible" : ""}`}
             onMouseEnter={() => setShowMusicControl(true)}
             onMouseLeave={() => setShowMusicControl(false)}
@@ -81,7 +81,7 @@ const App = () => {
             <button onClick={() => (window as any).toggleAudioMute?.()}>
               <span>{(window as any).isAudioMuted?.() ? "🔇" : "🔊"}</span>
             </button>
-          </div>
+          </div> */}
 
           <Toaster />
           <Sonner />

@@ -21,6 +21,7 @@ import colheita1 from "../Assets/images-webp/colheita1.webp";
 import destaque from "../Assets/images-webp/destaque.webp";
 import fundoCafe from "../Assets/images-webp/fundoCafe.webp";
 import logo from "../Assets/images-webp/logo.webp";
+import cafecoado from "../Assets/images-webp/café_Coado.webp";
 
 // Imagens específicas da pasta selfServices
 import espresso30ml from "../Assets/imagesSelfServices/Espresso30ml.jpg";
@@ -49,6 +50,7 @@ import icedChaiLatte from "../Assets/imagesSelfServices/IcedChaiLatte.jpg";
 import icedDirtyChaiLatte from "../Assets/imagesSelfServices/IcedDirtyChaiLatte.jpg";
 import kdsMontBlanc from "../Assets/imagesSelfServices/KDSMontBlanc.jpg";
 import kdsColdMatcha from "../Assets/imagesSelfServices/KDSCold&Matcha.jpg";
+import Images from "@/Constants/Images/images";
 
 export interface ProductVariant {
   id: string;
@@ -90,50 +92,58 @@ export const categories = [
   "Autorais",
 ];
 
-// =======================
-// PRODUCTS
-// =======================
 
 export const products: Product[] = [
-  // ===== CAFÉS FIXOS =====
+  //cafés kds 
   {
     id: "prod_001",
-    name: "KDS Café Especial Lata",
-    description: "Café especial em lata.",
+    name: "KDS Café coado - 180ml",
+    description: "Café coado",
     shortDescription: "Café especial.",
-    price: 42.9,
-    images: [canFront, canDiagonal, canTriple],
-    variants: [{ id: "var_001", name: "250g", price: 42.9, stock: 10 }],
+    price: 17.90,
+    images: [Images.cafecoado ],
+    variants: [{ id: "var_001", name: "250g", price: 10.0, stock: 10 }],
     category: "Café especial",
   },
   {
     id: "prod_002",
-    name: "KDS Café Especial",
+    name: "KDS Café Especial grão",
     description: "Café especial.",
     shortDescription: "Café especial.",
-    price: 32.9,
+    price: 38.9,
     images: [sacheFront, sacheDest, sacheBk],
     variants: [{ id: "var_002", name: "250g", price: 32.9, stock: 10 }],
     category: "Café especial",
   },
   {
     id: "prod_003",
-    name: "KDS Café Gourmet",
+    name: "KDS Café Gourmet moído",
     description: "Café gourmet.",
     shortDescription: "Café gourmet.",
-    price: 24.9,
-    images: [sacheBack, sacheBkBack, destaque],
+    price: 26.9,
+    images: [Images.sacheBk],
     variants: [{ id: "var_003", name: "250g", price: 24.9, stock: 10 }],
     category: "Café especial",
   },
 
-  // ===== CAFÉS QUENTES =====
+        {
+      id: "p46",
+    name: "Drip Coffee - 100g",
+    description: "Contém 10 saches",
+    shortDescription: "Drip Coffee",
+    price: 28.50,
+    images: [Images.dripCoffee],
+    variants: [{ id: "v40", name: "padrão", price: 18.9, stock: 999 }],
+    category: "Autorais"
+  },
+
+  //Quentes
   {
     id: "p4",
     name: "Espresso 30ml",
     description: "Dose de espresso (30ml) servida em copo de 100ml.",
     shortDescription: "Espresso clássico.",
-    price: 9.9,
+    price: 8.0,
     images: [espresso30ml, dripCoffe],
     variants: [{ id: "v4", name: "padrão", price: 9.9, stock: 999 }],
     category: "Cafés quentes"
@@ -143,7 +153,7 @@ export const products: Product[] = [
     name: "Espresso duplo 60ml",
     description: "Duas doses de espresso (60ml) servidas em copo de 100ml.",
     shortDescription: "Espresso duplo.",
-    price: 14.9,
+    price: 9.5,
     images: [espresso60ml, cafeBackground],
     variants: [{ id: "v5", name: "padrão", price: 14.9, stock: 999 }],
     category: "Cafés quentes"
@@ -153,7 +163,7 @@ export const products: Product[] = [
     name: "Espresso romano",
     description: "Espresso (30ml) com zest de limão siciliano (1g).",
     shortDescription: "Espresso com limão.",
-    price: 9.9,
+    price: 9.5,
     images: [espressoRomano, coffeDetails],
     variants: [{ id: "v6", name: "padrão", price: 9.9, stock: 999 }],
     category: "Cafés quentes"
@@ -163,7 +173,7 @@ export const products: Product[] = [
     name: "Machiatto",
     description: "Espresso (30ml) com crema de leite vaporizado.",
     shortDescription: "Espresso com leite.",
-    price: 9.9,
+    price: 8.5,
     images: [machiatto, fundoCafe],
     variants: [{ id: "v7", name: "padrão", price: 9.9, stock: 999 }],
     category: "Cafés quentes"
@@ -173,7 +183,7 @@ export const products: Product[] = [
     name: "Machiatto duplo",
     description: "Espresso duplo (60ml) com crema de leite vaporizado.",
     shortDescription: "Macchiato mais cremoso.",
-    price: 12.9,
+    price: 11.0,
     images: [machiattoDuplo, coffeDetails],
     variants: [{ id: "v8", name: "padrão", price: 12.9, stock: 999 }],
     category: "Cafés quentes"
@@ -183,7 +193,7 @@ export const products: Product[] = [
     name: "Espresso Carioca",
     description: "Espresso (30ml) com 30ml de água quente.",
     shortDescription: "Espresso mais suave.",
-    price: 9.9,
+    price: 8.0,
     images: [espresso60ml, colheita1],
     variants: [{ id: "v9", name: "padrão", price: 9.9, stock: 999 }],
     category: "Cafés quentes"
@@ -193,7 +203,7 @@ export const products: Product[] = [
     name: "Americano",
     description: "Espresso duplo (60ml) com 60ml de água quente.",
     shortDescription: "Café leve e longo.",
-    price: 12.9,
+    price: 9.80,
     images: [espresso60ml, cafeBackground],
     variants: [{ id: "v10", name: "padrão", price: 12.9, stock: 999 }],
     category: "Cafés quentes"
@@ -223,7 +233,7 @@ export const products: Product[] = [
     name: "Moka",
     description: "Espresso (30ml) com calda de chocolate (30g) e leite vaporizado.",
     shortDescription: "Café com chocolate.",
-    price: 14.9,
+    price: 15.9,
     images: [chaiLatteGroup, cupCacau],
     variants: [{ id: "v13", name: "padrão", price: 14.9, stock: 999 }],
     category: "Cafés quentes"
@@ -243,7 +253,7 @@ export const products: Product[] = [
     name: "Caramel Latte",
     description: "Espresso (30ml) com calda de caramelo (30g) e leite vaporizado.",
     shortDescription: "Café com caramelo.",
-    price: 14.9,
+    price: 15.9,
     images: [chaiLatteGroup, coffeDetails],
     variants: [{ id: "v15", name: "padrão", price: 14.9, stock: 999 }],
     category: "Cafés quentes"
@@ -253,7 +263,7 @@ export const products: Product[] = [
     name: "Salted Caramel Latte",
     description: "Espresso (30ml) com xarope de caramelo salgado (10ml) e leite vaporizado.",
     shortDescription: "Caramelo salgado.",
-    price: 15.9,
+    price: 16.9,
     images: [chaiLatteGroup, fundoCafe],
     variants: [{ id: "v16", name: "padrão", price: 15.9, stock: 999 }],
     category: "Cafés quentes"
@@ -263,7 +273,7 @@ export const products: Product[] = [
     name: "Avelã Latte",
     description: "Espresso (30ml) com xarope de avelã (20ml) e leite vaporizado.",
     shortDescription: "Café com avelã.",
-    price: 15.9,
+    price: 16.9,
     images: [avelaLatte, dripCoffe],
     variants: [{ id: "v17", name: "padrão", price: 15.9, stock: 999 }],
     category: "Cafés quentes"
@@ -273,19 +283,19 @@ export const products: Product[] = [
     name: "Capuccino Italiano Trufado",
     description: "Espresso (30ml) com leite vaporizado e borda trufada (Nutella ou doce de leite).",
     shortDescription: "Capuccino trufado.",
-    price: 16.9,
+    price: 18.9,
     images: [capuccinoTrufado, cupCacau],
     variants: [{ id: "v18", name: "padrão", price: 16.9, stock: 999 }],
     category: "Cafés quentes"
   },
 
-  // ===== GELADOS =====
+  //gelados
   {
     id: "p19",
     name: "Iced Latte",
     description: "Espresso duplo (60ml) com leite gelado e gelo.",
     shortDescription: "Café gelado com leite.",
-    price: 14.9,
+    price: 15.9,
     images: [icedLatte, cupCoco],
     variants: [{ id: "v19", name: "350ml", price: 14.9, stock: 999 }],
     category: "Cafés gelados"
@@ -305,7 +315,7 @@ export const products: Product[] = [
     name: "Iced Moka",
     description: "Espresso duplo (60ml) com calda de chocolate (40g) e leite gelado.",
     shortDescription: "Moka gelado.",
-    price: 16.9,
+    price: 17.9,
     images: [icedMoka, cupCacau],
     variants: [{ id: "v21", name: "350ml", price: 16.9, stock: 999 }],
     category: "Cafés gelados"
@@ -355,7 +365,7 @@ export const products: Product[] = [
     name: "Cold Brew",
     description: "Café extraído a frio servido com gelo.",
     shortDescription: "Cold brew.",
-    price: 14.9,
+    price: 12.9,
     images: [coldBrew, fundoCafe],
     variants: [{ id: "v26", name: "350ml", price: 14.9, stock: 999 }],
     category: "Cafés gelados"
@@ -365,7 +375,7 @@ export const products: Product[] = [
     name: "Cold Brew 500ml",
     description: "Cold brew servido com gelo (500ml).",
     shortDescription: "Cold brew grande.",
-    price: 17.9,
+    price: 15.9,
     images: [coldBrew, colheita1],
     variants: [{ id: "v27", name: "500ml", price: 17.9, stock: 999 }],
     category: "Cafés gelados"
@@ -375,7 +385,7 @@ export const products: Product[] = [
     name: "Espresso Tônica",
     description: "Espresso duplo (60ml) com gelo e água tônica finalizada por cima.",
     shortDescription: "Café com tônica.",
-    price: 14.9,
+    price: 15.9,
     images: [espressoTonica, cafeBackground],
     variants: [{ id: "v28", name: "350ml", price: 14.9, stock: 999 }],
     category: "Cafés gelados"
@@ -385,13 +395,13 @@ export const products: Product[] = [
     name: "Espresso Tônica 500ml",
     description: "Versão 500ml do espresso tônica.",
     shortDescription: "Tônica grande.",
-    price: 17.9,
+    price: 16.9,
     images: [espressoTonica, coffeDetails],
     variants: [{ id: "v29", name: "500ml", price: 17.9, stock: 999 }],
     category: "Cafés gelados"
   },
 
-  // ===== MATCHA =====
+  //matcha
   {
     id: "p30",
     name: "Matcha Latte",
@@ -417,7 +427,7 @@ export const products: Product[] = [
     name: "Ichigo Matcha Iced Latte",
     description: "Matcha com leite gelado e calda/geleia de morango.",
     shortDescription: "Matcha com morango.",
-    price: 18.9,
+    price: 19.9,
     images: [ichigoMatcha, cupCacau],
     variants: [{ id: "v32", name: "padrão", price: 18.9, stock: 999 }],
     category: "Matcha"
@@ -427,7 +437,7 @@ export const products: Product[] = [
     name: "Passion Furutsu Iced Matcha",
     description: "Matcha com leite gelado e calda/geleia de maracujá.",
     shortDescription: "Matcha com maracujá.",
-    price: 18.9,
+    price: 17.9,
     images: [passionFurutsu, cupCookie],
     variants: [{ id: "v33", name: "padrão", price: 18.9, stock: 999 }],
     category: "Matcha"
@@ -437,13 +447,12 @@ export const products: Product[] = [
     name: "Coconut Matcha",
     description: "Água de coco com cold foam de matcha.",
     shortDescription: "Matcha com coco.",
-    price: 17.9,
+    price: 18.9,
     images: [coconutMatcha, cupCoco],
     variants: [{ id: "v34", name: "padrão", price: 17.9, stock: 999 }],
     category: "Matcha"
   },
-
-  // ===== CHAI =====
+//chai
   {
     id: "p35",
     name: "Chai Latte",
@@ -459,7 +468,7 @@ export const products: Product[] = [
     name: "Dirty Chai Latte",
     description: "Chai latte com adição de espresso (30ml).",
     shortDescription: "Chai com café.",
-    price: 16.9,
+    price: 18.9,
     images: [dirtyChaiLatte, dripCoffe],
     variants: [{ id: "v36", name: "padrão", price: 16.9, stock: 999 }],
     category: "Chai"
@@ -469,7 +478,7 @@ export const products: Product[] = [
     name: "Iced Chai Latte",
     description: "Chai (180ml) com gelo.",
     shortDescription: "Chai gelado.",
-    price: 15.9,
+    price: 16.9,
     images: [icedChaiLatte, cafeBackground],
     variants: [{ id: "v37", name: "padrão", price: 15.9, stock: 999 }],
     category: "Chai"
@@ -484,14 +493,24 @@ export const products: Product[] = [
     variants: [{ id: "v38", name: "padrão", price: 17.9, stock: 999 }],
     category: "Chai"
   },
+           {
+      id: "p47",
+    name: "Iced Chai Massala",
+    description: "180ml batch chai ",
+    shortDescription: "Drip Coffee",
+    price: 17.0,
+    images: [Images.massala],
+    variants: [{ id: "v40", name: "padrão", price: 18.9, stock: 999 }],
+    category: "Autorais"
+  },
 
-  // ===== AUTORAIS =====
+  //Autorais
   {
     id: "p39",
     name: "KDS Mont Blanc",
     description: "Cold brew infusionado com laranja por 18h, finalizado com cold foam de baunilha e zest de laranja Bahia.",
     shortDescription: "Cold brew com laranja.",
-    price: 18.9,
+    price: 21.9,
     images: [kdsMontBlanc, destaque],
     variants: [{ id: "v39", name: "padrão", price: 18.9, stock: 999 }],
     category: "Autorais"
@@ -499,13 +518,74 @@ export const products: Product[] = [
   {
     id: "p40",
     name: "KDS Cold & Matcha",
-    description: "Cold brew infusionado por 18h com cold foam de matcha.",
-    shortDescription: "Cold brew com matcha.",
-    price: 18.9,
+    description: "Cold brew de arara amarelo infulsionado por 18 hooras + cold foam de matcha.",
+    shortDescription: "Cold brew de arara amarelo + cold foam de matcha",
+    price: 20.9,
     images: [kdsColdMatcha, logo],
     variants: [{ id: "v40", name: "padrão", price: 18.9, stock: 999 }],
     category: "Autorais"
   },
+    {
+    id: "p41",
+    name: "KDS Carajillo",
+    description: "Feito na coqueteleira com 50ml de licor 43 + 60ml de espresso",
+    shortDescription: "feito na coqueteleira com licor 43 e espresso.",
+    price: 28.9,
+    images: [Images.carajillo],
+    variants: [{ id: "v40", name: "padrão", price: 18.9, stock: 999 }],
+    category: "Autorais"
+  },
+  {
+      id: "p42",
+    name: "KDS Coffe Negronni",
+    description: "Feito no aeropress com 30ml de campari + 30ml de gin + 30ml de Martin Rosso",
+    shortDescription: "feito no aeropress com campari, gin e martin rosso.",
+    price: 29.9,
+    images: [Images.negronni],
+    variants: [{ id: "v40", name: "padrão", price: 18.9, stock: 999 }],
+    category: "Autorais"
+  },
+      {
+      id: "p43",
+    name: "Coca Cola Zero - 350ml",
+    description: "Refrigerante Coca Cola Zero em lata de 350ml.",
+    shortDescription: "Refrigerante zero açúcar.",
+    price: 8.50,
+    images: [Images.cocacolaZero],
+    variants: [{ id: "v40", name: "padrão", price: 18.9, stock: 999 }],
+    category: "Autorais"
+  },
+    {
+      id: "p44",
+    name: "Cola Cola - 350ml",
+    description: "Refrigerante Coca Cola em lata de 350ml.",
+    shortDescription: "Refrigerante com açúcar.",
+    price: 8.50,
+    images: [Images.cocacola],
+    variants: [{ id: "v40", name: "padrão", price: 18.9, stock: 999 }],
+    category: "Autorais"
+  },
+      {
+      id: "p45",
+    name: "Água com gás - 500ml",
+    description: "Água mineral com gás em garrafa de 500ml.",
+    shortDescription: "Água com gás.",
+    price: 7.0,
+    images: [Images.aguacomgas],
+    variants: [{ id: "v40", name: "padrão", price: 18.9, stock: 999 }],
+    category: "Autorais"
+  },
+      {
+      id: "p45",
+    name: "Frapuccino",
+    description: "Espresso batido com base de frapê + leite + gelo + chantilly. ( sabores: caramelo salgado, chocalate e avelã",
+    shortDescription: "Frapuccino sabores (caramelo salgado, chocolate e avelã).",
+    price: 18.90,
+    images: [Images.frapuccino],
+    variants: [{ id: "v40", name: "padrão", price: 18.9, stock: 999 }],
+    category: "Autorais"
+  },
+ 
 ];
 
 export const kits: Kit[] = [
