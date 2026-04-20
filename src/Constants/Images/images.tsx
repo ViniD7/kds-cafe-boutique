@@ -17,6 +17,7 @@ import negronni from "../../Assets/images/selfservices/Coffee Negroni.jpg";
 import cocacola from "../../Assets/images/cocacola.jpeg";
 import cocacolaZero from "../../Assets/images/cocacola_Zero.jpeg";
 import aguacomgas from "../../Assets/images/aguacomgas.jpeg";
+import aguasemgas from "../../Assets/images/aguasemgas.jpeg";
 import dripCoffee from "../../Assets/images/dripCoffe.webp";
 import massala from "../../Assets/images/selfservices/Chai Masala.jpg"
 import frapuccino from "../../Assets/images/selfservices/frapuccino.jpg"
@@ -43,6 +44,7 @@ const Images = {
   cocacola,
   cocacolaZero,
   aguacomgas,
+  aguasemgas,
   dripCoffee,
   massala,
   frapuccino

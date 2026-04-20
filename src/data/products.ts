@@ -576,6 +576,16 @@ export const products: Product[] = [
     category: "Autorais"
   },
       {
+      id: "p50",
+    name: "Água sem gás - 500ml",
+    description: "Água mineral sem gás em garrafa de 500ml.",
+    shortDescription: "Água sem gás.",
+    price: 6.0,
+    images: [Images.aguasemgas],
+    variants: [{ id: "v50", name: "padrão", price: 18.9, stock: 999 }],
+    category: "Autorais"
+  },
+      {
       id: "p45",
     name: "Frapuccino",
     description: "Espresso batido com base de frapê + leite + gelo + chantilly. ( sabores: caramelo salgado, chocalate e avelã",
