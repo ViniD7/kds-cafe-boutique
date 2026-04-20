@@ -288,7 +288,7 @@ app.get('/dashboard', (req, res) => {
 
     ${orders.length === 0 ? `
       <div class="empty-state">
-        <h2>Nenhum pedido aindaryrtyrty7ry</h2>
+        <h2>Nenhum pedido ainda</h2>
         <p>Os pedidos aparecerão aqui quando forem feitos pelo tablet</p>
       </div>
     ` : `
