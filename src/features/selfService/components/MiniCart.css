@@ -1,10 +1,15 @@
 /* MiniCart - Modern Floating Design */
 
 .minicart-wrapper {
+  /* 
+    IMPORTANT: This element uses position: fixed to float independently of the scroll.
+    Do NOT wrap this in containers with: transform, backface-visibility, contain, or will-change
+    as these properties break fixed positioning by creating new stacking contexts.
+  */
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  z-index: 99;
+  z-index: 1000; /* High z-index to stay above all other elements */
   max-width: 420px;
   min-width: 320px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

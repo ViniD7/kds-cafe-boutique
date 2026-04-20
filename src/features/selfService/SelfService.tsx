@@ -90,12 +90,7 @@ const SelfServiceContent: React.FC = () => {
       />
 
       <div className="selfservice-content">
-        {currentStep === "products" && (
-          <div>
-            <ProductList />
-            <MiniCart onCheckout={handleGoToCheckout} />
-          </div>
-        )}
+        {currentStep === "products" && <ProductList />}
 
         {currentStep === "cart" && <Cart onCheckout={handleGoToCheckout} />}
 
@@ -108,6 +103,11 @@ const SelfServiceContent: React.FC = () => {
 
         {currentStep === "success" && <Success onNewOrder={handleNewOrder} />}
       </div>
+
+      {/* MiniCart moved outside content container to ensure fixed positioning works correctly */}
+      {currentStep === "products" && (
+        <MiniCart onCheckout={handleGoToCheckout} />
+      )}
     </div>
   );
 };

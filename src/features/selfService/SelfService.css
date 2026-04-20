@@ -1,10 +1,11 @@
 .selfservice-container {
   min-height: 100vh;
   position: relative;
-  /* Otimizações de performance CSS */
-  will-change: auto;
-  transform: translateZ(0); /* Força aceleração GPU */
-  backface-visibility: hidden;
+  /* 
+    NOTE: Do NOT add transform, backface-visibility, or will-change here.
+    These properties create a new stacking context and break position: fixed 
+    for child elements (like MiniCart).
+  */
 }
 
 .selfservice-top-subtotal {
@@ -72,8 +73,11 @@
 
 .selfservice-content {
   padding-bottom: 2rem;
-  /* Otimização de renderização */
-  contain: layout style; /* Isola layout e estilo */
+  /* 
+    NOTE: Removed 'contain: layout style' because it can interfere with
+    position: fixed elements. If performance optimization is needed,
+    apply containment only to specific child elements, not the entire content area.
+  */
 }
 
 /* Otimização para tablets landscape (Elgin M10) */
