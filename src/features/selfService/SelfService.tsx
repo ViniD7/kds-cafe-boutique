@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import {
   SelfServiceCartProvider,
-  useSelfServiceCart,
+  useSelfServiceCartSummary,
 } from "./context/SelfServiceCartContext";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
@@ -15,9 +15,9 @@ import Colors from "@/Constants/Colors/Colors";
 import "./SelfService.css";
 import Images from "@/Constants/Images/images";
 
-// Componente para exibir subtotal no topo
-const TopSubtotal: React.FC = () => {
-  const { total, itemCount } = useSelfServiceCart();
+// Componente para exibir subtotal no topo - otimizado com memo
+const TopSubtotal = memo(() => {
+  const { total, itemCount } = useSelfServiceCartSummary();
 
   if (itemCount === 0) return null;
 
@@ -39,7 +39,9 @@ const TopSubtotal: React.FC = () => {
       </div>
     </div>
   );
-};
+});
+
+TopSubtotal.displayName = 'TopSubtotal';
 
 type SelfServiceStep = "products" | "cart" | "checkout" | "success";
 

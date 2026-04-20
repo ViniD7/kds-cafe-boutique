@@ -53,16 +53,12 @@ const Checkout: React.FC<CheckoutProps> = ({ onSuccess, onCancel }) => {
     // Codificar para URL
     const encodedMessage = encodeURIComponent(message);
     
-    // Obter IP do servidor
-    const serverIP = SELFSERVICE_CONFIG.serverIP === 'auto'
-      ? (window.location.hostname === 'localhost' ? 'localhost' : window.location.hostname)
-      : SELFSERVICE_CONFIG.serverIP;
-    
-    const port = SELFSERVICE_CONFIG.serverPort;
+    // Obter URL do servidor (funciona em dev e produção)
+    const serverURL = SELFSERVICE_CONFIG.serverURL;
     
     // Enviar pedido de forma silenciosa via fetch
     try {
-      const orderURL = `http://${serverIP}:${port}/pedido?data=${encodedMessage}`;
+      const orderURL = `${serverURL}/pedido?data=${encodedMessage}`;
       
       await fetch(orderURL, {
         method: 'GET',

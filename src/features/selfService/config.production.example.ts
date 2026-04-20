@@ -2,8 +2,8 @@
 // Copie este arquivo e rename para config.production.ts
 
 export const SELFSERVICE_CONFIG_PRODUCTION = {
-  // ⚠️ ALTERE PARA O IP REAL DO SERVIDOR
-  serverIP: '192.168.1.100', // Exemplo - substitua pelo IP real
+  // ⚠️ ALTERE PARA A URL REAL DO SERVIDOR NO RENDER
+  serverURL: 'https://seu-servidor.onrender.com', // Exemplo - substitua pela URL real
   
   serverPort: 3000,
   
@@ -33,23 +33,27 @@ export const SELFSERVICE_CONFIG_PRODUCTION = {
   }
 };
 
-// 📝 INSTRUÇÕES PARA PRODUÇÃO:
+// 📝 INSTRUÇÕES PARA DEPLOY EM PRODUÇÃO:
 //
-// 1. Altere o serverIP para o IP real do notebook
-// 2. Configure o firewall do Windows:
-//    netsh advfirewall firewall add rule name="KDS Self-Service" dir=in action=allow protocol=TCP localport=3000
+// 1. DEPLOY NO RENDER (Backend):
+//    - Crie um Web Service no Render
+//    - Conecte ao repositório do GitHub
+//    - Configure a variável de ambiente FRONTEND_URL
+//    - Valor: URL do seu frontend no Vercel
+//    - Exemplo: https://kds-autoatendimento.vercel.app
 //
-// 3. No tablet, acesse:
-//    http://{IP_DO_NOTEBOOK}:5173/autoatendimento
+// 2. DEPLOY NO VERCEL (Frontend):
+//    - Conecte ao repositório do GitHub
+//    - Configure a variável de ambiente VITE_BACKEND_URL
+//    - Valor: URL do seu servidor no Render
+//    - Exemplo: https://kds-selfservice-server.onrender.com
 //
-// 4. No notebook, acesse:
-//    http://localhost:3000/dashboard
-//
-// 5. Mantenha o servidor rodando no notebook:
-//    cd selfservice-server
-//    npm start
+// 3. TESTE A COMUNICAÇÃO:
+//    - Acesse o frontend no Vercel
+//    - Faça um pedido de teste
+//    - Verifique se aparece no dashboard do Render
 //
 // ⚠️ IMPORTANTE:
-// - Tablet e notebook DEVEM estar na mesma rede Wi-Fi
-// - Não exponha a porta 3000 na internet
-// - Use apenas em rede local segura
+// - Ambos os serviços devem estar em produção
+// - O Render pode demorar alguns minutos para iniciar (free tier)
+// - Use HTTPS em produção (automático no Vercel e Render)

@@ -1,6 +1,10 @@
 .selfservice-container {
   min-height: 100vh;
   position: relative;
+  /* Otimizações de performance CSS */
+  will-change: auto;
+  transform: translateZ(0); /* Força aceleração GPU */
+  backface-visibility: hidden;
 }
 
 .selfservice-top-subtotal {
@@ -68,6 +72,8 @@
 
 .selfservice-content {
   padding-bottom: 2rem;
+  /* Otimização de renderização */
+  contain: layout style; /* Isola layout e estilo */
 }
 
 /* Otimização para tablets landscape (Elgin M10) */

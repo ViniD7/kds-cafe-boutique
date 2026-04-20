@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, memo, useCallback } from "react";
 import { useSelfServiceCart } from "../context/SelfServiceCartContext";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
@@ -9,7 +9,67 @@ interface MiniCartProps {
   onCheckout: () => void;
 }
 
-const MiniCart: React.FC<MiniCartProps> = ({ onCheckout }) => {
+interface MiniCartItemProps {
+  item: any;
+  updateQuantity: (id: string, quantity: number) => void;
+  removeFromCart: (id: string) => void;
+}
+
+const MiniCartItem = memo<MiniCartItemProps>(({ item, updateQuantity, removeFromCart }) => (
+  <div className="minicart-item-row">
+    {/* Imagem e Nome */}
+    <div className="minicart-item-product">
+      {item.image && (
+        <div className="minicart-item-image">
+          <img src={item.image} alt={item.name} loading="lazy" decoding="async" />
+        </div>
+      )}
+      <div className="minicart-item-info">
+        <h4 className="minicart-item-name">{item.name}</h4>
+        <button
+          className="minicart-remove-btn"
+          onClick={() => removeFromCart(item.id)}
+        >
+          Remover
+        </button>
+      </div>
+    </div>
+
+    {/* Preço */}
+    <div className="minicart-item-price">
+      R$ {item.price.toFixed(2).replace(".", ",")}
+    </div>
+
+    {/* Quantidade */}
+    <div className="minicart-item-quantity">
+      <div className="quantity-controls">
+        <button
+          className="qty-btn"
+          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+        >
+          <Minus size={14} />
+        </button>
+        <span className="qty-value">{item.quantity}</span>
+        <button
+          className="qty-btn"
+          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+        >
+          <Plus size={14} />
+        </button>
+      </div>
+    </div>
+
+    {/* Subtotal */}
+    <div className="minicart-item-subtotal">
+      R${" "}
+      {(item.price * item.quantity).toFixed(2).replace(".", ",")}
+    </div>
+  </div>
+));
+
+MiniCartItem.displayName = 'MiniCartItem';
+
+const MiniCart = memo<MiniCartProps>(({ onCheckout }) => {
   const { items, total, itemCount, updateQuantity, removeFromCart, clearCart } =
     useSelfServiceCart();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -145,61 +205,12 @@ const MiniCart: React.FC<MiniCartProps> = ({ onCheckout }) => {
               {/* Lista de Itens */}
               <div className="minicart-items-list" ref={itemsListRef}>
                 {items.map((item) => (
-                  <div key={item.id} className="minicart-item-row">
-                    {/* Imagem e Nome */}
-                    <div className="minicart-item-product">
-                      {item.image && (
-                        <div className="minicart-item-image">
-                          <img src={item.image} alt={item.name} />
-                        </div>
-                      )}
-                      <div className="minicart-item-info">
-                        <h4 className="minicart-item-name">{item.name}</h4>
-                        <button
-                          className="minicart-remove-btn"
-                          onClick={() => removeFromCart(item.id)}
-                        >
-                          Remover
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Preço */}
-                    <div className="minicart-item-price">
-                      R$ {item.price.toFixed(2).replace(".", ",")}
-                    </div>
-
-                    {/* Quantidade */}
-                    <div className="minicart-item-quantity">
-                      <div className="quantity-controls">
-                        <button
-                          className="qty-btn"
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity - 1)
-                          }
-                        >
-                          <Minus size={14} />
-                        </button>
-                        <span className="qty-value">{item.quantity}</span>
-                        <button
-                          className="qty-btn"
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
-                          }
-                        >
-                          <Plus size={14} />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Subtotal */}
-                    <div className="minicart-item-subtotal">
-                      R${" "}
-                      {(item.price * item.quantity)
-                        .toFixed(2)
-                        .replace(".", ",")}
-                    </div>
-                  </div>
+                  <MiniCartItem
+                    key={item.id}
+                    item={item}
+                    updateQuantity={updateQuantity}
+                    removeFromCart={removeFromCart}
+                  />
                 ))}
               </div>
 
@@ -269,6 +280,8 @@ const MiniCart: React.FC<MiniCartProps> = ({ onCheckout }) => {
       )}
     </div>
   );
-};
+});
+
+MiniCart.displayName = 'MiniCart';
 
 export default MiniCart;

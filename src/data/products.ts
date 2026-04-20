@@ -566,13 +566,13 @@ export const products: Product[] = [
     category: "Autorais"
   },
       {
-      id: "p45",
+      id: "p49",
     name: "Água com gás - 500ml",
     description: "Água mineral com gás em garrafa de 500ml.",
     shortDescription: "Água com gás.",
     price: 7.0,
     images: [Images.aguacomgas],
-    variants: [{ id: "v40", name: "padrão", price: 18.9, stock: 999 }],
+    variants: [{ id: "v49", name: "padrão", price: 18.9, stock: 999 }],
     category: "Autorais"
   },
       {

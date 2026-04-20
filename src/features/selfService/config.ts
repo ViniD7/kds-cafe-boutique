@@ -1,12 +1,25 @@
 // Configuração do Autoatendimento
 // Edite este arquivo para personalizar o sistema
 
-export const SELFSERVICE_CONFIG = {
-  // Porta do servidor de pedidos
-  serverPort: 3000,
+// Detectar URL do backend baseado no ambiente
+const getBackendURL = () => {
+  // Se estiver em produção (Vercel), usar variável de ambiente
+  if (import.meta.env.VITE_BACKEND_URL) {
+    return import.meta.env.VITE_BACKEND_URL;
+  }
   
-  // IP do servidor (em produção, altere para o IP real)
-  // Deixe 'auto' para detectar automaticamente
+  // Em desenvolvimento, usar localhost
+  return 'http://localhost:3000';
+};
+
+export const SELFSERVICE_CONFIG = {
+  // URL completa do servidor (em produção, vem do .env)
+  serverURL: getBackendURL(),
+  
+  // Porta do servidor (apenas para referência em dev)
+  serverPort: parseInt(import.meta.env.VITE_BACKEND_URL?.split(':').pop() || '3000'),
+  
+  // IP do servidor (em produção, usar URL completa)
   serverIP: 'auto',
   
   // Intervalo de auto-refresh do dashboard (em ms)

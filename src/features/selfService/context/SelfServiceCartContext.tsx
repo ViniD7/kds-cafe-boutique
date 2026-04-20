@@ -73,10 +73,23 @@ export const SelfServiceCartProvider: React.FC<{ children: React.ReactNode }> = 
   );
 };
 
+// Hook otimizado para acessar apenas items e ações
 export const useSelfServiceCart = () => {
   const context = useContext(SelfServiceCartContext);
   if (!context) {
     throw new Error('useSelfServiceCart must be used within SelfServiceCartProvider');
   }
   return context;
+};
+
+// Hook otimizado para acessar apenas total e itemCount
+export const useSelfServiceCartSummary = () => {
+  const context = useContext(SelfServiceCartContext);
+  if (!context) {
+    throw new Error('useSelfServiceCartSummary must be used within SelfServiceCartProvider');
+  }
+  return useMemo(() => ({
+    total: context.total,
+    itemCount: context.itemCount
+  }), [context.total, context.itemCount]);
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { useSelfServiceCart } from '../context/SelfServiceCartContext';
 import { toast } from '@/hooks/use-toast';
 import Colors from '@/Constants/Colors/Colors';
@@ -8,7 +8,7 @@ interface CartProps {
   onCheckout: () => void;
 }
 
-const Cart: React.FC<CartProps> = ({ onCheckout }) => {
+const Cart = memo<CartProps>(({ onCheckout }) => {
   const { items, updateQuantity, total, itemCount } = useSelfServiceCart();
 
   const handleProceedToCheckout = () => {
@@ -127,6 +127,8 @@ const Cart: React.FC<CartProps> = ({ onCheckout }) => {
       </div>
     </div>
   );
-};
+});
+
+Cart.displayName = 'Cart';
 
 export default Cart;

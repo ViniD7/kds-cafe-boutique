@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: kds-selfservice-server
+    env: node
+    region: sao-paulo
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: FRONTEND_URL
+        sync: false

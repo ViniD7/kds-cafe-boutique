@@ -1,13 +1,19 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
+import cors from 'cors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+// Middleware CORS para produção
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*',
+  credentials: true
+}));
 
 let orders = [];
 
@@ -301,8 +307,7 @@ app.listen(PORT, '0.0.0.0', () => {
 ║   ☕ KDS Café Boutique - Servidor de Pedidos             ║
 ║                                                           ║
 ║   Servidor rodando em: http://0.0.0.0:${PORT}            ║
-║   Dashboard: http://localhost:${PORT}/dashboard          ║
-║   Health Check: http://localhost:${PORT}/health          ║
+║   Ambiente: ${process.env.NODE_ENV || 'development'}                ║
 ║                                                           ║
 ║   Aguardando pedidos do autoatendimento...               ║
 ║                                                           ║
