@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { formatCurrency, formatWhatsAppMessage } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import "./cartDrawer/CartDrawer.css";
+import "./CartDrawer/CartDrawer.css";
 
 interface CartDrawerProps {
   isOpen: boolean;

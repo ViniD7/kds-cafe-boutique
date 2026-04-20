@@ -1,22 +1,23 @@
-/* MiniCart - Baseado no layout do Cart.tsx */
+/* MiniCart - Modern Floating Design */
 
 .minicart-wrapper {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
   z-index: 99;
-  max-width: 450px;
-  min-width: 350px;
+  max-width: 420px;
+  min-width: 320px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Botão Toggle */
+/* Botão Toggle - Modern Floating Style */
 .minicart-toggle-btn {
   width: 100%;
-  background: rgb(189, 169, 105);
+  background: linear-gradient(135deg, rgb(189, 169, 105) 0%, rgb(151, 130, 68) 100%);
   color: white;
   border: none;
   padding: 1rem 1.5rem;
-  border-radius: 12px;
+  border-radius: 16px;
   font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
@@ -24,15 +25,38 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  transition: all 0.2s;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  min-height: 60px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8px 32px rgba(189, 169, 105, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.15);
+  min-height: 64px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Badge de contagem de itens */
+.minicart-toggle-btn > span:first-of-type {
+  flex: 1;
+  text-align: left;
+}
+
+.minicart-toggle-btn > span:nth-of-type(2) {
+  position: relative;
+  z-index: 1;
 }
 
 .minicart-toggle-btn:hover {
-  background: rgb(151, 130, 68);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, rgb(151, 130, 68) 0%, rgb(189, 169, 105) 100%);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 
+    0 12px 40px rgba(189, 169, 105, 0.4),
+    0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.minicart-toggle-btn:active {
+  transform: translateY(-2px) scale(0.98);
 }
 
 .toggle-icon {
@@ -40,13 +64,29 @@
   transition: transform 0.2s;
 }
 
-/* Carrinho Expandido */
+/* Carrinho Expandido - Modern Floating Card */
 .minicart-expanded {
-  background: white;
-  border-radius: 12px;
-  margin-top: 0.75rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 20px;
+  margin-top: 0.875rem;
+  box-shadow: 
+    0 12px 48px rgba(0, 0, 0, 0.15),
+    0 8px 24px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: slideUpFade 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Carrinho Vazio */
@@ -419,18 +459,31 @@
   transform: translateY(0);
 }
 
-/* Responsivo para tablets */
+/* Responsivo para tablets - Landscape mode */
 @media (max-width: 1280px) and (orientation: landscape) {
   .minicart-wrapper {
-    max-width: 400px;
-    min-width: 320px;
+    max-width: 380px;
+    min-width: 300px;
     bottom: 1.5rem;
     right: 1.5rem;
+  }
+
+  .minicart-toggle-btn {
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+    min-height: 60px;
+    border-radius: 14px;
+  }
+
+  .minicart-expanded {
+    border-radius: 16px;
+    margin-top: 0.75rem;
   }
 
   .minicart-item-row {
     grid-template-columns: 1fr auto auto;
     gap: 0.75rem;
+    padding: 0.875rem;
   }
 
   .minicart-item-price {
@@ -440,5 +493,46 @@
   .minicart-item-image {
     width: 50px;
     height: 50px;
+  }
+
+  .minicart-summary {
+    padding: 1.25rem;
+  }
+
+  .minicart-checkout-btn {
+    padding: 0.875rem;
+    font-size: 1rem;
+    min-height: 52px;
+  }
+}
+
+/* Tablets em modo retrato */
+@media (max-width: 1280px) and (orientation: portrait) {
+  .minicart-wrapper {
+    max-width: 90%;
+    left: 5%;
+    right: 5%;
+    bottom: 1.5rem;
+  }
+
+  .minicart-toggle-btn {
+    min-height: 64px;
+    border-radius: 16px;
+  }
+
+  .minicart-expanded {
+    border-radius: 18px;
+  }
+}
+
+/* Dispositivos com touch */
+@media (hover: none) and (pointer: coarse) {
+  .minicart-toggle-btn {
+    -webkit-tap-highlight-color: rgba(189, 169, 105, 0.2);
+    touch-action: manipulation;
+  }
+
+  .minicart-toggle-btn:active {
+    transform: scale(0.98);
   }
 }

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useCallback, memo } from "react";
+import React, { useMemo, useRef, useState, useCallback, memo, useEffect } from "react";
 import { products } from "@/data/products";
 import { useSelfServiceCart } from "../context/SelfServiceCartContext";
 import { toast } from "@/hooks/use-toast";
@@ -113,6 +113,7 @@ const ProductCard = memo(({
   onImageError: (productId: number) => void;
   formatPrice: (price: number) => string;
 }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
   const hasImage = product.images[0] && !imageErrors.has(product.id);
 
   return (
@@ -123,14 +124,18 @@ const ProductCard = memo(({
     >
       <div className="card-media">
         {hasImage ? (
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            loading="lazy"
-            onError={() => onImageError(product.id)}
-            className="product-image"
-            decoding="async"
-          />
+          <>
+            {!imageLoaded && <div className="image-loading-skeleton" />}
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              loading="lazy"
+              onError={() => onImageError(product.id)}
+              onLoad={() => setImageLoaded(true)}
+              className={`product-image ${imageLoaded ? 'loaded' : ''}`}
+              decoding="async"
+            />
+          </>
         ) : (
           <div className="image-placeholder">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
@@ -201,6 +206,7 @@ const ProductList: React.FC = () => {
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const imageCacheRef = useRef<Set<string>>(new Set());
 
   const productList = useMemo(() => products, []);
 
@@ -211,6 +217,53 @@ const ProductList: React.FC = () => {
     () => productList.slice(startIndex, startIndex + itemsPerPage),
     [productList, startIndex],
   );
+
+  // Smart image prefetching: load current, previous, and next pages
+  useEffect(() => {
+    const prefetchImages = () => {
+      const pagesToPrefetch = new Set<number>();
+      
+      // Always load current page
+      pagesToPrefetch.add(currentPage);
+      
+      // Load previous page if exists
+      if (currentPage > 0) {
+        pagesToPrefetch.add(currentPage - 1);
+      }
+      
+      // Load next page if exists
+      if (currentPage < totalPages - 1) {
+        pagesToPrefetch.add(currentPage + 1);
+      }
+      
+      // Prefetch images for these pages
+      pagesToPrefetch.forEach(pageIndex => {
+        const pageStartIndex = pageIndex * itemsPerPage;
+        const pageProducts = productList.slice(pageStartIndex, pageStartIndex + itemsPerPage);
+        
+        pageProducts.forEach(product => {
+          if (product.images && product.images[0]) {
+            const imageUrl = product.images[0];
+            
+            // Only prefetch if not already cached
+            if (!imageCacheRef.current.has(imageUrl)) {
+              imageCacheRef.current.add(imageUrl);
+              
+              const img = new Image();
+              img.src = imageUrl;
+              img.decoding = 'async';
+              // Image will be cached by browser automatically
+            }
+          }
+        });
+      });
+    };
+    
+    // Small delay to not block initial render
+    const timer = setTimeout(prefetchImages, 100);
+    
+    return () => clearTimeout(timer);
+  }, [currentPage, productList, itemsPerPage, totalPages]);
 
   const handleAddToCart = useCallback(
     (product: any, e: React.MouseEvent) => {
