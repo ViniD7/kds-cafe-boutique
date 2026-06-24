@@ -1,10 +1,12 @@
-import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
 import Header from "./components/Header/Header";
+import Footer from "./components/Footer";
+import { useEffect, useState, lazy, Suspense } from "react";
+
 import Index from "./pages/Index/Index";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
@@ -15,9 +17,13 @@ import Policies from "./pages/Policies";
 import Contact from "./pages/Contact";
 import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
-import Footer from "./components/Footer";
-import { useEffect, useRef, useState, lazy, Suspense } from "react";
-import "./App.css";
+import Login from "./pages/Login";
+import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
+import Profile from "./pages/Profile";
+import Orders from "./pages/Orders";
+
+import { AuthProvider } from "./context/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -35,50 +41,54 @@ const ScrollToTop = () => {
 // Lazy load do áudio
 const AudioPlayer = lazy(() => import("./components/AudioPlayer"));
 
-const App = () => {
-  const [showMusicControl, setShowMusicControl] = useState(false);
+const AppLayout = () => {
+  const { pathname } = useLocation();
+  const hideHeaderFooter = pathname === '/login';
 
   return (
+    <>
+      <ScrollToTop />
+      {!hideHeaderFooter && <Header />}
+      <main>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/produtos" element={<Products />} />
+            <Route path="/produtos/:id" element={<ProductDetail />} />
+            <Route path="/kits" element={<Kits />} />
+            <Route path="/kits/:id" element={<KitDetail />} />
+            <Route path="/sobre" element={<About />} />
+            <Route path="/politicas" element={<Policies />} />
+            <Route path="/contato" element={<Contact />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-success" element={<OrderSuccess />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+      </main>
+      {!hideHeaderFooter && <Footer />}
+    </>
+  );
+};
+
+const App = () => {
+  return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <CartProvider>
-          <Suspense fallback={null}>
-            <AudioPlayer />
-          </Suspense>
-
-          <div
-            className={`music-control ${showMusicControl ? "visible" : ""}`}
-            onMouseEnter={() => setShowMusicControl(true)}
-            onMouseLeave={() => setShowMusicControl(false)}
-          >
-            <button onClick={() => (window as any).toggleAudioMute?.()}>
-              <span>{(window as any).isAudioMuted?.() ? "🔇" : "🔊"}</span>
-            </button>
-          </div>
-
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
-            <Header />
-            <main>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/produtos" element={<Products />} />
-                <Route path="/produtos/:id" element={<ProductDetail />} />
-                <Route path="/kits" element={<Kits />} />
-                <Route path="/kits/:id" element={<KitDetail />} />
-                <Route path="/sobre" element={<About />} />
-                <Route path="/politicas" element={<Policies />} />
-                <Route path="/contato" element={<Contact />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <Footer />
-          </BrowserRouter>
-        </CartProvider>
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <CartProvider>
+            <Suspense fallback={null}>
+              <AudioPlayer />
+            </Suspense>
+            <Sonner />
+            <BrowserRouter>
+              <AppLayout />
+            </BrowserRouter>
+          </CartProvider>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };

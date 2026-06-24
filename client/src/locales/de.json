@@ -1,0 +1,23 @@
+{
+  "header": {
+    "home": "START",
+    "products": "PRODUKTE",
+    "kits": "SETS",
+    "about": "ÜBER UNS",
+    "policies": "RICHTLINIEN",
+    "contact": "KONTAKT",
+    "hello": "Hallo",
+    "user": "Benutzer",
+    "logout": "Abmelden",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "quickContact": "Schnellkontakt"
+  },
+  "hero": {
+    "title_part1": "Entdecke die Welt der ",
+    "title_highlight": "Spezialitätenkaffees",
+    "subtitle": "Ein einzigartiges sensorisches Erlebnis. Single-Origin-Kaffees, sorgfältig angebaut und präzise geröstet.",
+    "explore": "Kaffees Entdecken",
+    "history": "Unsere Geschichte"
+  }
+}

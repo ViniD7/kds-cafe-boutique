@@ -42,6 +42,8 @@ export interface IOrder extends Document {
   items: IOrderItem[];
   total: number;
   status: 'Pendente' | 'Processando' | 'Enviado' | 'Entregue' | 'Cancelado';
+  paymentStatus?: 'PENDING' | 'PAID' | 'FAILED';
+  paymentMethod?: 'CREDIT_CARD' | 'DEBIT_CARD' | 'PIX';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -61,6 +63,15 @@ const OrderSchema: Schema = new Schema({
     type: String,
     enum: ['Pendente', 'Processando', 'Enviado', 'Entregue', 'Cancelado'],
     default: 'Pendente'
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['PENDING', 'PAID', 'FAILED'],
+    default: 'PENDING'
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['CREDIT_CARD', 'DEBIT_CARD', 'PIX']
   }
 }, {
   timestamps: true

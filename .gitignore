@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Repomix outputs
+repomix-output.*
+
+
+# Environment Variables
+.env

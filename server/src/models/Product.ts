@@ -19,6 +19,15 @@ const ProductVariantSchema: Schema = new Schema({
     type: Number,
     required: true
   }
+}, {
+  toJSON: {
+    virtuals: true,
+    transform: (doc, ret) => {
+      ret.id = ret._id;
+      delete ret._id;
+      return ret;
+    }
+  }
 });
 
 export interface IProduct extends Document {
@@ -65,7 +74,16 @@ const ProductSchema: Schema = new Schema({
     default: false
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (doc, ret) => {
+      ret.id = ret._id;
+      delete ret._id;
+      delete ret.__v;
+      return ret;
+    }
+  }
 });
 
 export default mongoose.model<IProduct>('Product', ProductSchema);

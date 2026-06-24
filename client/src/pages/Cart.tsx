@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { formatCurrency, formatWhatsAppMessage } from "@/lib/utils";
-import { Plus, Minus, Trash2, ShoppingCart, MessageCircle } from "lucide-react";
+import { Plus, Minus, Trash2, ShoppingCart, MessageCircle, CreditCard } from "lucide-react";
+import api from "@/services/api";
 
 const Cart = () => {
   const {
@@ -12,6 +13,23 @@ const Cart = () => {
     clearCart,
   } = useCart();
   const cartItems = getCartItemDetails();
+  const navigate = useNavigate();
+
+  const handleCheckout = async () => {
+    try {
+      const total = getCartTotal();
+      const response = await api.post("/orders", {
+        total,
+      });
+      const order = response.data;
+      navigate("/checkout", {
+        state: { orderId: order._id, amount: total },
+      });
+    } catch (error) {
+      console.error("Erro ao criar pedido", error);
+      alert("Não foi possível iniciar o checkout. Verifique se você está logado.");
+    }
+  };
 
   const handleWhatsAppOrder = () => {
     // Create message with cart items using the utility function
@@ -91,6 +109,7 @@ const Cart = () => {
                         <button
                           onClick={() => removeFromCart(item.id)}
                           className="text-sm text-muted-foreground hover:text-destructive flex items-center mt-1 md:hidden"
+                          aria-label="Remover produto do carrinho"
                         >
                           <Trash2 size={14} className="mr-1" />
                           Remover
@@ -113,6 +132,7 @@ const Cart = () => {
                             updateQuantity(item.id, item.quantity - 1)
                           }
                           className="px-2 py-1 hover:bg-muted"
+                          aria-label="Reduzir quantidade"
                         >
                           <Minus size={14} />
                         </button>
@@ -124,6 +144,7 @@ const Cart = () => {
                             updateQuantity(item.id, item.quantity + 1)
                           }
                           className="px-2 py-1 hover:bg-muted"
+                          aria-label="Aumentar quantidade"
                         >
                           <Plus size={14} />
                         </button>
@@ -143,6 +164,7 @@ const Cart = () => {
                       <button
                         onClick={() => removeFromCart(item.id)}
                         className="text-sm text-muted-foreground hover:text-destructive flex items-center"
+                        aria-label="Remover produto do carrinho"
                       >
                         <Trash2 size={14} className="mr-1" />
                         Remover
@@ -204,12 +226,13 @@ const Cart = () => {
                 Comprar via WhatsApp
               </button>
 
-              {/* <Link 
-                to="/checkout"
-                className="block w-full bg-gold text-white py-3 rounded-md text-center font-medium hover:bg-gold/90 transition-colors"
+              <button 
+                onClick={handleCheckout}
+                className="flex justify-center items-center w-full bg-gold text-white py-3 rounded-md text-center font-medium hover:bg-gold/90 transition-colors"
               >
+                <CreditCard size={20} className="mr-2" />
                 Finalizar Compra
-              </Link> */}
+              </button>
 
               <div className="mt-4 text-sm text-muted-foreground text-center">
                 Frete e impostos calculados no checkout

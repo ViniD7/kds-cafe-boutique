@@ -3,6 +3,18 @@
 @tailwind components;
 @tailwind utilities;
 
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Otimização de fontes - carregamento mais eficiente */
 
 @layer base {
@@ -32,6 +44,44 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    /* Brand tokens — KDS Café Boutique */
+    --gold: 42 48% 55%;
+    /* #baa460 */
+    --gold-dark: 42 40% 48%;
+    /* #a89250 */
+    --gold-light: 47 61% 48%;
+    /* #c4b035 / #e0be14 area */
+
+    /* Surface tokens */
+    --surface: 210 20% 98%;
+    /* #f8fafc */
+    --surface-alt: 214 32% 95%;
+    /* #f1f5f9 */
+
+    /* Text hierarchy tokens */
+    --text-heading: 215 28% 17%;
+    /* #1e293b */
+    --text-body: 215 16% 47%;
+    /* #64748b */
+    --text-subtle: 215 14% 34%;
+    /* #475569 */
+    --text-muted-extra: 215 17% 63%;
+    /* #94a3b8 */
+
+    /* Border tokens */
+    --border-light: 214 32% 91%;
+    /* #e2e8f0 */
+    --border-medium: 213 27% 84%;
+    /* #cbd5e1 */
+
+    /* Status tokens */
+    --success: 160 84% 39%;
+    /* #10b981 */
+    --error: 0 84% 60%;
+    /* #ef4444 */
+    --whatsapp: 142 70% 49%;
+    /* #25D366 */
   }
 
   .dark {
@@ -66,9 +116,20 @@
   * {
     @apply border-border;
   }
+
+  html,
+  body,
+  #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
   }
 }
 
@@ -89,13 +150,15 @@ html {
 }
 
 /* Prevenção de layout shift */
-img, video {
+img,
+video {
   max-width: 100%;
   height: auto;
 }
 
 /* Otimização de animações */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -119,56 +182,56 @@ img, video {
   .container-custom {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
-  
+
   .btn-primary {
     @apply bg-primary text-white py-2 px-4 rounded-md hover:bg-primary/90 transition-colors;
   }
-  
+
   .btn-secondary {
     @apply bg-secondary text-foreground py-2 px-4 rounded-md hover:bg-secondary/80 transition-colors;
   }
-  
+
   .product-image {
     @apply w-full h-full object-cover transition-all duration-300;
   }
-  
+
   .product-image-container {
     @apply relative overflow-hidden bg-muted rounded-md;
   }
-  
+
   .image-loading {
     @apply opacity-60 blur-sm;
   }
-  
+
   .image-loaded {
     @apply opacity-100 blur-none;
   }
-  
+
   /* Estilos para formulários de autenticação */
   .auth-form {
     @apply space-y-4;
   }
-  
+
   .auth-form .form-group {
     @apply space-y-2;
   }
-  
+
   .auth-form label {
     @apply block text-sm font-medium text-foreground;
   }
-  
+
   .auth-form input {
     @apply w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary;
   }
-  
+
   .auth-form button {
     @apply w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary;
   }
-  
+
   .auth-form .form-footer {
     @apply text-center text-sm text-muted-foreground;
   }
-  
+
   .auth-form .form-footer a {
     @apply font-medium text-primary hover:text-primary/90;
   }
@@ -179,6 +242,7 @@ img, video {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -209,4 +273,277 @@ img, video {
 
 .order-status-cancelled {
   @apply bg-red-100 text-red-800;
+}
+
+/* Music Control Floating Button */
+.music-control {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #906804;
+  color: #ffffff;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 50;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+  overflow: hidden;
+  /* Important for the shine effect */
+}
+
+/* Shine pseudo-element */
+.music-control::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 100%);
+  transform: skewX(-25deg);
+  z-index: 1;
+}
+
+@keyframes sword-shine {
+  0% {
+    left: -100%;
+  }
+
+  20% {
+    left: 200%;
+  }
+
+  100% {
+    left: 200%;
+  }
+}
+
+.music-control:hover::before,
+.music-control.visible::before {
+  animation: sword-shine 8s infinite;
+}
+
+.music-control:hover,
+.music-control.visible {
+  opacity: 1;
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(144, 104, 4, 0.6);
+}
+
+.music-control button {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  position: relative;
+  z-index: 2;
+  /* Keeps icon above shine */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Sonner Custom Pop-ups */
+[data-sonner-toast]:not([data-removed='true']) {
+  animation: toast-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+[data-sonner-toast][data-removed='true'] {
+  animation: toast-exit 0.4s ease-in forwards !important;
+}
+
+[data-sonner-toast] {
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
+  font-family: 'Open Sans', sans-serif !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  height: auto !important;
+}
+
+[data-sonner-toast]:hover {
+  box-shadow: 0 0 15px rgba(144, 104, 4, 0.4) !important;
+}
+
+/* Shine pseudo-element para o toast */
+[data-sonner-toast]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0) 100%);
+  transform: skewX(-25deg);
+  z-index: 1;
+  pointer-events: none;
+}
+
+[data-sonner-toast]:hover::before {
+  animation: sword-shine 9s infinite !important;
+}
+
+[data-sonner-toast][data-type='success'] {
+  background-color: #2e7d32 !important;
+  /* Verde */
+}
+
+[data-sonner-toast][data-type='error'] {
+  background-color: #d32f2f !important;
+  /* Vermelho */
+}
+
+/* Fix icon spacing */
+[data-sonner-toast] [data-icon] {
+  color: white !important;
+  margin-right: 12px !important;
+}
+
+/* Ocultar fundo padrão/overlay se ele renderizar estranho */
+[data-sonner-toast] [data-icon] {
+  color: white !important;
+}
+
+[data-sonner-toast] [data-title] {
+  color: white !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+}
+
+[data-sonner-toast] [data-description] {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 0.9rem !important;
+}
+
+@keyframes toast-bounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(40px);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05) translateY(-5px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes toast-exit {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  20% {
+    opacity: 1;
+    transform: scale(1.02) translateY(-5px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.9) translateY(30px);
+  }
+}
+
+/* =========================================
+   Global Sword Shine Effect for Action Buttons 
+   ========================================= */
+button.bg-primary,
+button.bg-secondary,
+button.bg-destructive,
+.btn-primary,
+.btn-secondary,
+.about-button,
+.newsletter-button,
+.auth-submit-btn,
+.cart-drawer-continue-btn,
+.whatsapp-order-btn,
+.checkout-btn,
+.auth-button,
+.checkout-stripe-btn,
+.hero-button.primary,
+.hero-button.secondary,
+.view-all-button,
+.category-pill.active {
+  position: relative;
+  overflow: hidden;
+}
+
+button.bg-primary::before,
+button.bg-secondary::before,
+button.bg-destructive::before,
+.btn-primary::before,
+.btn-secondary::before,
+.about-button::before,
+.newsletter-button::before,
+.auth-submit-btn::before,
+.cart-drawer-continue-btn::before,
+.whatsapp-order-btn::before,
+.checkout-btn::before,
+.auth-button::before,
+.checkout-stripe-btn::before,
+.hero-button.primary::before,
+.hero-button.secondary::before,
+.view-all-button::before,
+.category-pill.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0) 100%);
+  transform: skewX(-25deg);
+  z-index: 1;
+  pointer-events: none;
+}
+
+button.bg-primary:hover::before,
+button.bg-secondary:hover::before,
+button.bg-destructive:hover::before,
+.btn-primary:hover::before,
+.btn-secondary:hover::before,
+.about-button:hover::before,
+.newsletter-button:hover::before,
+.auth-submit-btn:hover::before,
+.cart-drawer-continue-btn:hover::before,
+.whatsapp-order-btn:hover::before,
+.checkout-btn:hover::before,
+.auth-button:hover::before,
+.checkout-stripe-btn:hover::before,
+.hero-button.primary:hover::before,
+.hero-button.secondary:hover::before,
+.view-all-button:hover::before,
+.category-pill.active:hover::before {
+  animation: sword-shine 9s infinite !important;
+}
+@media (max-width: 992px) {
+  .music-control {
+    bottom: 5rem !important;
+  }
 }

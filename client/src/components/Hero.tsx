@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import "./Hero/Hero.css";
 
 const Hero = () => {
+  const { t } = useTranslation();
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
 
@@ -78,21 +80,20 @@ const Hero = () => {
       >
         <motion.div className="hero-text" variants={containerVariants}>
           <motion.h1 className="hero-title" variants={itemVariants}>
-            Descubra o mundo dos{" "}
-            <span className="text-gold">cafés especiais</span>
+            {t("hero.title_part1")}
+            <span className="text-gold">{t("hero.title_highlight")}</span>
           </motion.h1>
 
           <motion.p className="hero-subtitle" variants={itemVariants}>
-            Uma experiência sensorial única. Cafés de origem única, cultivados
-            com cuidado e torrados com precisão.
+            {t("hero.subtitle")}
           </motion.p>
 
           <motion.div className="hero-buttons" variants={itemVariants}>
             <Link to="/produtos" className="hero-button primary">
-              Explorar Cafés
+              {t("hero.explore")}
             </Link>
             <Link to="/sobre" className="hero-button secondary">
-              Conheça Nossa História
+              {t("hero.history")}
             </Link>
           </motion.div>
         </motion.div>

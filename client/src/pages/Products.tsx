@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ProductGrid from "../components/ProductGrid";
 import { productAPI } from "../services/api";
@@ -7,10 +8,12 @@ import SectionHeader from "../components/SectionHeader/SectionHeader";
 import "./Products/Products.css";
 
 const Products = () => {
-  const [activeCategory, setActiveCategory] = useState<string>("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeCategory = searchParams.get("category") || "all";
+  const currentIndex = Number(searchParams.get("page")) || 0;
+
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -43,7 +46,6 @@ const Products = () => {
       const filtered = allProducts.filter(product => product.category === activeCategory);
       setFilteredProducts(filtered);
     }
-    setCurrentIndex(0);
   }, [activeCategory, allProducts]);
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -52,13 +54,22 @@ const Products = () => {
     (currentIndex + 1) * itemsPerPage
   );
 
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev === totalPages - 1 ? 0 : prev + 1));
-  };
+  const setPage = useCallback((page: number) => {
+    setSearchParams(prev => {
+      prev.set("page", String(page));
+      return prev;
+    });
+  }, [setSearchParams]);
 
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev === 0 ? totalPages - 1 : prev - 1));
-  };
+  const nextSlide = useCallback(() => {
+    const next = currentIndex === totalPages - 1 ? 0 : currentIndex + 1;
+    setPage(next);
+  }, [currentIndex, totalPages, setPage]);
+
+  const prevSlide = useCallback(() => {
+    const prev = currentIndex === 0 ? totalPages - 1 : currentIndex - 1;
+    setPage(prev);
+  }, [currentIndex, totalPages, setPage]);
 
   if (isLoading) {
     return (
@@ -91,18 +102,20 @@ const Products = () => {
           >
             {["all", ...Array.from(new Set(allProducts.map(p => p.category))).filter((c: string) => c !== "Kits")].map(
               (category) => (
-                <div
+                <button
                   key={category}
+                  type="button"
                   className={`category-pill ${
                     activeCategory === category ? "active" : ""
                   }`}
-                  onClick={() => setActiveCategory(category)}
+                  onClick={() => setSearchParams({ category, page: "0" })}
+                  aria-pressed={activeCategory === category}
                 >
                   {category === "all" ? "Todos" : category}
                   {activeCategory === category && (
                     <div className="active-indicator" />
                   )}
-                </div>
+                </button>
               )
             )}
           </div>
@@ -123,7 +136,7 @@ const Products = () => {
                     className={`indicator ${
                       index === currentIndex ? "active" : ""
                     }`}
-                    onClick={() => setCurrentIndex(index)}
+                    onClick={() => setPage(index)}
                   />
                 ))}
               </div>

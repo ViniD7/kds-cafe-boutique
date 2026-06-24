@@ -55,8 +55,9 @@ export interface Kit {
 
 // Cart-related types
 export interface CartItem {
-  id: string;
-  productId: string;
+  id?: string;
+  _id?: string;
+  productId: any; // populated product object
   variantId?: string;
   quantity: number;
   isKit: boolean;

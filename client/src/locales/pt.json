@@ -1,0 +1,23 @@
+{
+  "header": {
+    "home": "HOME",
+    "products": "PRODUTOS",
+    "kits": "KITS",
+    "about": "SOBRE NÓS",
+    "policies": "POLÍTICAS",
+    "contact": "CONTATOS",
+    "hello": "Olá",
+    "user": "Usuário",
+    "logout": "Sair",
+    "login": "Entrar",
+    "register": "Criar Conta",
+    "quickContact": "Contato Rápido"
+  },
+  "hero": {
+    "title_part1": "Descubra o mundo dos ",
+    "title_highlight": "cafés especiais",
+    "subtitle": "Uma experiência sensorial única. Cafés de origem única, cultivados com cuidado e torrados com precisão.",
+    "explore": "Explorar Cafés",
+    "history": "Conheça Nossa História"
+  }
+}

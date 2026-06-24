@@ -1,3 +1,4 @@
+import { memo } from "react";
 import ProductCard from "./ProductCard";
 import { Product, Kit } from "@/types/api";
 import { AspectRatio } from "./ui/aspect-ratio";
@@ -43,4 +44,4 @@ const ProductGrid = ({ products = [], kits = [], title }: ProductGridProps) => {
   );
 };
 
-export default ProductGrid;
+export default memo(ProductGrid);

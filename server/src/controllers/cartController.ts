@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
+import { AuthRequest } from '../middleware/auth';
 import Cart from '../models/Cart';
 import Product from '../models/Product';
 
-export const getCart = async (req: Request, res: Response) => {
+export const getCart = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).userId; // Assuming middleware adds userId
+    const userId = req.userId;
 
     const cart = await Cart.findOne({ userId }).populate('items.productId');
     
@@ -21,9 +22,9 @@ export const getCart = async (req: Request, res: Response) => {
   }
 };
 
-export const addToCart = async (req: Request, res: Response) => {
+export const addToCart = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).userId; // Assuming middleware adds userId
+    const userId = req.userId;
     const { productId, variantId, quantity, isKit } = req.body;
 
     // Validate product exists
@@ -56,7 +57,7 @@ export const addToCart = async (req: Request, res: Response) => {
         variantId,
         quantity,
         isKit
-      } as any); // Type assertion due to Mongoose schema
+      } as typeof cart.items[number]); // Type assertion for Mongoose subdocument
     }
 
     await cart.save();
@@ -71,9 +72,9 @@ export const addToCart = async (req: Request, res: Response) => {
   }
 };
 
-export const updateCartItem = async (req: Request, res: Response) => {
+export const updateCartItem = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).userId; // Assuming middleware adds userId
+    const userId = req.userId;
     const { itemId } = req.params;
     const { quantity } = req.body;
 
@@ -107,9 +108,9 @@ export const updateCartItem = async (req: Request, res: Response) => {
   }
 };
 
-export const removeFromCart = async (req: Request, res: Response) => {
+export const removeFromCart = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).userId; // Assuming middleware adds userId
+    const userId = req.userId;
     const { itemId } = req.params;
 
     const cart = await Cart.findOne({ userId });
@@ -135,9 +136,9 @@ export const removeFromCart = async (req: Request, res: Response) => {
   }
 };
 
-export const clearCart = async (req: Request, res: Response) => {
+export const clearCart = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).userId; // Assuming middleware adds userId
+    const userId = req.userId;
 
     await Cart.deleteMany({ userId });
 

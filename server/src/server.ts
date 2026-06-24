@@ -8,11 +8,16 @@ import authRoutes from './routes/auth';
 import productRoutes from './routes/products';
 import cartRoutes from './routes/cart';
 import orderRoutes from './routes/orders';
+import paymentRoutes from './routes/payments';
+import { stripeWebhook } from './controllers/payment';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Webhook MUST be before express.json()
+app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 
 // Middleware
 app.use(cors());
@@ -27,6 +32,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

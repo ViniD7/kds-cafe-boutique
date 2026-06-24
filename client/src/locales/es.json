@@ -1,0 +1,23 @@
+{
+  "header": {
+    "home": "INICIO",
+    "products": "PRODUCTOS",
+    "kits": "KITS",
+    "about": "NOSOTROS",
+    "policies": "POLÍTICAS",
+    "contact": "CONTACTO",
+    "hello": "Hola",
+    "user": "Usuario",
+    "logout": "Salir",
+    "login": "Ingresar",
+    "register": "Crear Cuenta",
+    "quickContact": "Contacto Rápido"
+  },
+  "hero": {
+    "title_part1": "Descubre el mundo de los ",
+    "title_highlight": "cafés de especialidad",
+    "subtitle": "Una experiencia sensorial única. Cafés de origen único, cultivados con cuidado y tostados con precisión.",
+    "explore": "Explorar Cafés",
+    "history": "Conoce Nuestra Historia"
+  }
+}

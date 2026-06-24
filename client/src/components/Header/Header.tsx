@@ -1,18 +1,29 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
-import { ShoppingCart, Menu, X } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { ShoppingCart, Menu, X, LogOut, User, Headset } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import Images from "@/Constants/Images/images";
 import "./Header.css";
 import CartDrawer from "../CartDrawer";
+import LanguageSwitcher from "../LanguageSwitcher/LanguageSwitcher";
 
 const Header = () => {
+  const { t } = useTranslation();
   const { getCartItemsCount } = useCart();
+  const { user, isAuthenticated, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -41,12 +52,12 @@ const Header = () => {
   }, []);
 
   const menuItems = [
-    { name: "HOME", path: "/" },
-    { name: "PRODUTOS", path: "/produtos" },
-    { name: "KITS", path: "/kits" },
-    { name: "SOBRE NÓS", path: "/sobre" },
-    { name: "POLÍTICAS", path: "/politicas" },
-    { name: "CONTATOS", path: "/contato" },
+    { name: t("header.home"), path: "/" },
+    { name: t("header.products"), path: "/produtos" },
+    { name: t("header.kits"), path: "/kits" },
+    { name: t("header.about"), path: "/sobre" },
+    { name: t("header.policies"), path: "/politicas" },
+    { name: t("header.contact"), path: "/contato" },
   ];
 
   const headerVariants = {
@@ -87,9 +98,8 @@ const Header = () => {
                 <li key={item.path}>
                   <Link
                     to={item.path}
-                    className={`nav-link ${
-                      location.pathname === item.path ? "active" : ""
-                    }`}
+                    className={`nav-link ${location.pathname === item.path ? "active" : ""
+                      }`}
                   >
                     {item.name}
                   </Link>
@@ -99,6 +109,29 @@ const Header = () => {
           </nav>
 
           <div className="header-actions">
+            <LanguageSwitcher />
+
+            {/* Botões de autenticação */}
+            <div className="auth-links">
+              {isAuthenticated ? (
+                <div className="user-profile-menu">
+                  <span className="user-greeting">
+                    <User size={18} />
+                    {t("header.hello")}, {user?.name ? user.name.split(' ')[0] : t("header.user")}
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <Link to="/login" className="auth-button">
+                    {t("header.login")}
+                  </Link>
+                  <Link to="/login?mode=register" className="auth-button register">
+                    {t("header.register")}
+                  </Link>
+                </>
+              )}
+            </div>
+
             <button
               onClick={() => setIsCartOpen(true)}
               className="cart-button"
@@ -112,15 +145,11 @@ const Header = () => {
               </div>
             </button>
 
-            {/* Botões de autenticação */}
-            {/* <div className="auth-links">
-              <Link to="/login" className="auth-button">
-                Entrar
-              </Link>
-              <Link to="/register" className="auth-button register">
-                Criar Conta
-              </Link>
-            </div> */}
+            {isAuthenticated && (
+              <button onClick={handleLogout} className="logout-button" aria-label="Sair">
+                <LogOut size={18} />
+              </button>
+            )}
 
             <button
               className="mobile-menu-button"
@@ -180,6 +209,14 @@ const Header = () => {
                     </button>
                   </div>
 
+                  {isAuthenticated && (
+                    <div className="mobile-user-greeting-top">
+                      <span className="greeting-text">
+                        {t("header.hello")}, {user?.name ? user.name.split(' ')[0] : t("header.user")}
+                      </span>
+                    </div>
+                  )}
+
                   <ul className="mobile-nav-list">
                     {menuItems.map((item, index) => (
                       <motion.li
@@ -195,9 +232,8 @@ const Header = () => {
                       >
                         <Link
                           to={item.path}
-                          className={`mobile-nav-link ${
-                            location.pathname === item.path ? "active" : ""
-                          }`}
+                          className={`mobile-nav-link ${location.pathname === item.path ? "active" : ""
+                            }`}
                           onClick={() => setIsMenuOpen(false)}
                         >
                           <span className="link-text">{item.name}</span>
@@ -208,31 +244,51 @@ const Header = () => {
                   </ul>
 
                   <div className="mobile-nav-footer">
-                    {/* Botões de autenticação no mobile */}
-                    {/* <div className="mobile-auth-links">
-                      <Link
-                        to="/login"
-                        className="mobile-auth-button"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Entrar
-                      </Link>
-                      <Link
-                        to="/register"
-                        className="mobile-auth-button register"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Criar Conta
-                      </Link>
-                    </div> */}
-
                     <a
                       href="https://wa.me/5528999921033?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20Caf%C3%A9s%20da%20KDS."
-                      className="mobile-contact-link"
+                      className="mobile-contact-box"
                     >
-                      <span>Contato Rápido</span>
-                      <span>+55 (28) 99992-1033</span>
+                      <div className="mobile-contact-icon-wrapper">
+                        <Headset size={24} />
+                      </div>
+                      <div className="mobile-contact-info">
+                        <span className="mobile-contact-title">{t("header.quickContact")}</span>
+                        <span className="mobile-contact-phone">+55 (28) 99992-1033</span>
+                        <span className="mobile-contact-subtitle">Atendimento via WhatsApp</span>
+                      </div>
                     </a>
+
+                    <div className="mobile-auth-links">
+                      {isAuthenticated ? (
+                        <button
+                          onClick={() => {
+                            handleLogout();
+                            setIsMenuOpen(false);
+                          }}
+                          className="mobile-logout-full"
+                          aria-label="Sair"
+                        >
+                          <LogOut size={20} /> SAIR DA CONTA
+                        </button>
+                      ) : (
+                        <div className="mobile-unauth-container">
+                          <Link
+                            to="/login"
+                            className="mobile-auth-button"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            {t("header.login")}
+                          </Link>
+                          <Link
+                            to="/login?mode=register"
+                            className="mobile-auth-button register"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            {t("header.register")}
+                          </Link>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </motion.nav>

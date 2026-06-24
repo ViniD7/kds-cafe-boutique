@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
+// Declaração tipada para as funções de áudio expostas globalmente
+declare global {
+  interface Window {
+    toggleAudioMute?: () => void;
+    isAudioMuted?: () => boolean;
+  }
+}
+
 const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isMuted, setIsMuted] = useState(true);
@@ -69,16 +77,35 @@ const AudioPlayer = () => {
 
   // Expor toggleMute globalmente para o botão de controle
   useEffect(() => {
-    (window as any).toggleAudioMute = toggleMute;
-    (window as any).isAudioMuted = () => isMuted;
+    window.toggleAudioMute = toggleMute;
+    window.isAudioMuted = () => isMuted;
 
     return () => {
-      delete (window as any).toggleAudioMute;
-      delete (window as any).isAudioMuted;
+      delete window.toggleAudioMute;
+      delete window.isAudioMuted;
     };
   }, [isMuted, audioLoaded]);
 
-  return <audio ref={audioRef} loop muted={isMuted} preload="none" />;
+  const [showMusicControl, setShowMusicControl] = useState(false);
+
+  return (
+    <>
+      <audio ref={audioRef} loop muted={isMuted} preload="none" style={{ display: 'none' }} />
+      
+      <div
+        className={`music-control ${showMusicControl ? "visible" : ""}`}
+        onMouseEnter={() => setShowMusicControl(true)}
+        onMouseLeave={() => setShowMusicControl(false)}
+      >
+        <button
+          onClick={toggleMute}
+          aria-label={isMuted ? "Ativar música" : "Silenciar música"}
+        >
+          <span>{isMuted ? "🔇" : "🔊"}</span>
+        </button>
+      </div>
+    </>
+  );
 };
 
 export default AudioPlayer;

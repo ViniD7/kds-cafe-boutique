@@ -4,8 +4,8 @@ import {
   AnimatePresence,
   type Variants,
 } from "framer-motion";
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, memo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Product, Kit } from "@/types/api";
 import {
   formatCurrency,
@@ -15,7 +15,7 @@ import {
 } from "@/lib/utils";
 import { FaShoppingCart, FaEye, FaHeart } from "react-icons/fa";
 import { useCart } from "@/context/CartContext";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import "./ProductCard/ProductCard.css";
 
 interface ProductCardProps {
@@ -45,7 +45,7 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
   const controls = useAnimation();
   const [isMobile, setIsMobile] = useState(false);
   const { addToCart } = useCart();
-  const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Detecta se é mobile
   useEffect(() => {
@@ -120,7 +120,7 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation(); // Add this to prevent event bubbling
 
@@ -128,30 +128,27 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
     if (isKit) {
       // Check kit availability
       if (!isAvailable) {
-        toast({
-          title: "Kit Indisponível",
+        toast.error("Kit Indisponível", {
           description:
             "Este kit contém produtos esgotados e não pode ser adicionado ao carrinho.",
-          variant: "destructive",
         });
         return;
       }
       
-      addToCart(id, 1, undefined, true);
-      toast({
-        title: "Adicionado ao Carrinho",
-        description: `${name} foi adicionado ao seu carrinho.`,
-      });
+      try {
+        await addToCart(id, 1, undefined, true);
+        // The toast is handled inside addToCart context!
+      } catch (error) {
+        console.error("Erro ao adicionar ao carrinho:", error);
+      }
       return;
     }
 
     // For products, check availability
     if (!isAvailable) {
-      toast({
-        title: "Produto Indisponível",
+      toast.error("Produto Indisponível", {
         description:
           "Este produto está esgotado e não pode ser adicionado ao carrinho.",
-        variant: "destructive",
       });
       return;
     }
@@ -164,17 +161,14 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
 
     if (availableVariant) {
       addToCart(id, 1, availableVariant.id, false);
-      toast({
-        title: "Adicionado ao Carrinho",
+      toast.success("Adicionado ao Carrinho", {
         description: `${name} (${availableVariant.name}) foi adicionado ao seu carrinho.`,
       });
     } else {
       // This shouldn't happen if isAvailable is true, but just in case
-      toast({
-        title: "Produto Indisponível",
+      toast.error("Produto Indisponível", {
         description:
           "Este produto está esgotado e não pode ser adicionado ao carrinho.",
-        variant: "destructive",
       });
     }
   };
@@ -351,4 +345,4 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
   );
 };
 
-export default PremiumProductCard;
+export default memo(PremiumProductCard);

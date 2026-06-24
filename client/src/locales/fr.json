@@ -1,0 +1,23 @@
+{
+  "header": {
+    "home": "ACCUEIL",
+    "products": "PRODUITS",
+    "kits": "COFFRETS",
+    "about": "À PROPOS",
+    "policies": "POLITIQUES",
+    "contact": "CONTACT",
+    "hello": "Bonjour",
+    "user": "Utilisateur",
+    "logout": "Déconnexion",
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "quickContact": "Contact Rapide"
+  },
+  "hero": {
+    "title_part1": "Découvrez le monde des ",
+    "title_highlight": "cafés de spécialité",
+    "subtitle": "Une expérience sensorielle unique. Des cafés d'origine unique, cultivés avec soin et torréfiés avec précision.",
+    "explore": "Explorer les Cafés",
+    "history": "Découvrir Notre Histoire"
+  }
+}

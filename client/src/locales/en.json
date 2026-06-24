@@ -1,0 +1,23 @@
+{
+  "header": {
+    "home": "HOME",
+    "products": "PRODUCTS",
+    "kits": "KITS",
+    "about": "ABOUT US",
+    "policies": "POLICIES",
+    "contact": "CONTACT",
+    "hello": "Hello",
+    "user": "User",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Sign Up",
+    "quickContact": "Quick Contact"
+  },
+  "hero": {
+    "title_part1": "Discover the world of ",
+    "title_highlight": "specialty coffees",
+    "subtitle": "A unique sensory experience. Single-origin coffees, carefully grown and precisely roasted.",
+    "explore": "Explore Coffees",
+    "history": "Discover Our History"
+  }
+}

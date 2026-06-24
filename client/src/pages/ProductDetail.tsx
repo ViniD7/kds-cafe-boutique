@@ -10,6 +10,8 @@ import {
   ShoppingCart,
   Minus,
   Plus,
+  CreditCard,
+  QrCode,
 } from "lucide-react";
 import "./ProductsDetails/ProductsDetails.css";
 
@@ -44,6 +46,13 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
+  // Set the first variant as selected when product loads
+  useEffect(() => {
+    if (product && product.variants && product.variants.length > 0) {
+      setSelectedVariant(product.variants[0].id);
+    }
+  }, [product]);
+
   if (loading) {
     return (
       <div className="product-detail-container">
@@ -71,12 +80,6 @@ const ProductDetail = () => {
     );
   }
 
-  // Set the first variant as selected when product loads
-  useEffect(() => {
-    if (product && product.variants && product.variants.length > 0) {
-      setSelectedVariant(product.variants[0].id);
-    }
-  }, [product]);
 
   const selectedVariantObj = product.variants.find(
     (v) => v.id === selectedVariant
@@ -295,6 +298,27 @@ const ProductDetail = () => {
                 <MessageCircle size={20} />
                 <span>Comprar via WhatsApp</span>
               </button>
+            </div>
+
+            {/* Payment Methods */}
+            <div className="payment-methods-section" style={{ marginTop: '2rem', padding: '1rem', backgroundColor: 'var(--muted)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+              <span className="payment-label" style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--muted-foreground)', marginBottom: '0.75rem', textAlign: 'center' }}>
+                Pagamento 100% Seguro
+              </span>
+              <div className="payment-icons" style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', color: 'var(--foreground)' }}>
+                <div className="payment-icon-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                  <CreditCard size={24} />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 500 }}>Crédito</span>
+                </div>
+                <div className="payment-icon-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                  <CreditCard size={24} />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 500 }}>Débito</span>
+                </div>
+                <div className="payment-icon-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                  <QrCode size={24} />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 500 }}>PIX</span>
+                </div>
+              </div>
             </div>
 
             {/* Product Meta */}

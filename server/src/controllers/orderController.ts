@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
+import { AuthRequest } from '../middleware/auth';
 import Order from '../models/Order';
 import Cart from '../models/Cart';
 import Product from '../models/Product';
 
-export const getUserOrders = async (req: Request, res: Response) => {
+export const getUserOrders = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).userId; // Assuming middleware adds userId
+    const userId = req.userId;
 
     const orders = await Order.find({ userId }).sort({ createdAt: -1 });
     
@@ -18,10 +19,10 @@ export const getUserOrders = async (req: Request, res: Response) => {
   }
 };
 
-export const getOrderById = async (req: Request, res: Response) => {
+export const getOrderById = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const userId = (req as any).userId; // Assuming middleware adds userId
+    const userId = req.userId;
 
     const order = await Order.findOne({ _id: id, userId });
 
@@ -38,9 +39,9 @@ export const getOrderById = async (req: Request, res: Response) => {
   }
 };
 
-export const createOrder = async (req: Request, res: Response) => {
+export const createOrder = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).userId; // Assuming middleware adds userId
+    const userId = req.userId;
     const { items, total, shippingAddress, paymentMethod } = req.body;
 
     // Get user's cart
@@ -98,11 +99,11 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-export const updateOrder = async (req: Request, res: Response) => {
+export const updateOrder = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    const userId = (req as any).userId; // Assuming middleware adds userId
+    const userId = req.userId;
 
     const updatedOrder = await Order.findOneAndUpdate(
       { _id: id, userId },
@@ -123,10 +124,10 @@ export const updateOrder = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteOrder = async (req: Request, res: Response) => {
+export const deleteOrder = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const userId = (req as any).userId; // Assuming middleware adds userId
+    const userId = req.userId;
 
     const deletedOrder = await Order.findOneAndDelete({ _id: id, userId });
 

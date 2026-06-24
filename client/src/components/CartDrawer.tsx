@@ -2,8 +2,9 @@ import { useCart, CartItemDetail } from "@/context/CartContext";
 import { X, Plus, Minus, ShoppingCart, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatWhatsAppMessage } from "@/lib/utils";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import api from "@/services/api";
 import "./CartDrawer/CartDrawer.css";
 
 interface CartDrawerProps {
@@ -21,6 +22,24 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
   } = useCart();
   const cartItems = getCartItemDetails();
   const [isHeaderScrolled, setIsHeaderScrolled] = useState(false);
+  const navigate = useNavigate();
+
+  const handleCheckout = async () => {
+    try {
+      const total = getCartTotal();
+      const response = await api.post("/orders", {
+        total,
+      });
+      const order = response.data;
+      onClose(); // close the drawer
+      navigate("/checkout", {
+        state: { orderId: order._id, amount: total },
+      });
+    } catch (error) {
+      console.error("Erro ao criar pedido", error);
+      alert("Não foi possível iniciar o checkout. Verifique se você está logado.");
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -141,9 +160,12 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                 Comprar via WhatsApp
               </button>
 
-              {/* <Link to="/cart" className="checkout-btn" onClick={onClose}>
+              <button 
+                onClick={handleCheckout} 
+                className="checkout-btn"
+              >
                 Finalizar Compra
-              </Link> */}
+              </button>
               <button onClick={onClose} className="continue-shopping-btn">
                 Continuar Comprando
               </button>

@@ -1,15 +1,18 @@
+import "./Profile.css";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { motion } from "framer-motion";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
 
 const Profile = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
+  const { user, logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -24,6 +27,7 @@ const Profile = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
     try {
       // Aqui seria a chamada para atualizar o perfil do usuário
@@ -32,120 +36,133 @@ const Profile = () => {
       // Simulando chamada API
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      toast({
-        title: "Sucesso",
-        description: "Perfil atualizado com sucesso!"
+      toast.success("Perfil atualizado!", {
+        description: "Suas informações foram salvas com sucesso.",
       });
       
       setIsEditing(false);
     } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Ocorreu um erro ao atualizar o perfil. Tente novamente.",
-        variant: "destructive"
+      toast.error("Erro", {
+        description: "Não foi possível atualizar o perfil.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="text-center py-8">
-            <p>Você precisa estar logado para acessar esta página.</p>
-            <Button className="mt-4" onClick={() => window.location.href = "/login"}>
-              Ir para Login
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="profile-login-container">
+        <div className="profile-login-card">
+          <p style={{ color: 'var(--text-body)', marginBottom: '20px' }}>Você precisa estar logado para acessar esta página.</p>
+          <button 
+            onClick={() => window.location.href = "/login"}
+            className="btn-save"
+          >
+            Ir para Login
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle>Meu Perfil</CardTitle>
-            <CardDescription>Gerencie suas informações pessoais</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nome Completo</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email">E-mail</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Telefone</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="address">Endereço</Label>
-                  <Input
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                  />
-                </div>
-              </div>
-              
-              {isEditing && (
-                <div className="flex justify-end space-x-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsEditing(false)}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button type="submit">
-                    Salvar Alterações
-                  </Button>
-                </div>
-              )}
-            </form>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            {!isEditing && (
-              <Button onClick={() => setIsEditing(true)}>
-                Editar Perfil
-              </Button>
-            )}
-            <Button variant="outline" onClick={() => window.location.href = "/orders"}>
-              Meus Pedidos
-            </Button>
-          </CardFooter>
-        </Card>
+    <div className="profile-container">
+      <div className="profile-card">
+        <div className="profile-header">
+          <h1 className="profile-title">Meu Perfil</h1>
+          <p className="profile-description">Gerencie suas informações pessoais e endereço de entrega.</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="profile-form">
+          <div className="profile-grid">
+            <div className="form-group">
+              <label htmlFor="name" className="form-label">Nome Completo</label>
+              <input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className="form-input"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">E-mail</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className="form-input"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="phone" className="form-label">Telefone</label>
+              <input
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className="form-input"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="address" className="form-label">Endereço Completo</label>
+              <input
+                id="address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className="form-input"
+              />
+            </div>
+          </div>
+          
+          {isEditing && (
+            <div className="profile-actions">
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="btn-cancel"
+              >
+                Cancelar
+              </button>
+              <button 
+                type="submit"
+                disabled={isLoading}
+                className="btn-save"
+              >
+                {isLoading ? 'Salvando...' : 'Salvar Alterações'}
+              </button>
+            </div>
+          )}
+        </form>
+
+        <div className="profile-footer">
+          {!isEditing ? (
+            <button 
+              onClick={() => setIsEditing(true)}
+              className="btn-edit"
+            >
+              Editar Perfil
+            </button>
+          ) : <div></div>}
+          
+          <button 
+            onClick={() => window.location.href = "/orders"}
+            className="btn-orders"
+          >
+            Ver Meus Pedidos
+          </button>
+        </div>
       </div>
     </div>
   );

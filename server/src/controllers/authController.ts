@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { AuthRequest } from '../middleware/auth';
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -96,9 +97,9 @@ export const logout = (req: Request, res: Response) => {
   res.json({ message: 'Logout successful' });
 };
 
-export const getProfile = async (req: Request, res: Response) => {
+export const getProfile = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).userId; // Assuming middleware adds userId
+    const userId = req.userId;
     const user = await User.findById(userId).select('-password');
     
     if (!user) {
@@ -114,9 +115,9 @@ export const getProfile = async (req: Request, res: Response) => {
   }
 };
 
-export const updateProfile = async (req: Request, res: Response) => {
+export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).userId; // Assuming middleware adds userId
+    const userId = req.userId;
     const { name, email } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(

@@ -1,7 +1,6 @@
+import "./Orders.css";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 // Interface para os pedidos
 interface OrderItem {
@@ -15,7 +14,7 @@ interface Order {
   id: string;
   date: string;
   total: number;
-  status: "Pendente" | "Processando" | "Enviado" | "Entregue" | "Cancelado";
+  status: "Pendente" | "Processando" | "Enviado" | "Entregue" | "Cancelado" | "Pago";
   items: OrderItem[];
 }
 
@@ -79,98 +78,104 @@ const Orders = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="text-center py-8">
-            <p>Você precisa estar logado para acessar esta página.</p>
-            <Button className="mt-4" onClick={() => window.location.href = "/login"}>
-              Ir para Login
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="orders-login-container">
+        <div className="orders-login-card">
+          <p style={{ color: 'var(--text-body)', marginBottom: '20px' }}>Você precisa estar logado para acessar esta página.</p>
+          <button 
+            onClick={() => window.location.href = "/login"}
+            className="btn-shop"
+          >
+            Ir para Login
+          </button>
+        </div>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Carregando pedidos...</p>
+      <div className="orders-loading-container">
+        <p className="orders-loading-text">Carregando pedidos...</p>
       </div>
     );
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusStyle = (status: string) => {
     switch (status) {
       case "Pendente":
-        return "bg-yellow-100 text-yellow-800";
+        return { backgroundColor: '#fef3c7', color: '#92400e' };
       case "Processando":
-        return "bg-blue-100 text-blue-800";
+        return { backgroundColor: '#dbeafe', color: '#1e40af' };
       case "Enviado":
-        return "bg-indigo-100 text-indigo-800";
+        return { backgroundColor: '#e0e7ff', color: '#3730a3' };
       case "Entregue":
-        return "bg-green-100 text-green-800";
+        return { backgroundColor: '#d1fae5', color: '#065f46' };
       case "Cancelado":
-        return "bg-red-100 text-red-800";
+        return { backgroundColor: '#fee2e2', color: '#b91c1c' };
+      case "Pago":
+        return { backgroundColor: '#d1fae5', color: '#065f46' };
       default:
-        return "bg-gray-100 text-gray-800";
+        return { backgroundColor: '#f3f4f6', color: '#1f2937' };
     }
   };
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle>Meus Pedidos</CardTitle>
-            <CardDescription>Veja o histórico dos seus pedidos</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {orders.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-gray-500">Você ainda não fez nenhum pedido.</p>
-                <Button className="mt-4" onClick={() => window.location.href = "/"}>
-                  Começar a comprar
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {orders.map((order) => (
-                  <div key={order.id} className="border rounded-lg p-6">
-                    <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-                      <div>
-                        <h3 className="text-lg font-semibold">Pedido #{order.id}</h3>
-                        <p className="text-gray-500">Data: {new Date(order.date).toLocaleDateString('pt-BR')}</p>
-                      </div>
-                      <div className="mt-2 md:mt-0">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                          {order.status}
-                        </span>
-                      </div>
+    <div className="orders-container">
+      <div className="orders-card">
+        <div className="orders-header">
+          <h1 className="orders-title">Meus Pedidos</h1>
+          <p className="orders-description">Veja o histórico dos seus pedidos</p>
+        </div>
+        
+        {orders.length === 0 ? (
+          <div className="orders-empty">
+            <p className="orders-empty-text">Você ainda não fez nenhum pedido.</p>
+            <button 
+              onClick={() => window.location.href = "/"}
+              className="btn-shop"
+            >
+              Começar a comprar
+            </button>
+          </div>
+        ) : (
+          <div className="orders-list">
+            {orders.map((order) => {
+              const statusStyle = getStatusStyle(order.status);
+              return (
+                <div key={order.id} className="order-item-card">
+                  <div className="order-item-header">
+                    <div>
+                      <h3 className="order-id">Pedido #{order.id}</h3>
+                      <p className="order-date">Data: {new Date(order.date).toLocaleDateString('pt-BR')}</p>
                     </div>
-                    
-                    <div className="mb-4">
-                      <h4 className="font-medium mb-2">Itens do pedido:</h4>
-                      <ul className="space-y-2">
-                        {order.items.map((item) => (
-                          <li key={item.id} className="flex justify-between">
-                            <span>{item.quantity}x {item.name}</span>
-                            <span>R$ {(item.price * item.quantity).toFixed(2)}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div className="flex justify-between items-center pt-4 border-t">
-                      <span className="font-semibold">Total:</span>
-                      <span className="font-bold text-lg">R$ {order.total.toFixed(2)}</span>
+                    <div>
+                      <span className="order-status-badge" style={statusStyle}>
+                        {order.status}
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  
+                  <div className="order-items-section">
+                    <h4 className="order-items-title">Itens do pedido:</h4>
+                    <ul className="order-items-list">
+                      {order.items.map((item) => (
+                        <li key={item.id} className="order-item-row">
+                          <span>{item.quantity}x {item.name}</span>
+                          <span className="order-item-price">R$ {(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  <div className="order-item-footer">
+                    <span className="order-total-label">Total:</span>
+                    <span className="order-total-value">R$ {order.total.toFixed(2).replace('.', ',')}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

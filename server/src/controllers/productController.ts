@@ -1,16 +1,21 @@
 import { Request, Response } from 'express';
 import Product from '../models/Product';
 
+interface ProductFilter {
+  featured?: boolean;
+  category?: string;
+}
+
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
     const { featured, category } = req.query;
-    let filter: any = {};
+    const filter: ProductFilter = {};
 
     if (featured === 'true') {
       filter.featured = true;
     }
 
-    if (category) {
+    if (typeof category === 'string') {
       filter.category = category;
     }
 
