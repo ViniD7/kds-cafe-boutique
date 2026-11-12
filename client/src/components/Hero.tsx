@@ -1,9 +1,40 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
 const Hero = () => {
   const { t } = useTranslation();
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoSources, setVideoSources] = useState<{ webm: string; mp4: string } | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadVideo = async () => {
+      try {
+        const [webmModule, mp4Module] = await Promise.all([
+          import("../Assets/video/bgCafe.webm"),
+          import("../Assets/video/bgCafe.mp4"),
+        ]);
+        if (isMounted) {
+          setVideoSources({
+            webm: webmModule.default,
+            mp4: mp4Module.default,
+          });
+          setVideoLoaded(true);
+        }
+      } catch (error) {
+        console.error("Failed to load hero background video:", error);
+      }
+    };
+
+    // Delay de carregamento para não bloquear a renderização inicial crítica
+    const timer = setTimeout(loadVideo, 80);
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -31,9 +62,28 @@ const Hero = () => {
 
   return (
     <section className="relative w-full bg-espresso-deep text-paper-cream overflow-hidden">
+      {/* Background Video Layer */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        {videoLoaded && videoSources && (
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover scale-105 opacity-35 transition-opacity duration-1000 ease-out"
+          >
+            <source src={videoSources.webm} type="video/webm" />
+            <source src={videoSources.mp4} type="video/mp4" />
+          </video>
+        )}
+        {/* Overlays em degradê espresso para manter legibilidade editorial e elegância */}
+        <div className="absolute inset-0 bg-gradient-to-b from-espresso-deep/90 via-espresso-deep/70 to-espresso-deep" />
+        <div className="absolute inset-0 bg-espresso-deep/30" />
+      </div>
+
       {/* Ambient micro-mesh atmospheric glows */}
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-gold-bright/15 via-gold-burnished/5 to-transparent blur-3xl pointer-events-none rounded-full" />
-      <div className="absolute -bottom-24 right-0 w-[480px] h-[480px] bg-gradient-to-tl from-gold-bright/10 to-transparent blur-2xl pointer-events-none rounded-full" />
+      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-gold-bright/15 via-gold-burnished/5 to-transparent blur-3xl pointer-events-none rounded-full z-0" />
+      <div className="absolute -bottom-24 right-0 w-[480px] h-[480px] bg-gradient-to-tl from-gold-bright/10 to-transparent blur-2xl pointer-events-none rounded-full z-0" />
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-12 pb-16 md:pt-20 md:pb-24 relative z-10 flex flex-col items-center text-center">
         <motion.div
