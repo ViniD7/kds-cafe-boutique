@@ -3,10 +3,26 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
+// ============================================================================
+// AJUSTE MANUAL PADRÃO DA OPACIDADE DO FUNDO DO HERO
+// Edite estes valores (de 0.0 a 1.0) para definir a intensidade padrão:
+// ============================================================================
+export const HERO_BACKGROUND_CONFIG = {
+  // Opacidade do vídeo (ex: 0.20 = bem sutil, 0.40 = moderado, 0.75 = bem vivo)
+  videoOpacity: 0.40,
+  // Escuridão da máscara espresso por cima (ex: 0.50 = mais claro, 0.85 = bem escuro)
+  overlayDarkness: 0.65,
+};
+
 const Hero = () => {
   const { t } = useTranslation();
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoSources, setVideoSources] = useState<{ webm: string; mp4: string } | null>(null);
+
+  // Estados com controle manual em tempo real
+  const [videoOpacity, setVideoOpacity] = useState(HERO_BACKGROUND_CONFIG.videoOpacity);
+  const [overlayDarkness, setOverlayDarkness] = useState(HERO_BACKGROUND_CONFIG.overlayDarkness);
+  const [showTuner, setShowTuner] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -70,15 +86,94 @@ const Hero = () => {
             loop
             muted
             playsInline
-            className="w-full h-full object-cover scale-105 opacity-35 transition-opacity duration-1000 ease-out"
+            className="w-full h-full object-cover scale-105 transition-opacity duration-300 ease-out"
+            style={{ opacity: videoOpacity }}
           >
             <source src={videoSources.webm} type="video/webm" />
             <source src={videoSources.mp4} type="video/mp4" />
           </video>
         )}
-        {/* Overlays em degradê espresso para manter legibilidade editorial e elegância */}
-        <div className="absolute inset-0 bg-gradient-to-b from-espresso-deep/90 via-espresso-deep/70 to-espresso-deep" />
-        <div className="absolute inset-0 bg-espresso-deep/30" />
+        {/* Overlays em degradê espresso com opacidade ajustável */}
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-espresso-deep via-espresso-deep/75 to-espresso-deep transition-opacity duration-300"
+          style={{ opacity: overlayDarkness }}
+        />
+        <div className="absolute inset-0 bg-espresso-deep/20" />
+      </div>
+
+      {/* Mini painel de ajuste manual interativo da opacidade */}
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-30 pointer-events-auto">
+        <button
+          onClick={() => setShowTuner(!showTuner)}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-espresso-surface/85 hover:bg-espresso-surface border border-gold-bright/30 hover:border-gold-bright text-gold-bright text-[11px] font-sans tracking-wide shadow-lg backdrop-blur-sm transition-all"
+          title="Ajustar opacidade manualmente"
+        >
+          <span className="material-symbols-outlined text-[15px]">tune</span>
+          <span className="hidden sm:inline">Ajustar Opacidade</span>
+          <span className="font-mono text-[10px] text-paper-sand/80">({Math.round(videoOpacity * 100)}%)</span>
+        </button>
+
+        {showTuner && (
+          <div className="absolute right-0 mt-2 p-4 rounded-xl bg-espresso-surface/95 border border-gold-bright/40 shadow-2xl backdrop-blur-md w-72 text-left text-paper-cream animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between mb-3 border-b border-border-hairline/15 pb-2">
+              <div className="flex items-center gap-1.5 text-gold-bright">
+                <span className="material-symbols-outlined text-[16px]">opacity</span>
+                <span className="font-serif text-sm font-semibold">Opacidade do Hero</span>
+              </div>
+              <button
+                onClick={() => setShowTuner(false)}
+                className="text-paper-sand/60 hover:text-paper-cream text-xs px-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4 font-sans text-xs">
+              <div>
+                <div className="flex justify-between mb-1.5">
+                  <span className="text-paper-sand/90">Vídeo de Fundo</span>
+                  <span className="font-mono text-gold-bright font-semibold">
+                    {Math.round(videoOpacity * 100)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={videoOpacity}
+                  onChange={(e) => setVideoOpacity(parseFloat(e.target.value))}
+                  className="w-full accent-[#C2A763] cursor-pointer h-1.5 bg-espresso-deep rounded-lg"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between mb-1.5">
+                  <span className="text-paper-sand/90">Escuridão da Máscara</span>
+                  <span className="font-mono text-gold-bright font-semibold">
+                    {Math.round(overlayDarkness * 100)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={overlayDarkness}
+                  onChange={(e) => setOverlayDarkness(parseFloat(e.target.value))}
+                  className="w-full accent-[#C2A763] cursor-pointer h-1.5 bg-espresso-deep rounded-lg"
+                />
+              </div>
+
+              <div className="pt-2.5 border-t border-border-hairline/10 text-[10px] text-paper-sand/60 flex items-center justify-between">
+                <span>Valores para o código:</span>
+                <code className="text-gold-burnished font-mono bg-espresso-deep px-1.5 py-0.5 rounded border border-border-hairline/10">
+                  {videoOpacity} / {overlayDarkness}
+                </code>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Ambient micro-mesh atmospheric glows */}
