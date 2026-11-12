@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import Product from '../models/Product';
 
 interface ProductFilter {
@@ -8,6 +9,11 @@ interface ProductFilter {
 
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      console.warn('⚠️ MongoDB not connected, returning empty products list');
+      return res.json([]);
+    }
+
     const { featured, category } = req.query;
     const filter: ProductFilter = {};
 
@@ -35,13 +41,27 @@ export const getProductById = async (req: Request, res: Response) => {
     
     console.log('🔍 Backend - Fetching product with ID:', id);
     
-    // Validate ObjectId format
     if (!id || id.length === 0) {
       console.error('❌ Backend - Invalid product ID:', id);
       return res.status(400).json({ message: 'Invalid product ID' });
     }
+
+    if (mongoose.connection.readyState !== 1) {
+      console.warn('⚠️ MongoDB not connected, returning 404 for fallback handling');
+      return res.status(404).json({ message: 'Product not found (DB offline)' });
+    }
     
-    const product = await Product.findById(id);
+    let product = null;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      product = await Product.findById(id);
+    } else {
+      product = await Product.findOne({
+        $or: [
+          { slug: id },
+          { name: new RegExp(`^${id.replace(/-/g, ' ')}$`, 'i') }
+        ]
+      });
+    }
 
     if (!product) {
       console.warn('⚠️ Backend - Product not found for ID:', id);
@@ -54,9 +74,7 @@ export const getProductById = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error('❌ Backend - Error fetching product:', error);
     console.error('Error details:', error.message);
-    console.error('Error stack:', error.stack);
     
-    // Check for specific MongoDB errors
     if (error.name === 'CastError') {
       return res.status(400).json({ 
         message: 'Invalid product ID format',
