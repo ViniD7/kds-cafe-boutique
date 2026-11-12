@@ -16,6 +16,7 @@ import {
 import { FaShoppingCart, FaEye, FaHeart } from "react-icons/fa";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
+import { usePreloadImages } from "@/lib/imagePreloader";
 import "./ProductCard/ProductCard.css";
 
 interface ProductCardProps {
@@ -25,6 +26,10 @@ interface ProductCardProps {
 
 const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
   const { id, name, shortDescription, price, images } = item;
+  
+  // Debug log to check if ID exists
+  console.log('🏷️ ProductCard - Product ID:', id, 'Name:', name);
+  
   const kit = isKit ? (item as Kit) : null;
   const discount = kit ? calculateDiscount(kit.originalPrice, kit.price) : 0;
 
@@ -46,6 +51,10 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
   const [isMobile, setIsMobile] = useState(false);
   const { addToCart } = useCart();
   const navigate = useNavigate();
+
+  // Preload all product images immediately for instant display
+  const imageUrls = images.map(img => getImageUrl(img));
+  usePreloadImages(imageUrls, { immediate: true, concurrency: 3 });
 
   // Detecta se é mobile
   useEffect(() => {
@@ -211,7 +220,8 @@ const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
                 alt={name}
                 className="premium-product-image"
                 onLoad={() => setImageLoaded(true)}
-                loading="lazy"
+                loading="eager"
+                decoding="async"
                 custom={currentImageIndex}
                 variants={imageVariants}
                 initial="enter"

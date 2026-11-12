@@ -74,7 +74,15 @@ const OrderSchema: Schema = new Schema({
     enum: ['CREDIT_CARD', 'DEBIT_CARD', 'PIX']
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+// Virtual for id (to match frontend expectations)
+OrderSchema.virtual('id').get(function() {
+  // @ts-ignore - accessing _id which exists on Document
+  return this._id.toHexString();
 });
 
 export default mongoose.model<IOrder>('Order', OrderSchema);

@@ -32,17 +32,42 @@ export const getAllProducts = async (req: Request, res: Response) => {
 export const getProductById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    
+    console.log('🔍 Backend - Fetching product with ID:', id);
+    
+    // Validate ObjectId format
+    if (!id || id.length === 0) {
+      console.error('❌ Backend - Invalid product ID:', id);
+      return res.status(400).json({ message: 'Invalid product ID' });
+    }
+    
     const product = await Product.findById(id);
 
     if (!product) {
+      console.warn('⚠️ Backend - Product not found for ID:', id);
       return res.status(404).json({ message: 'Product not found' });
     }
 
+    console.log('✅ Backend - Product found:', product.name);
     res.json(product);
     return;
-  } catch (error) {
-    console.error('Error fetching product:', error);
-    res.status(500).json({ message: 'Server error' });
+  } catch (error: any) {
+    console.error('❌ Backend - Error fetching product:', error);
+    console.error('Error details:', error.message);
+    console.error('Error stack:', error.stack);
+    
+    // Check for specific MongoDB errors
+    if (error.name === 'CastError') {
+      return res.status(400).json({ 
+        message: 'Invalid product ID format',
+        error: error.message 
+      });
+    }
+    
+    res.status(500).json({ 
+      message: 'Server error',
+      error: error.message 
+    });
     return;
   }
 };

@@ -83,7 +83,8 @@ const ProductSchema: Schema = new Schema({
       delete ret.__v;
       return ret;
     }
-  }
+  },
+  toObject: { virtuals: true }
 });
 
 export default mongoose.model<IProduct>('Product', ProductSchema);

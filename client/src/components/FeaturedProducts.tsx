@@ -2,6 +2,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { productAPI } from "../services/api";
 import { Product } from "../types/api";
+import { usePreloadImages } from "../lib/imagePreloader";
+import { getImageUrl } from "../lib/utils";
+import SkeletonLoader from "./SkeletonLoader";
 import "./FeaturedProducts/FeacturedProducts.css";
 
 const FeaturedProducts = () => {
@@ -22,6 +25,10 @@ const FeaturedProducts = () => {
         setLoading(true);
         const featuredProds = await productAPI.getAllProducts({ featured: true });
         setProducts(featuredProds);
+        
+        // Preload featured product images
+        const imageUrls = featuredProds.flatMap(p => p.images.map(img => getImageUrl(img)));
+        // Images will be preloaded via the hook below
       } catch (error) {
         console.error("Error fetching featured products:", error);
         setProducts([]);
@@ -32,6 +39,12 @@ const FeaturedProducts = () => {
 
     fetchFeaturedProducts();
   }, []);
+
+  // Preload all featured product images
+  const featuredImageUrls = products.flatMap(product => 
+    product.images.map(img => getImageUrl(img))
+  );
+  usePreloadImages(featuredImageUrls, { immediate: true, concurrency: 3 });
 
   // Otimizar o intervalo do carrossel
   const nextProject = useCallback(() => {
@@ -104,7 +117,7 @@ const FeaturedProducts = () => {
     return (
       <section className="featured-products-section">
         <div className="featured-products-container">
-          <p>Carregando produtos em destaque...</p>
+          <SkeletonLoader count={4} />
         </div>
       </section>
     );
@@ -157,11 +170,12 @@ const FeaturedProducts = () => {
                       <div className="product-image-skeleton"></div>
                     )}
                     <img
-                      src={product.images[0]}
+                      src={getImageUrl(product.images[0])}
                       alt={product.name}
                       className="product-image-lazy"
-                      onLoad={() => handleImageLoad(product.images[0])}
-                      loading="lazy"
+                      onLoad={() => handleImageLoad(getImageUrl(product.images[0]))}
+                      loading="eager"
+                      decoding="async"
                     />
                     <div className="product-image-overlay"></div>
                     <div className="product-image-content">

@@ -21,5 +21,4 @@ router.put('/update/:itemId', authenticateToken, [
 
 router.delete('/remove/:itemId', authenticateToken, removeFromCart);
 router.delete('/clear', authenticateToken, clearCart);
-
 export default router;

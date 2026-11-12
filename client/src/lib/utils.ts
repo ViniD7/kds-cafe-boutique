@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { CartItemDetail } from "@/context/CartContext"
+import { CartItemDetail } from "../types/api"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -29,14 +29,19 @@ export function createSlug(text: string): string {
     .replace(/\s+/g, '-');
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+
 export function getImageUrl(path: string): string {
   // Check if the path is already a full URL
-  if (path.startsWith('http') || path.startsWith('/')) {
+  if (path.startsWith('http')) {
     return path;
   }
   
-  // Otherwise, assume it's a local path
-  return `/${path}`;
+  // Ensure path starts with /
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  
+  // Return full URL with backend base URL
+  return `${API_BASE_URL}${normalizedPath}`;
 }
 
 export function formatWhatsAppMessage(items: CartItemDetail[], total: number): string {

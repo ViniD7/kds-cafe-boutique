@@ -2,8 +2,11 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ProductGrid from "../components/ProductGrid";
+import SkeletonLoader from "../components/SkeletonLoader";
 import { productAPI } from "../services/api";
 import { Product } from "../types/api";
+import { usePreloadImages } from "../lib/imagePreloader";
+import { getImageUrl } from "../lib/utils";
 import SectionHeader from "../components/SectionHeader/SectionHeader";
 import "./Products/Products.css";
 
@@ -18,6 +21,14 @@ const Products = () => {
   const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const itemsPerPage = 4;
+
+  // Extract all image URLs for preloading
+  const allImageUrls = allProducts.flatMap(product => 
+    product.images.map(img => getImageUrl(img))
+  );
+
+  // Preload all product images
+  usePreloadImages(allImageUrls, { immediate: true, concurrency: 5 });
 
   // Fetch all products on initial load
   useEffect(() => {
@@ -75,7 +86,12 @@ const Products = () => {
     return (
       <div className="products-parallax-container fade-in-up" ref={containerRef}>
         <div className="container-custom">
-          <p>Carregando produtos...</p>
+          <SectionHeader
+            title="Nossos"
+            highlightedText="Cafés Especiais"
+            subtitle="Descubra nossa seleção de cafés especiais, torrados com precisão para destacar suas características únicas e proporcionar uma experiência sensorial completa."
+          />
+          <SkeletonLoader count={8} />
         </div>
       </div>
     );

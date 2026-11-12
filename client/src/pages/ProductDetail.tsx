@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { productAPI } from "@/services/api";
 import { Product } from "@/types/api";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getImageUrl } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import {
   ArrowLeft,
@@ -25,26 +25,43 @@ const ProductDetail = () => {
 
   useEffect(() => {
     const fetchProduct = async () => {
+      // Guard clause - don't fetch if id is missing
+      if (!id) {
+        console.error('❌ Product ID is missing from route parameters');
+        setError('ID do produto não fornecido');
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        const fetchedProduct = await productAPI.getProductById(id || "");
+        setError(null);
+        console.log('🔍 Fetching product with ID:', id);
+        const fetchedProduct = await productAPI.getProductById(id);
+        console.log('✅ Product fetched successfully:', fetchedProduct);
         setProduct(fetchedProduct);
-      } catch (error) {
-        console.error("Error fetching product:", error);
+      } catch (error: any) {
+        console.error("❌ Error fetching product:", error);
+        console.error("Error response:", error?.response);
+        console.error("Error status:", error?.response?.status);
+        console.error("Error message:", error?.message);
+        
+        const errorMsg = error?.response?.data?.message || error?.message || 'Erro ao carregar produto';
+        setError(errorMsg);
+        setProduct(null);
       } finally {
         setLoading(false);
       }
     };
 
-    if (id) {
-      fetchProduct();
-    }
+    fetchProduct();
   }, [id]);
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Set the first variant as selected when product loads
   useEffect(() => {
@@ -69,6 +86,11 @@ const ProductDetail = () => {
         <div className="not-found-content">
           <div className="not-found-icon">😔</div>
           <h1 className="not-found-title">Produto não encontrado</h1>
+          {error && (
+            <p className="not-found-error" style={{ color: 'red', marginTop: '1rem' }}>
+              Erro: {error}
+            </p>
+          )}
           <p className="not-found-description">
             O produto que você está procurando não existe ou foi removido.
           </p>
@@ -151,7 +173,7 @@ const ProductDetail = () => {
             <div className="image-main-container">
               <div className="product-image-main">
                 <img
-                  src={product.images[selectedImage]}
+                  src={getImageUrl(product.images[selectedImage])}
                   alt={product.name}
                   loading="lazy"
                 />
@@ -172,7 +194,7 @@ const ProductDetail = () => {
                   aria-label={`Visualizar imagem ${index + 1}`}
                 >
                   <img
-                    src={image}
+                    src={getImageUrl(image)}
                     alt={`${product.name} - Imagem ${index + 1}`}
                     loading="lazy"
                   />

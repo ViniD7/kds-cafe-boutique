@@ -10,6 +10,10 @@ import {
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+// Image cache to prevent redundant API calls
+const productCache = new Map<string, { data: Product[]; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -72,14 +76,46 @@ export const authAPI = {
 
 // PRODUCTS
 export const productAPI = {
-  getAllProducts: (params?: { featured?: boolean; category?: string }) => 
-    api.get<Product[]>('/products', { params }).then(res => res.data),
+  getAllProducts: async (params?: { featured?: boolean; category?: string }) => {
+    const cacheKey = `products_${JSON.stringify(params || {})}`;
+    const cached = productCache.get(cacheKey);
+    
+    // Return cached data if still valid
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return cached.data;
+    }
+    
+    // Fetch fresh data
+    const response = await api.get<Product[]>('/products', { params });
+    productCache.set(cacheKey, { data: response.data, timestamp: Date.now() });
+    return response.data;
+  },
   
-  getProductById: (id: string) => 
-    api.get<Product>(`/products/${id}`).then(res => res.data),
+  getProductById: async (id: string) => {
+    const cacheKey = `product_${id}`;
+    const cached = productCache.get(cacheKey);
+    
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return cached.data[0];
+    }
+    
+    const response = await api.get<Product>(`/products/${id}`);
+    productCache.set(cacheKey, { data: [response.data], timestamp: Date.now() });
+    return response.data;
+  },
   
-  getProductsByCategory: (category: string) => 
-    api.get<Product[]>(`/products/category/${category}`).then(res => res.data),
+  getProductsByCategory: async (category: string) => {
+    const cacheKey = `products_category_${category}`;
+    const cached = productCache.get(cacheKey);
+    
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return cached.data;
+    }
+    
+    const response = await api.get<Product[]>(`/products/category/${category}`);
+    productCache.set(cacheKey, { data: response.data, timestamp: Date.now() });
+    return response.data;
+  },
 };
 
 // CART
