@@ -49,7 +49,7 @@ const AppLayout = () => {
     <>
       <ScrollToTop />
       {!hideHeaderFooter && <Header />}
-      <main>
+      <main className={!hideHeaderFooter ? "pt-[116px] min-h-[calc(100vh-116px)]" : ""}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/produtos" element={<Products />} />

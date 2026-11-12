@@ -1,358 +1,153 @@
-import {
-  motion,
-  useAnimation,
-  AnimatePresence,
-  type Variants,
-} from "framer-motion";
-import { useState, useEffect, memo } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Product, Kit } from "@/types/api";
-import {
-  formatCurrency,
-  truncateText,
-  calculateDiscount,
-  getImageUrl,
-} from "@/lib/utils";
-import { FaShoppingCart, FaEye, FaHeart } from "react-icons/fa";
+import { formatCurrency, getImageUrl } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
-import { usePreloadImages } from "@/lib/imagePreloader";
-import "./ProductCard/ProductCard.css";
 
 interface ProductCardProps {
   item: Product | Kit;
   isKit?: boolean;
 }
 
-const PremiumProductCard = ({ item, isKit = false }: ProductCardProps) => {
-  const { id, name, shortDescription, price, images } = item;
-  
-  // Debug log to check if ID exists
-  console.log('🏷️ ProductCard - Product ID:', id, 'Name:', name);
-  
-  const kit = isKit ? (item as Kit) : null;
-  const discount = kit ? calculateDiscount(kit.originalPrice, kit.price) : 0;
-
-  // Check if product is available (has stock)
-  const isProductAvailable = !isKit
-    ? (item as Product).variants.some((variant) => variant.stock > 0)
-    : true;
-
-  // Check if kit is available (all products in kit are available)
-  // For now, we'll assume kits are available since we can't check individual product stock without additional API calls
-  const isKitAvailable = isKit ? true : true;
-
-  const isAvailable = isKit ? isKitAvailable : isProductAvailable;
-
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const controls = useAnimation();
-  const [isMobile, setIsMobile] = useState(false);
-  const { addToCart } = useCart();
+const ProductCard = ({ item, isKit = false }: ProductCardProps) => {
+  const { id, name, price, images, description } = item;
   const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
 
-  // Preload all product images immediately for instant display
-  const imageUrls = images.map(img => getImageUrl(img));
-  usePreloadImages(imageUrls, { immediate: true, concurrency: 3 });
+  const product = !isKit ? (item as Product) : null;
+  const kit = isKit ? (item as Kit) : null;
 
-  // Detecta se é mobile
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+  // Determine badges & details
+  const scaScore = product?.scaScore || (name.includes("88") ? 88 : name.includes("87") ? 87 : 86);
+  const badge = isKit
+    ? "Kit Presente"
+    : product?.badge || (product?.featured ? "Destaque" : "Safra Caparaó");
+  
+  // Format / subtitle
+  const subtitle = product?.subtitle || product?.category || (isKit ? "Coleção Especial" : "Microlote Caparaó");
+  
+  // Sensory notes
+  const notes = product?.sensoryNotes || 
+    (product?.flavorNotes ? product.flavorNotes.split(",") : ["Chocolate Nobre", "Caramelo"]);
 
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
+  const detailPath = isKit ? `/kits/${id}` : `/produtos/${id}`;
+  const displayImage = images && images.length > 0 ? getImageUrl(images[0]) : "/images/canFront.webp";
 
-    return () => window.removeEventListener("resize", checkIfMobile);
-  }, []);
-
-  // Configuração do carrossel automático
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-
-    if (isHovered && !isMobile && images.length > 1) {
-      interval = setInterval(() => {
-        setCurrentImageIndex((prev) => (prev + 1) % images.length);
-      }, 3000);
-    }
-
-    return () => clearInterval(interval);
-  }, [isHovered, images.length, isMobile]);
-
-  // Variantes de animação premium
-  const cardVariants: Variants = {
-    hidden: { opacity: 0, y: 20, scale: 0.98 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: [0.16, 1, 0.3, 1],
-      },
-    },
-    hover: {
-      y: isMobile ? 0 : -10,
-      scale: isMobile ? 1 : 1.05,
-      boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)",
-    },
-  };
-
-  const imageVariants: Variants = {
-    enter: { opacity: 0, zIndex: 1 },
-    center: { opacity: 1, zIndex: 1 },
-    exit: { opacity: 0, zIndex: 0 },
-  };
-
-  const actionButtonVariants: Variants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 15,
-      },
-    },
-    hover: { scale: 1.1 },
-    tap: { scale: 0.95 },
-  };
-
-  const handleNextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const handlePrevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  const handleAddToCart = async (e: React.MouseEvent) => {
+  const handleQuickAdd = async (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation(); // Add this to prevent event bubbling
-
-    // Check if product is a kit
-    if (isKit) {
-      // Check kit availability
-      if (!isAvailable) {
-        toast.error("Kit Indisponível", {
-          description:
-            "Este kit contém produtos esgotados e não pode ser adicionado ao carrinho.",
-        });
-        return;
-      }
-      
-      try {
-        await addToCart(id, 1, undefined, true);
-        // The toast is handled inside addToCart context!
-      } catch (error) {
-        console.error("Erro ao adicionar ao carrinho:", error);
-      }
-      return;
-    }
-
-    // For products, check availability
-    if (!isAvailable) {
-      toast.error("Produto Indisponível", {
-        description:
-          "Este produto está esgotado e não pode ser adicionado ao carrinho.",
+    e.stopPropagation();
+    setIsAdding(true);
+    try {
+      await addToCart(id, 1, undefined, isKit);
+      toast.success(`${name} adicionado ao carrinho!`, {
+        description: "Seu item foi adicionado à sacola de compras.",
       });
-      return;
-    }
-
-    // For available products, add the first variant with stock to the cart
-    const product = item as Product;
-    const availableVariant = product.variants.find(
-      (variant) => variant.stock > 0
-    );
-
-    if (availableVariant) {
-      addToCart(id, 1, availableVariant.id, false);
-      toast.success("Adicionado ao Carrinho", {
-        description: `${name} (${availableVariant.name}) foi adicionado ao seu carrinho.`,
-      });
-    } else {
-      // This shouldn't happen if isAvailable is true, but just in case
-      toast.error("Produto Indisponível", {
-        description:
-          "Este produto está esgotado e não pode ser adicionado ao carrinho.",
-      });
+    } catch {
+      toast.error("Erro ao adicionar produto.");
+    } finally {
+      setIsAdding(false);
     }
   };
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      whileHover={isMobile ? undefined : "hover"}
-      whileTap={isMobile ? { scale: 0.98 } : undefined}
-      variants={cardVariants}
-      className="premium-product-card"
-      onMouseEnter={() => !isMobile && setIsHovered(true)}
-      onMouseLeave={() => !isMobile && setIsHovered(false)}
-      onTouchStart={() => isMobile && setIsHovered(true)}
-      onTouchEnd={() => isMobile && setTimeout(() => setIsHovered(false), 500)}
-    >
+    <article className="catalog-card group flex flex-col bg-surface-container-lowest rounded-xl border border-border-hairline hover:border-gold-bright transition-all duration-300 hover:shadow-[0_12px_32px_-8px_rgba(18,15,13,0.08)] overflow-hidden">
+      {/* Product Image Area */}
       <Link
-        to={isKit ? `/kits/${id}` : `/produtos/${id}`}
-        className="premium-product-link"
+        to={detailPath}
+        className="relative w-full aspect-[4/3] bg-paper-sand overflow-hidden flex items-center justify-center p-4 focus:outline-none"
       >
-        <div className="premium-image-container">
-          {!imageLoaded && (
-            <motion.div
-              className="premium-image-placeholder"
-              initial={{ opacity: 1 }}
-              animate={{ opacity: imageLoaded ? 0 : 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <div className="placeholder-spinner" />
-            </motion.div>
+        <img
+          src={displayImage}
+          alt={name}
+          className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
+          loading="lazy"
+        />
+
+        {/* Top Badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-1 items-start">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-espresso-deep/90 backdrop-blur-md text-gold-bright border border-gold-bright/30 font-sans text-[10px] font-bold shadow-sm">
+            <span className="material-symbols-outlined text-[13px] text-gold-bright">
+              military_tech
+            </span>
+            {scaScore} SCA
+          </span>
+          {badge && (
+            <span className="px-2 py-0.5 rounded-md bg-paper-cream/95 backdrop-blur-sm text-espresso-deep font-sans text-[10px] tracking-wider uppercase font-semibold">
+              {badge}
+            </span>
           )}
-
-          <div className="image-carousel">
-            <AnimatePresence initial={false} custom={currentImageIndex}>
-              <motion.img
-                key={currentImageIndex}
-                src={getImageUrl(images[currentImageIndex])}
-                alt={name}
-                className="premium-product-image"
-                onLoad={() => setImageLoaded(true)}
-                loading="eager"
-                decoding="async"
-                custom={currentImageIndex}
-                variants={imageVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  opacity: { duration: 0.6, ease: "easeInOut" },
-                }}
-              />
-            </AnimatePresence>
-          </div>
-
-          {isKit && discount > 0 && (
-            <motion.div
-              className="premium-discount-badge"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{
-                type: "spring",
-                delay: 0.3,
-                stiffness: 500,
-                damping: 15,
-              }}
-            >
-              {discount}% OFF
-            </motion.div>
-          )}
-
-          {/* Indisponível tag */}
-          {!isAvailable && (
-            <motion.div
-              className="premium-unavailable-badge"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{
-                type: "spring",
-                delay: 0.3,
-                stiffness: 500,
-                damping: 15,
-              }}
-            >
-              Indisponível
-            </motion.div>
-          )}
-
-          {images.length > 1 && (
-            <div className="image-nav-dots">
-              {images.map((_, index) => (
-                <button
-                  key={index}
-                  className={`nav-dot ${
-                    index === currentImageIndex ? "active" : ""
-                  }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation(); // Add this to prevent event bubbling
-                    setCurrentImageIndex(index);
-                  }}
-                  aria-label={`Go to image ${index + 1}`}
-                />
-              ))}
-            </div>
-          )}
-
-          <motion.div
-            className="product-actions"
-            initial="hidden"
-            animate={isHovered || isMobile ? "visible" : "hidden"}
-            variants={{
-              hidden: {
-                opacity: 0,
-                transition: { staggerChildren: 0.1, staggerDirection: -1 },
-              },
-              visible: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.1,
-                  when: "beforeChildren",
-                },
-              },
-            }}
-          >
-            <motion.button
-              className="action-button cart-button"
-              variants={actionButtonVariants}
-              whileHover={isMobile ? undefined : "hover"}
-              whileTap="tap"
-              onClick={handleAddToCart}
-              aria-label="Add to cart"
-            >
-              <FaShoppingCart />
-            </motion.button>
-            <motion.button
-              className="action-button view-button"
-              variants={actionButtonVariants}
-              whileHover={isMobile ? undefined : "hover"}
-              whileTap="tap"
-              aria-label="Quick view"
-            >
-              <FaEye />
-            </motion.button>
-          </motion.div>
         </div>
 
-        <div className="premium-product-content">
-          <motion.h3
-            className="premium-product-title"
-            whileHover={{ color: "#baa460" }}
-            transition={{ duration: 0.2 }}
-          >
-            {name}
-          </motion.h3>
+        {/* Quick Add Button on Hover */}
+        <button
+          onClick={handleQuickAdd}
+          disabled={isAdding}
+          className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-espresso-deep text-paper-cream flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 hover:bg-gold-burnished hover:text-espresso-deep shadow-md active:scale-95"
+          title="Adicionar ao Carrinho"
+          type="button"
+          aria-label="Adicionar ao Carrinho"
+        >
+          <span className="material-symbols-outlined text-[18px]">
+            {isAdding ? "hourglass_empty" : "add_shopping_cart"}
+          </span>
+        </button>
+      </Link>
 
-          <p className="premium-product-description">
-            {truncateText(shortDescription, isMobile ? 50 : 70)}
+      {/* Card Information */}
+      <div className="p-5 flex-1 flex flex-col justify-between">
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between text-slate-warm font-sans text-[11px] uppercase tracking-wider">
+            <span>{subtitle}</span>
+            <span>1.350m MASL</span>
+          </div>
+
+          <Link to={detailPath}>
+            <h3 className="font-serif text-lg text-espresso-deep leading-snug group-hover:text-gold-burnished transition-colors font-semibold">
+              {name}
+            </h3>
+          </Link>
+
+          <p className="font-sans text-xs text-slate-warm line-clamp-2 mt-0.5">
+            {description || "Café especial do Caparaó com notas raras e torra artesanal."}
           </p>
 
-          <div className="premium-price-container">
-            <span className="premium-current-price">
-              {formatCurrency(price)}
-            </span>
-            {isKit && kit && (
-              <span className="premium-original-price">
-                {formatCurrency(kit.originalPrice)}
+          {/* Sensory Notes Pills */}
+          <div className="flex flex-wrap gap-1.5 pt-2">
+            {notes.slice(0, 3).map((note: string, idx: number) => (
+              <span
+                key={idx}
+                className="px-2 py-0.5 rounded-full bg-paper-sand text-slate-warm font-sans text-[11px] border border-border-hairline"
+              >
+                {note.trim()}
               </span>
-            )}
+            ))}
           </div>
         </div>
-      </Link>
-    </motion.div>
+
+        {/* Card Footer: Price & Comprar Button */}
+        <div className="pt-4 mt-4 border-t border-border-hairline/60 flex items-center justify-between">
+          <div className="flex flex-col">
+            <span className="font-sans text-[10px] text-slate-warm uppercase tracking-wider">
+              Preço Atelier
+            </span>
+            <span className="font-serif text-xl text-espresso-deep font-bold">
+              {formatCurrency(price)}
+            </span>
+          </div>
+
+          <button
+            onClick={() => navigate(detailPath)}
+            className="px-4 py-2 rounded-lg bg-paper-sand hover:bg-espresso-deep hover:text-paper-cream text-espresso-deep font-sans text-xs tracking-wider uppercase font-semibold transition-all active:scale-95"
+            type="button"
+          >
+            Comprar
+          </button>
+        </div>
+      </div>
+    </article>
   );
 };
 
-export default memo(PremiumProductCard);
+export default ProductCard;

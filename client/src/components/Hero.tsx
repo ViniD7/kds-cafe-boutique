@@ -1,104 +1,166 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import "./Hero/Hero.css";
 
 const Hero = () => {
   const { t } = useTranslation();
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const [videoSrc, setVideoSrc] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Carregar vídeo apenas quando o componente estiver visível
-    const loadVideo = async () => {
-      try {
-        const { default: webmSrc } = await import(
-          "../Assets/video/bgCafe.webm"
-        );
-        const { default: mp4Src } = await import("../Assets/video/bgCafe.mp4");
-        setVideoSrc(webmSrc);
-        setVideoLoaded(true);
-      } catch (error) {
-        console.log("Failed to load video:", error);
-      }
-    };
-
-    // Carregar vídeo após um pequeno delay para não bloquear o carregamento inicial
-    const timer = setTimeout(loadVideo, 100);
-    return () => clearTimeout(timer);
-  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.3,
-        delayChildren: 0.5,
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { y: 50, opacity: 0 },
+    hidden: { y: 25, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
         type: "spring" as const,
-        damping: 10,
+        damping: 20,
         stiffness: 100,
       },
     },
   };
 
   return (
-    <div className="hero-container">
-      <div className="hero-video-container">
-        {videoLoaded && videoSrc ? (
-          <video autoPlay loop muted playsInline className="hero-video">
-            <source src={videoSrc} type="video/webm" />
-            <source src={videoSrc.replace(".webm", ".mp4")} type="video/mp4" />
-            Seu navegador não suporta vídeos HTML5
-          </video>
-        ) : (
-          // Placeholder enquanto o vídeo carrega
-          <div className="hero-video-placeholder">
-            <div className="hero-video-skeleton"></div>
-          </div>
-        )}
-        <div className="video-overlay"></div>
-      </div>
+    <section className="relative w-full bg-espresso-deep text-paper-cream overflow-hidden">
+      {/* Ambient micro-mesh atmospheric glows */}
+      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-gold-bright/15 via-gold-burnished/5 to-transparent blur-3xl pointer-events-none rounded-full" />
+      <div className="absolute -bottom-24 right-0 w-[480px] h-[480px] bg-gradient-to-tl from-gold-bright/10 to-transparent blur-2xl pointer-events-none rounded-full" />
 
-      {/* Conteúdo com animação */}
-      <motion.div
-        className="hero-content"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-      >
-        <motion.div className="hero-text" variants={containerVariants}>
-          <motion.h1 className="hero-title" variants={itemVariants}>
-            {t("hero.title_part1")}
-            <span className="text-gold">{t("hero.title_highlight")}</span>
+      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-12 pb-16 md:pt-20 md:pb-24 relative z-10 flex flex-col items-center text-center">
+        <motion.div
+          className="flex flex-col items-center max-w-4xl"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          {/* Monogram Sub-badge */}
+          <motion.div
+            variants={itemVariants}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-espresso-surface border border-gold-bright/30 text-gold-bright mb-6 shadow-sm"
+          >
+            <span
+              className="material-symbols-outlined text-[16px] text-gold-bright"
+              style={{ fontVariationSettings: "'FILL' 1" }}
+            >
+              local_cafe
+            </span>
+            <span className="font-sans text-[11px] tracking-[0.2em] uppercase font-bold text-gold-bright">
+              Caparaó Capixaba • Safra 2024/2025
+            </span>
+          </motion.div>
+
+          {/* Expressive Editorial Headline */}
+          <motion.h1
+            variants={itemVariants}
+            className="font-serif text-3xl sm:text-5xl md:text-6xl text-paper-cream tracking-tight leading-[1.15] max-w-4xl"
+          >
+            A Nobreza dos Cafés Especiais do{" "}
+            <span className="italic font-normal text-gold-bright">Caparaó Capixaba</span>
           </motion.h1>
 
-          <motion.p className="hero-subtitle" variants={itemVariants}>
-            {t("hero.subtitle")}
+          {/* Refined Subheading */}
+          <motion.p
+            variants={itemVariants}
+            className="font-sans text-base sm:text-lg text-paper-sand/80 max-w-2xl mt-5 mb-10 leading-relaxed font-light"
+          >
+            Tradição familiar desde 1969 em Pequiá, Iúna-ES. Grãos raros colhidos manualmente acima
+            de 1.350m e torrados artesanalmente com rigor sensorial impecável.
           </motion.p>
 
-          <motion.div className="hero-buttons" variants={itemVariants}>
-            <Link to="/produtos" className="hero-button primary">
-              {t("hero.explore")}
+          {/* Dual Action Buttons */}
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+          >
+            <Link
+              to="/produtos"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-gold-burnished hover:bg-gold-bright text-espresso-deep font-sans text-xs tracking-wider uppercase transition-all duration-300 shadow-[0_0_24px_rgba(194,167,99,0.25)] hover:shadow-[0_0_32px_rgba(194,167,99,0.45)] font-bold flex items-center justify-center gap-2 group"
+            >
+              <span>Explorar Catálogo de Cafés</span>
+              <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
+                arrow_forward
+              </span>
             </Link>
-            <Link to="/sobre" className="hero-button secondary">
-              {t("hero.history")}
-            </Link>
+
+            <a
+              href="https://wa.me/5528999921033?text=Ol%C3%A1%2C%20gostaria%20de%20consultoria%20sobre%20os%20caf%C3%A9s%20especiais%20da%20KDS."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-lg bg-espresso-surface/90 hover:bg-espresso-surface text-paper-cream font-sans text-xs tracking-wider uppercase border border-gold-bright/35 hover:border-gold-bright transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[18px] text-gold-bright">
+                chat
+              </span>
+              <span>Consultoria no WhatsApp</span>
+            </a>
           </motion.div>
         </motion.div>
-      </motion.div>
-    </div>
+
+        {/* Floating Stats Bar */}
+        <div className="w-full max-w-5xl mt-14 md:mt-20 pt-8 border-t border-border-hairline/15 grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 text-left">
+          <div className="flex flex-col p-4 rounded-xl bg-espresso-surface/50 border border-border-hairline/10 hover:border-gold-bright/30 transition-colors">
+            <div className="flex items-center gap-1.5 text-gold-bright mb-1">
+              <span className="material-symbols-outlined text-[17px]">verified</span>
+              <span className="font-sans text-[10px] uppercase tracking-widest text-gold-burnished font-semibold">
+                Qualidade SCA
+              </span>
+            </div>
+            <span className="font-serif text-2xl text-paper-cream font-semibold">88+ Pontos</span>
+            <span className="font-sans text-xs text-paper-sand/60 mt-0.5">
+              Metodologia oficial SCA
+            </span>
+          </div>
+
+          <div className="flex flex-col p-4 rounded-xl bg-espresso-surface/50 border border-border-hairline/10 hover:border-gold-bright/30 transition-colors">
+            <div className="flex items-center gap-1.5 text-gold-bright mb-1">
+              <span className="material-symbols-outlined text-[17px]">terrain</span>
+              <span className="font-sans text-[10px] uppercase tracking-widest text-gold-burnished font-semibold">
+                Microclima
+              </span>
+            </div>
+            <span className="font-serif text-2xl text-paper-cream font-semibold">1.350m MASL</span>
+            <span className="font-sans text-xs text-paper-sand/60 mt-0.5">
+              Maturação lenta na montanha
+            </span>
+          </div>
+
+          <div className="flex flex-col p-4 rounded-xl bg-espresso-surface/50 border border-border-hairline/10 hover:border-gold-bright/30 transition-colors">
+            <div className="flex items-center gap-1.5 text-gold-bright mb-1">
+              <span className="material-symbols-outlined text-[17px]">eco</span>
+              <span className="font-sans text-[10px] uppercase tracking-widest text-gold-burnished font-semibold">
+                Botânica
+              </span>
+            </div>
+            <span className="font-serif text-2xl text-paper-cream font-semibold">100% Arábica</span>
+            <span className="font-sans text-xs text-paper-sand/60 mt-0.5">
+              Catuaí, Arara e Caparaó Raro
+            </span>
+          </div>
+
+          <div className="flex flex-col p-4 rounded-xl bg-espresso-surface/50 border border-border-hairline/10 hover:border-gold-bright/30 transition-colors">
+            <div className="flex items-center gap-1.5 text-gold-bright mb-1">
+              <span className="material-symbols-outlined text-[17px]">history_edu</span>
+              <span className="font-sans text-[10px] uppercase tracking-widest text-gold-burnished font-semibold">
+                Legado Vivo
+              </span>
+            </div>
+            <span className="font-serif text-2xl text-paper-cream font-semibold">Desde 1969</span>
+            <span className="font-sans text-xs text-paper-sand/60 mt-0.5">
+              Mais de 55 anos de tradição
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 
