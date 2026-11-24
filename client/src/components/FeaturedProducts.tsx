@@ -35,7 +35,7 @@ const fallbackFeatured = [
     name: "Drip Coffee Pocket Box",
     category: "drip",
     price: 54.0,
-    images: ["/images/sacheBk.webp"],
+    images: ["/images/dripCoffe.webp"],
     description: "Praticidade Gourmet • Filtrado individual onde estiver",
     scaScore: 86,
     badge: "10 Sachês",
@@ -46,7 +46,7 @@ const fallbackFeatured = [
     name: "Cookie Cups Trio Degustação",
     category: "cookie-cups",
     price: 62.0,
-    images: ["/images/canTriple.webp"],
+    images: ["/images/cupCookie.webp"],
     description: "Copinhos artesanais comestíveis recheados para café",
     badge: "Exclusividade",
     sensoryNotes: ["Baunilha", "Cacau 70%", "Coco Queimado"],
@@ -168,7 +168,7 @@ const FeaturedProducts = () => {
           {filteredProducts.slice(0, 4).map((product) => {
             const prodImage = product.images?.[0]
               ? getImageUrl(product.images[0])
-              : "/images/canFront.webp";
+              : getImageUrl("/images/canFront.webp");
             const sca = product.scaScore || (product.name.includes("88") ? 88 : 87);
             const badge = product.badge || (product.featured ? "Destaque" : "Safra Nova");
             const notes =

@@ -44,12 +44,13 @@ const AudioPlayer = lazy(() => import("./components/AudioPlayer"));
 const AppLayout = () => {
   const { pathname } = useLocation();
   const hideHeaderFooter = pathname === '/login';
+  const hasHeroBanner = pathname === "/" || pathname === "/sobre";
 
   return (
     <>
       <ScrollToTop />
       {!hideHeaderFooter && <Header />}
-      <main className={!hideHeaderFooter ? "pt-[116px] min-h-[calc(100vh-116px)]" : ""}>
+      <main className={!hideHeaderFooter ? (hasHeroBanner ? "min-h-screen" : "pt-[52px] sm:pt-[56px] min-h-[calc(100vh-56px)]") : ""}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/produtos" element={<Products />} />

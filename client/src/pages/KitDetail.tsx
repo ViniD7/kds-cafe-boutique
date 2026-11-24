@@ -1,48 +1,54 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { productAPI } from "@/services/api";
-import { Kit, Product } from "@/types/api";
-import { formatCurrency, calculateDiscount } from "@/lib/utils";
+import { Kit } from "@/types/api";
+import { formatCurrency, getImageUrl } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
-import {
-  ArrowLeft,
-  MessageCircle,
-  ShoppingCart,
-  Minus,
-  Plus,
-} from "lucide-react";
-import "./ProductsDetails/ProductsDetails.css";
+import { toast } from "sonner";
+
+const defaultKitData: Record<string, any> = {
+  "kit-degustacao-caparao-nobre": {
+    id: "kit-degustacao-caparao-nobre",
+    name: "Kit Degustação Caparaó Nobre",
+    category: "kits",
+    price: 139.0,
+    originalPrice: 155.0,
+    images: ["/images/canTriple.webp", "/images/canDiagonal.webp", "/images/cupCookie.webp"],
+    description:
+      "Caixa presente rígida contendo 1 Lata Colecionável 250g de Catuaí Vermelho Fermentado (88.5 SCA), 1 Pacote de Arara Amarelo (87.5 SCA) e 2 Cookie Cups artesanais revestidos com chocolate belga. Acompanha guia de prova e lacre de cera dourada.",
+    badge: "Coleção Degustação",
+    sensoryNotes: ["Edição Presente", "Guia Sensorial", "Lacre Dourado"],
+  },
+};
 
 const KitDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { addToCart } = useCart();
-  
-  const [kit, setKit] = useState<Kit | null>(null);
+
+  const [kit, setKit] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   useEffect(() => {
     const fetchKit = async () => {
       try {
         setLoading(true);
-        // For now, treating kits as products in the API
-        // In a real implementation, you'd want a dedicated endpoint for kits
         const product = await productAPI.getProductById(id || "");
-        
-        // If the API returns a product that represents a kit, treat it as such
         if (product) {
-          const kitData: Kit = {
-            ...product,
-            originalPrice: product.price, // Default to same price if not specified
-            products: [] // Kit composition would need to be stored differently
-          };
-          setKit(kitData);
-          
-          // For now, we'll need to simulate kit products since the API doesn't have a separate kit structure
-          // In a real implementation, kits would have a separate API endpoint
+          setKit(product);
+        } else if (defaultKitData[id || ""]) {
+          setKit(defaultKitData[id || ""]);
+        } else {
+          setKit(defaultKitData["kit-degustacao-caparao-nobre"]);
         }
       } catch (error) {
-        console.error("Error fetching kit:", error);
+        if (defaultKitData[id || ""]) {
+          setKit(defaultKitData[id || ""]);
+        } else {
+          setKit(defaultKitData["kit-degustacao-caparao-nobre"]);
+        }
       } finally {
         setLoading(false);
       }
@@ -53,14 +59,16 @@ const KitDetail = () => {
     }
   }, [id]);
 
-  const [quantity, setQuantity] = useState(1);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
-
   if (loading) {
     return (
-      <div className="product-detail-container">
-        <div className="container-custom">
-          <p>Carregando detalhes do kit...</p>
+      <div className="w-full min-h-[70vh] flex items-center justify-center bg-[#0D0B0A] text-[#F5F2EB]">
+        <div className="flex flex-col items-center gap-3">
+          <span className="material-symbols-outlined text-[40px] text-gold-bright animate-spin">
+            progress_activity
+          </span>
+          <p className="font-mono text-xs uppercase tracking-widest text-paper-sand/60">
+            Carregando kit especial...
+          </p>
         </div>
       </div>
     );
@@ -68,216 +76,188 @@ const KitDetail = () => {
 
   if (!kit) {
     return (
-      <div className="not-found">
-        <div className="not-found-content">
-          <div className="not-found-icon">😔</div>
-          <h1 className="not-found-title">Kit não encontrado</h1>
-          <p className="not-found-description">
-            O kit que você está procurando não existe ou foi removido.
-          </p>
-          <Link to="/kits" className="not-found-link">
-            Explorar Kits
-          </Link>
-        </div>
+      <div className="w-full min-h-[70vh] flex flex-col items-center justify-center p-8 bg-[#0D0B0A] text-[#F5F2EB] text-center">
+        <span className="material-symbols-outlined text-[48px] text-gold-bright mb-3">
+          inventory_2
+        </span>
+        <h1 className="font-serif text-3xl text-paper-cream font-normal mb-2">
+          Kit não encontrado
+        </h1>
+        <p className="font-sans text-xs sm:text-sm text-paper-sand/60 mb-6 max-w-md">
+          Este kit já foi descontinuado ou não está disponível no momento.
+        </p>
+        <Link
+          to="/kits"
+          className="px-6 py-3 bg-gold-burnished hover:bg-gold-bright text-[#0D0B0A] font-mono text-xs uppercase tracking-widest font-bold"
+        >
+          Explorar Kits →
+        </Link>
       </div>
     );
   }
 
-  // For now, assume kits are available since we can't check individual product stock without additional API calls
-  const isKitAvailable = true;
-
-  const discount = kit.originalPrice ? calculateDiscount(kit.originalPrice, kit.price) : 0;
+  const currentPrice = kit.price || 139;
+  const pixPrice = currentPrice * 0.95;
+  const imagesList =
+    kit.images && kit.images.length > 0
+      ? kit.images.map((img: string) => getImageUrl(img))
+      : ["/images/canTriple.webp"].map(getImageUrl);
 
   const handleAddToCart = async () => {
-    if (!isKitAvailable) return;
-    
     setIsAddingToCart(true);
-    addToCart(kit.id, quantity, undefined, true);
-
-    // Feedback visual
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setIsAddingToCart(false);
+    try {
+      await addToCart(kit.id, quantity, undefined, true);
+      toast.success(`${kit.name} adicionado à sacola!`);
+    } catch {
+      toast.error("Erro ao adicionar kit.");
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const handleWhatsAppOrder = () => {
-    const message = `Olá! Gostaria de comprar: ${
-      kit.name
-    }%0AQuantidade: ${quantity}%0APreço unitário: ${formatCurrency(
-      kit.price
-    )}%0APreço total: ${formatCurrency(
-      kit.price * quantity
-    )}%0A%0AAguardo confirmação do pedido.`;
+    const message = `Olá! Gostaria de encomendar o kit de presente:%0A*${kit.name}*%0A• Quantidade: ${quantity}%0A• Total: ${formatCurrency(
+      currentPrice * quantity
+    )}%0A%0AEnvio direto do Caparaó.`;
 
     const whatsappUrl = `https://wa.me/5528999921033?text=${message}`;
     window.open(whatsappUrl, "_blank");
   };
 
-  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    if (value > 0 && value <= 99) {
-      setQuantity(value);
-    }
-  };
-
-  const incrementQuantity = () => {
-    if (quantity < 99) setQuantity(quantity + 1);
-  };
-
-  const decrementQuantity = () => {
-    if (quantity > 1) setQuantity(quantity - 1);
-  };
-
   return (
-    <div className="product-detail-container">
-      <div className="container-custom">
-        {/* Navigation */}
-        <nav className="breadcrumb">
-          <button onClick={() => navigate(-1)} className="back-button">
-            <ArrowLeft size={20} />
-            <span>Voltar</span>
-          </button>
-          <div className="breadcrumb-links">
-            <span>Kits</span>
-            <span className="breadcrumb-divider">/</span>
-            <span className="breadcrumb-current">{kit.name}</span>
-          </div>
-        </nav>
+    <div className="w-full flex flex-col bg-[#0D0B0A] text-[#F5F2EB] min-h-screen">
+      {/* 1. BREADCRUMBS */}
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-8 pt-6 pb-4">
+        <div className="flex items-center gap-2 text-paper-sand/60 text-xs font-mono pb-4 border-b border-white/10">
+          <Link to="/" className="hover:text-gold-bright transition-colors uppercase">
+            Início
+          </Link>
+          <span>/</span>
+          <Link to="/kits" className="hover:text-gold-bright transition-colors uppercase">
+            Kits &amp; Presentes
+          </Link>
+          <span>/</span>
+          <span className="text-paper-cream truncate max-w-xs">{kit.name}</span>
+        </div>
+      </div>
 
-        <div className="product-grid">
-          {/* Product Images */}
-          <div className="images-section">
-            <div className="image-main-container">
-              <div className="product-image-main">
-                <img
-                  src={kit.images[0] || "/placeholder.svg"}
-                  alt={kit.name}
-                  loading="lazy"
-                />
-                {!isKitAvailable && (
-                  <div className="out-of-stock-badge">Indisponível</div>
-                )}
-                {discount > 0 && (
-                  <div className="discount-badge">{discount}% OFF</div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Product Info */}
-          <div className="info-section">
-            <div className="product-header">
-              <h1 className="product-title">{kit.name}</h1>
-              <div className="product-price">
-                <span className="price-current">
-                  {formatCurrency(kit.price)}
+      {/* 2. PRODUCT STAGE */}
+      <section className="w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          {/* Left Column: Gallery */}
+          <div className="lg:col-span-7 flex flex-col gap-6">
+            <div className="relative w-full aspect-[4/3] bg-[#161311] border border-white/10 overflow-hidden flex items-center justify-center p-8">
+              <img
+                src={imagesList[selectedImage] || imagesList[0]}
+                alt={kit.name}
+                className="max-h-full max-w-full object-contain filter drop-shadow-[0_25px_45px_rgba(0,0,0,0.95)]"
+              />
+              <div className="absolute top-4 left-4">
+                <span className="px-3 py-1 bg-[#0D0B0A] border border-gold-bright/30 text-gold-bright font-mono text-[10.5px] uppercase tracking-widest font-bold">
+                  COLEÇÃO PRESENTEÁVEL // EDIÇÃO ESPECIAL
                 </span>
-                {kit.originalPrice && kit.originalPrice > kit.price && (
-                  <span className="price-original">
-                    {formatCurrency(kit.originalPrice)}
-                  </span>
-                )}
               </div>
             </div>
 
-            {/* Description */}
-            <div className="description-section">
-              <p className="product-description">{kit.description}</p>
-            </div>
-
-            {/* Kit Products - placeholder since we don't have a real kit structure */}
-            <div className="variants-section">
-              <h3 className="section-title">Contém</h3>
-              <div className="kit-products-list">
-                <p>Informações sobre os produtos contidos no kit estarão disponíveis em breve.</p>
-              </div>
-            </div>
-
-            {/* Quantity Selector */}
-            <div className="quantity-section">
-              <h3 className="section-title">Quantidade</h3>
-              <div className="quantity-selector">
-                <button
-                  onClick={decrementQuantity}
-                  className="quantity-btn"
-                  disabled={quantity <= 1 || !isKitAvailable}
-                  aria-label="Reduzir quantidade"
-                >
-                  <Minus size={16} />
-                </button>
-                <input
-                  type="number"
-                  value={quantity}
-                  onChange={handleQuantityChange}
-                  className="quantity-input"
-                  min="1"
-                  max="99"
-                  aria-label="Quantidade"
-                  disabled={!isKitAvailable}
-                />
-                <button
-                  onClick={incrementQuantity}
-                  className="quantity-btn"
-                  disabled={quantity >= 99 || !isKitAvailable}
-                  aria-label="Aumentar quantidade"
-                >
-                  <Plus size={16} />
-                </button>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="actions-section">
-              <button
-                onClick={handleAddToCart}
-                className={`add-to-cart-btn ${isAddingToCart ? "adding" : ""} ${
-                  !isKitAvailable ? "disabled" : ""
-                }`}
-                disabled={!isKitAvailable || isAddingToCart}
-              >
-                <div className="btn-content">
-                  {isAddingToCart ? (
-                    <div className="loading-spinner"></div>
-                  ) : (
-                    <ShoppingCart size={20} />
-                  )}
-                  <span>
-                    {!isKitAvailable
-                      ? "Indisponível"
-                      : isAddingToCart
-                      ? "Adicionando..."
-                      : "Adicionar ao Carrinho"}
-                  </span>
-                </div>
-              </button>
-
-              <button
-                onClick={handleWhatsAppOrder}
-                className="whatsapp-btn"
-                disabled={!isKitAvailable}
-              >
-                <MessageCircle size={20} />
-                <span>Comprar via WhatsApp</span>
-              </button>
-            </div>
-
-            {/* Product Meta */}
-            <div className="meta-section">
-              <div className="meta-grid">
-                <div className="meta-item">
-                  <span className="meta-label">Disponibilidade</span>
-                  <span
-                    className={`meta-value ${
-                      isKitAvailable ? "in-stock" : "out-of-stock"
+            {/* Thumbnail Strip */}
+            {imagesList.length > 1 && (
+              <div className="grid grid-cols-4 gap-3">
+                {imagesList.map((img: string, idx: number) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(idx)}
+                    className={`relative aspect-square bg-[#161311] p-3 border transition-all ${
+                      selectedImage === idx
+                        ? "border-gold-bright shadow-lg"
+                        : "border-white/10 hover:border-white/30"
                     }`}
                   >
-                    {isKitAvailable ? "Disponível" : "Indisponível"}
-                  </span>
-                </div>
+                    <img
+                      src={img}
+                      alt={`Miniatura ${idx + 1}`}
+                      className="w-full h-full object-contain"
+                    />
+                  </button>
+                ))}
               </div>
+            )}
+          </div>
+
+          {/* Right Column: Purchasing Engine */}
+          <div className="lg:col-span-5 flex flex-col gap-6">
+            <div className="pb-6 border-b border-white/10">
+              <span className="px-3 py-1 bg-gold-bright text-[#0D0B0A] font-mono text-[10.5px] font-bold tracking-wider uppercase inline-block mb-3">
+                {kit.badge || "Kit Degustação"}
+              </span>
+              <h1 className="font-serif text-3xl sm:text-4xl text-paper-cream font-normal mb-3">
+                {kit.name}
+              </h1>
+              <p className="font-sans text-xs sm:text-sm text-paper-sand/75 font-light leading-relaxed">
+                {kit.description}
+              </p>
+            </div>
+
+            {/* Price Panel */}
+            <div className="p-5 bg-[#161311] border border-white/10 flex flex-col gap-2">
+              <div className="flex items-baseline justify-between">
+                <span className="font-mono text-3xl text-paper-cream font-bold">
+                  {formatCurrency(currentPrice)}
+                </span>
+                <span className="px-2.5 py-1 bg-gold-bright text-[#0D0B0A] font-mono text-xs font-bold">
+                  {formatCurrency(pixPrice)} no Pix (-5%)
+                </span>
+              </div>
+              <span className="font-mono text-[11px] text-paper-sand/60">
+                Ou até 3x sem juros no cartão de crédito • Frete grátis neste item
+              </span>
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col gap-3 pt-2">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center bg-[#161311] border border-white/10 p-1">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="w-10 h-10 flex items-center justify-center text-paper-cream hover:bg-white/10 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">remove</span>
+                  </button>
+                  <span className="w-8 text-center font-mono text-sm font-bold text-paper-cream">
+                    {quantity}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="w-10 h-10 flex items-center justify-center text-paper-cream hover:bg-white/10 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">add</span>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddToCart}
+                  disabled={isAddingToCart}
+                  className="flex-1 bg-gold-burnished hover:bg-gold-bright text-[#0D0B0A] font-mono text-xs uppercase tracking-widest font-bold py-3.5 px-6 transition-all flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
+                  <span>{isAddingToCart ? "Adicionando..." : "Adicionar à Sacola"}</span>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleWhatsAppOrder}
+                className="w-full bg-[#161311] hover:bg-white/10 text-paper-cream py-3 px-4 border border-white/10 flex items-center justify-center gap-2 transition-colors font-mono text-xs uppercase tracking-wider"
+              >
+                <span className="material-symbols-outlined text-[18px] text-gold-bright">chat</span>
+                <span>Pedir via WhatsApp Concierge</span>
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

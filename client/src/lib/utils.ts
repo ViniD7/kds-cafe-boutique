@@ -34,14 +34,14 @@ const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http:
 export function getImageUrl(path: string): string {
   // Check if the path is already a full URL
   if (path.startsWith('http')) {
-    return path;
+    return path.includes('?') ? path : `${path}?v=2`;
   }
   
   // Ensure path starts with /
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   
-  // Return full URL with backend base URL
-  return `${API_BASE_URL}${normalizedPath}`;
+  // Return full URL with backend base URL and cache buster
+  return `${API_BASE_URL}${normalizedPath}?v=2`;
 }
 
 export function formatWhatsAppMessage(items: CartItemDetail[], total: number): string {

@@ -1,28 +1,19 @@
 import { useState } from "react";
-import { Phone, Mail, MapPin, Send } from "lucide-react";
-import "./Contact/Contact.css";
-import SectionHeader from "@/components/SectionHeader/SectionHeader";
+import { toast } from "sonner";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    subject: "",
+    subject: "cafes-especiais",
     message: "",
   });
-
-  const [formStatus, setFormStatus] = useState<null | {
-    type: "success" | "error";
-    message: string;
-  }>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -32,282 +23,236 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Create WhatsApp message with form data
     const message =
-      `*Nova mensagem de contato*%0A%0A` +
+      `*Mensagem enviada pelo site KDS*%0A%0A` +
       `*Nome:* ${formData.name}%0A` +
       `*E-mail:* ${formData.email}%0A` +
       `*Telefone:* ${formData.phone || "Não informado"}%0A` +
       `*Assunto:* ${formData.subject}%0A%0A` +
       `*Mensagem:*%0A${formData.message}`;
 
-    // WhatsApp link with pre-filled message
     const whatsappUrl = `https://wa.me/5528999921033?text=${message}`;
     window.open(whatsappUrl, "_blank");
 
-    // Show success message
-    setFormStatus({
-      type: "success",
-      message: "Mensagem enviada com sucesso! Entraremos em contato em breve.",
+    toast.success("Mensagem direcionada ao Concierge KDS!", {
+      description: "Abrimos o atendimento direto via WhatsApp com os detalhes preenchidos.",
     });
 
     setFormData({
       name: "",
       email: "",
       phone: "",
-      subject: "",
+      subject: "cafes-especiais",
       message: "",
     });
 
     setIsSubmitting(false);
-
-    // Clear success message after 5 seconds
-    setTimeout(() => {
-      setFormStatus(null);
-    }, 5000);
   };
 
   return (
-    <div className="contact-container">
-      <div className="container-custom">
-        <div className="contact-header">
-          <SectionHeader
-            title="Entre em"
-            highlightedText="Contato"
-            subtitle="Estamos à disposição para responder suas dúvidas, ouvir sugestões ou receber feedback sobre nossos produtos."
-          />
+    <div className="w-full flex flex-col bg-[#0D0B0A] text-[#F5F2EB] min-h-screen">
+      {/* 1. TOP EDITORIAL BANNER */}
+      <section className="w-full max-w-7xl mx-auto px-4 md:px-8 pt-8 pb-8">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-white/10 pb-8">
+          <div className="max-w-3xl flex flex-col gap-2">
+            <div className="flex items-center gap-2 font-mono text-xs text-gold-bright uppercase tracking-widest">
+              <span className="w-2 h-2 bg-gold-bright inline-block" />
+              <span>Atelier Concierge // Atendimento Privado</span>
+              <span className="text-white/30">•</span>
+              <span className="text-paper-sand/60">Pequiá, Iúna-ES // 1.400M MASL</span>
+            </div>
+
+            <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl text-paper-cream tracking-tight font-normal">
+              Fale com Nosso <span className="italic text-gold-bright">Atelier</span>
+            </h1>
+
+            <p className="font-sans text-xs sm:text-sm text-paper-sand/70 max-w-2xl font-light leading-relaxed">
+              Consultoria para amantes de café especial, parcerias corporativas de presentes e
+              fornecimento B2B de microlotes em saca para cafeterias.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-4 bg-[#161311] px-6 py-4 border border-white/10 self-start lg:self-auto font-mono text-xs">
+            <div className="flex flex-col">
+              <span className="text-[10px] text-paper-sand/50 uppercase tracking-wider">
+                Atendimento
+              </span>
+              <span className="font-serif text-lg text-paper-cream font-bold">Segunda a Sábado</span>
+            </div>
+            <div className="h-8 w-px bg-white/10" />
+            <div className="flex flex-col">
+              <span className="text-[10px] text-paper-sand/50 uppercase tracking-wider">
+                Resposta
+              </span>
+              <span className="text-gold-bright font-bold">&lt; 2 Horas</span>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <div className="contact-grid">
-          {/* Contact Form */}
-          <div>
-            <div className="contact-form-container">
-              <div className="form-header">
-                <h2 className="form-title">Envie uma Mensagem</h2>
-                <div className="form-decoration"></div>
+      {/* 2. TWO-COLUMN CONTACT STAGE */}
+      <section className="w-full max-w-7xl mx-auto px-4 md:px-8 pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          {/* Left Column: Direct Channels & Atelier Coordinates */}
+          <div className="lg:col-span-5 flex flex-col gap-6">
+            {/* WhatsApp Concierge Card */}
+            <a
+              href="https://wa.me/5528999921033?text=Ol%C3%A1%2C%20gostaria%20de%20falar%20com%20o%20Concierge%20KDS."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-6 bg-[#161311] border border-gold-bright/40 hover:border-gold-bright transition-all flex items-start gap-4 group"
+            >
+              <div className="p-3 bg-gold-bright text-[#0D0B0A] font-bold">
+                <span className="material-symbols-outlined text-[24px]">chat</span>
               </div>
+              <div className="flex-1">
+                <span className="font-mono text-[10px] uppercase tracking-widest text-gold-bright block mb-1">
+                  Atendimento Instantâneo
+                </span>
+                <h4 className="font-serif text-xl text-paper-cream mb-1">WhatsApp Concierge</h4>
+                <p className="font-mono text-sm text-paper-sand/80 mb-2">+55 (28) 99992-1033</p>
+                <span className="font-mono text-xs text-gold-bright group-hover:translate-x-1 transition-transform inline-block">
+                  Iniciar conversa direta →
+                </span>
+              </div>
+            </a>
 
-              {formStatus && (
-                <div className={`form-status ${formStatus.type}`}>
-                  {formStatus.message}
-                </div>
-              )}
+            {/* Email & Wholesale */}
+            <div className="p-6 bg-[#161311] border border-white/10 flex items-start gap-4">
+              <div className="p-3 bg-white/5 border border-white/10 text-gold-bright">
+                <span className="material-symbols-outlined text-[24px]">mail</span>
+              </div>
+              <div>
+                <span className="font-mono text-[10px] uppercase tracking-widest text-gold-bright block mb-1">
+                  Correspondência Formal
+                </span>
+                <h4 className="font-serif text-xl text-paper-cream mb-1">E-mail de Ateliê</h4>
+                <p className="font-mono text-sm text-paper-sand/80">contato@kdscafes.com.br</p>
+                <p className="font-sans text-xs text-paper-sand/50 mt-1">
+                  Para propostas comerciais, imprensa e pedidos B2B em grande escala.
+                </p>
+              </div>
+            </div>
 
-              <form onSubmit={handleSubmit} className="contact-form">
-                <div className="form-group">
-                  <label htmlFor="name" className="form-label">
-                    Nome completo
+            {/* Farm Coordinates */}
+            <div className="p-6 bg-[#161311] border border-white/10 flex items-start gap-4">
+              <div className="p-3 bg-white/5 border border-white/10 text-gold-bright">
+                <span className="material-symbols-outlined text-[24px]">location_on</span>
+              </div>
+              <div>
+                <span className="font-mono text-[10px] uppercase tracking-widest text-gold-bright block mb-1">
+                  Origem do Terroir
+                </span>
+                <h4 className="font-serif text-xl text-paper-cream mb-1">Fazenda &amp; Torrefação</h4>
+                <p className="font-mono text-xs text-paper-sand/80">
+                  Sítio Boa Vista, Distrito de Pequiá, Iúna — Espírito Santo
+                </p>
+                <p className="font-mono text-xs text-gold-bright/80 mt-1">
+                  LAT: -20.358 // LON: -41.523 • 1.400M MASL
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: High-Contrast Architectural Form */}
+          <div className="lg:col-span-7 bg-[#161311] border border-white/10 p-8 sm:p-10">
+            <span className="font-mono text-xs uppercase tracking-[0.25em] text-gold-bright block mb-2">
+              Envio de Mensagem
+            </span>
+            <h3 className="font-serif text-2xl sm:text-3xl text-paper-cream mb-6">
+              Como podemos ajudar sua xícara?
+            </h3>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-mono text-xs uppercase tracking-wider text-paper-sand/70 block mb-1">
+                    Seu Nome *
                   </label>
                   <input
                     type="text"
-                    id="name"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="form-input"
                     required
-                    placeholder="Digite seu Nome completo"
+                    placeholder="Ex: Carlos Albuquerque"
+                    className="w-full px-4 py-3 bg-[#0D0B0A] border border-white/10 text-paper-cream text-xs font-mono focus:outline-none focus:border-gold-bright"
                   />
                 </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="email" className="form-label">
-                      E-mail
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="form-input"
-                      required
-                      placeholder="Usuário@dominio"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="phone" className="form-label">
-                      Telefone
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="form-input"
-                      placeholder="(00) 00000-0000"
-                    />
-                  </div>
+                <div>
+                  <label className="font-mono text-xs uppercase tracking-wider text-paper-sand/70 block mb-1">
+                    E-mail Principal *
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    placeholder="carlos@exemplo.com"
+                    className="w-full px-4 py-3 bg-[#0D0B0A] border border-white/10 text-paper-cream text-xs font-mono focus:outline-none focus:border-gold-bright"
+                  />
                 </div>
+              </div>
 
-                <div className="form-group">
-                  <label htmlFor="subject" className="form-label">
-                    Assunto
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-mono text-xs uppercase tracking-wider text-paper-sand/70 block mb-1">
+                    Telefone / WhatsApp
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="(28) 99999-9999"
+                    className="w-full px-4 py-3 bg-[#0D0B0A] border border-white/10 text-paper-cream text-xs font-mono focus:outline-none focus:border-gold-bright"
+                  />
+                </div>
+                <div>
+                  <label className="font-mono text-xs uppercase tracking-wider text-paper-sand/70 block mb-1">
+                    Finalidade do Contato
                   </label>
                   <select
-                    id="subject"
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    className="form-select"
-                    required
+                    className="w-full px-4 py-3 bg-[#0D0B0A] border border-white/10 text-paper-cream text-xs font-mono focus:outline-none focus:border-gold-bright cursor-pointer"
                   >
-                    <option value="">Selecione um assunto</option>
-                    <option value="Dúvida sobre produtos">
-                      Dúvida sobre produtos
-                    </option>
-                    <option value="Informações sobre pedidos">
-                      Informações sobre pedidos
-                    </option>
-                    <option value="Problema com entrega">
-                      Problema com entrega
-                    </option>
-                    <option value="Sugestões">Sugestões</option>
-                    <option value="Outros">Outros</option>
+                    <option value="cafes-especiais">Dúvida sobre Microlotes e Safras</option>
+                    <option value="kits-corporativos">Presentes &amp; Kits Corporativos</option>
+                    <option value="atacado-b2b">Fornecimento B2B / Cafeterias (Sacas)</option>
+                    <option value="outros">Outro Assunto</option>
                   </select>
                 </div>
-
-                <div className="form-group">
-                  <label htmlFor="message" className="form-label">
-                    Mensagem
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    rows={5}
-                    className="form-textarea"
-                    required
-                    placeholder="Fale conosco!"
-                  ></textarea>
-                </div>
-
-                <div>
-                  <button
-                    type="submit"
-                    className={`submit-button ${
-                      isSubmitting ? "submitting" : ""
-                    }`}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="spinner"></div>
-                        Enviando...
-                      </>
-                    ) : (
-                      <>
-                        <Send size={18} style={{ marginRight: "0.5rem" }} />
-                        Enviar Mensagem
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          {/* Contact Information */}
-          <div>
-            <div className="contact-info-container">
-              <div className="info-header">
-                <h2 className="form-title">Informações de Contato</h2>
-                <div className="info-decoration"></div>
               </div>
 
-              <div className="info-items-container">
-                <div className="info-item">
-                  <div className="info-icon">
-                    <div className="icon-container">
-                      <Phone size={20} />
-                    </div>
-                  </div>
-                  <div className="info-content">
-                    <h3>Telefone</h3>
-                    <p>
-                      <a href="tel:+5528999921033" className="info-link">
-                        +55 (28) 99992-1033
-                      </a>
-                    </p>
-                    <p className="info-detail">Segunda a Sexta, 9h às 18h</p>
-                  </div>
-                </div>
-
-                <div className="info-item">
-                  <div className="info-icon">
-                    <div className="icon-container">
-                      <Mail size={20} />
-                    </div>
-                  </div>
-                  <div className="info-content">
-                    <h3>E-mail</h3>
-                    <p>
-                      <a
-                        href="mailto:kdscafesespeciais@gmail.com"
-                        className="info-link"
-                      >
-                        kdscafesespeciais@gmail.com
-                      </a>
-                    </p>
-                    <p className="info-detail">
-                      Respondemos em até 24 horas úteis
-                    </p>
-                  </div>
-                </div>
-
-                <div className="info-item">
-                  <div className="info-icon">
-                    <div className="icon-container">
-                      <MapPin size={20} />
-                    </div>
-                  </div>
-                  <div className="info-content">
-                    <h3>Endereço</h3>
-                    <p>
-                      KdsCafésEspeciais
-                      <br />
-                      Pequiá, Iúna - ES
-                      <br />
-                      CEP: 29390-000
-                    </p>
-                  </div>
-                </div>
+              <div>
+                <label className="font-mono text-xs uppercase tracking-wider text-paper-sand/70 block mb-1">
+                  Mensagem *
+                </label>
+                <textarea
+                  name="message"
+                  rows={4}
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  placeholder="Escreva sua dúvida ou solicitação..."
+                  className="w-full px-4 py-3 bg-[#0D0B0A] border border-white/10 text-paper-cream text-xs font-mono focus:outline-none focus:border-gold-bright"
+                />
               </div>
-            </div>
 
-            {/* WhatsApp CTA */}
-            <div className="whatsapp-cta">
-              <div className="whatsapp-icon-container">
-                <svg
-                  className="whatsapp-icon"
-                  fill="currentColor"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                </svg>
-              </div>
-              <h3 className="whatsapp-title">Atendimento pelo WhatsApp</h3>
-              <p className="whatsapp-description">
-                Para um atendimento mais rápido, fale conosco pelo WhatsApp.
-                Estamos disponíveis de Segunda a Sábado, das 9h às 18h.
-              </p>
-              <a
-                href="https://wa.me/5528999921033"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="whatsapp-button"
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full py-4 bg-gold-burnished hover:bg-gold-bright text-[#0D0B0A] font-mono text-xs uppercase tracking-widest font-bold transition-all shadow-md"
               >
-                Falar pelo WhatsApp
-              </a>
-            </div>
+                {isSubmitting ? "Enviando..." : "Enviar Mensagem ao Concierge →"}
+              </button>
+            </form>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

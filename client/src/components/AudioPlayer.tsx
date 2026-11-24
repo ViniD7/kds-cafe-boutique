@@ -1,110 +1,100 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 // Declaração tipada para as funções de áudio expostas globalmente
 declare global {
   interface Window {
+    toggleAudioPlay?: () => Promise<boolean>;
+    isAudioPlaying?: () => boolean;
     toggleAudioMute?: () => void;
     isAudioMuted?: () => boolean;
   }
 }
 
 const AudioPlayer = () => {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
-  const [audioReady, setAudioReady] = useState(false);
-  const [audioLoaded, setAudioLoaded] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioLoadedRef = useRef(false);
+  const isPlayingRef = useRef(false);
 
-  // Carregar áudio apenas quando necessário
+  // Manter ref sincronizado com o estado
   useEffect(() => {
-    const savedPreference = localStorage.getItem("musicPreference");
-    const shouldMute = savedPreference === "muted";
+    isPlayingRef.current = isPlaying;
+    window.dispatchEvent(
+      new CustomEvent("kds:audio-state", { detail: { isPlaying } })
+    );
+  }, [isPlaying]);
 
-    setIsMuted(shouldMute);
+  // Carrega e inicia o áudio
+  const startAudio = useCallback(async (): Promise<boolean> => {
+    try {
+      if (!audioRef.current) return false;
 
-    // Carregar áudio apenas após interação do usuário
-    const handleUserInteraction = () => {
-      if (!audioLoaded) {
-        import("../Assets/audio/fundoMusic.mp3")
-          .then((module) => {
-            if (audioRef.current) {
-              audioRef.current.src = module.default;
-              audioRef.current.volume = 0.3;
-              audioRef.current.muted = shouldMute;
-              setAudioLoaded(true);
-
-              // Tentar tocar após carregar
-              audioRef.current
-                .play()
-                .then(() => {
-                  setAudioReady(true);
-                })
-                .catch((error) => {
-                  console.log("Autoplay prevented:", error);
-                });
-            }
-          })
-          .catch((error) => {
-            console.log("Failed to load audio:", error);
-          });
-
-        document.removeEventListener("click", handleUserInteraction);
-        document.removeEventListener("touchstart", handleUserInteraction);
-      }
-    };
-
-    document.addEventListener("click", handleUserInteraction);
-    document.addEventListener("touchstart", handleUserInteraction);
-
-    return () => {
-      document.removeEventListener("click", handleUserInteraction);
-      document.removeEventListener("touchstart", handleUserInteraction);
-    };
-  }, [audioLoaded]);
-
-  const toggleMute = () => {
-    if (audioRef.current && audioLoaded) {
-      if (isMuted) {
-        audioRef.current.play().catch((error) => {
-          console.log("Play failed:", error);
-        });
+      // Se ainda não carregou o módulo de áudio
+      if (!audioLoadedRef.current) {
+        const audioModule = await import("../Assets/audio/fundoMusic.mp3");
+        audioRef.current.src = audioModule.default;
+        audioRef.current.volume = 0.25; // Volume de ateliê elegante e suave
+        audioLoadedRef.current = true;
       }
 
-      audioRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-      localStorage.setItem("musicPreference", !isMuted ? "muted" : "unmuted");
+      await audioRef.current.play();
+      setIsPlaying(true);
+      return true;
+    } catch (err) {
+      console.warn("KDS Atelier Soundscape: erro ou bloqueio de reprodução:", err);
+      setIsPlaying(false);
+      return false;
     }
-  };
+  }, []);
 
-  // Expor toggleMute globalmente para o botão de controle
+  // Pausa o áudio
+  const pauseAudio = useCallback((): boolean => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    setIsPlaying(false);
+    return false;
+  }, []);
+
+  // Alterna reprodução (play / pause)
+  const togglePlay = useCallback(async (): Promise<boolean> => {
+    if (isPlayingRef.current) {
+      pauseAudio();
+      return false;
+    } else {
+      return await startAudio();
+    }
+  }, [pauseAudio, startAudio]);
+
+  // Expor funções globais para o Header e outros componentes
   useEffect(() => {
-    window.toggleAudioMute = toggleMute;
-    window.isAudioMuted = () => isMuted;
+    window.toggleAudioPlay = togglePlay;
+    window.isAudioPlaying = () => isPlayingRef.current;
+    
+    // Compatibilidade com código legado
+    window.toggleAudioMute = () => {
+      togglePlay();
+    };
+    window.isAudioMuted = () => !isPlayingRef.current;
 
     return () => {
+      delete window.toggleAudioPlay;
+      delete window.isAudioPlaying;
       delete window.toggleAudioMute;
       delete window.isAudioMuted;
     };
-  }, [isMuted, audioLoaded]);
-
-  const [showMusicControl, setShowMusicControl] = useState(false);
+  }, [togglePlay]);
 
   return (
-    <>
-      <audio ref={audioRef} loop muted={isMuted} preload="none" style={{ display: 'none' }} />
-      
-      <div
-        className={`music-control ${showMusicControl ? "visible" : ""}`}
-        onMouseEnter={() => setShowMusicControl(true)}
-        onMouseLeave={() => setShowMusicControl(false)}
-      >
-        <button
-          onClick={toggleMute}
-          aria-label={isMuted ? "Ativar música" : "Silenciar música"}
-        >
-          <span>{isMuted ? "🔇" : "🔊"}</span>
-        </button>
-      </div>
-    </>
+    <audio
+      ref={audioRef}
+      loop
+      preload="none"
+      style={{ display: "none" }}
+      onEnded={() => setIsPlaying(false)}
+      onPause={() => setIsPlaying(false)}
+      onPlay={() => setIsPlaying(true)}
+    />
   );
 };
 

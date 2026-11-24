@@ -1,28 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
-
-// ============================================================================
-// AJUSTE MANUAL PADRÃO DA OPACIDADE DO FUNDO DO HERO
-// Edite estes valores (de 0.0 a 1.0) para definir a intensidade padrão:
-// ============================================================================
-export const HERO_BACKGROUND_CONFIG = {
-  // Opacidade do vídeo (ex: 0.20 = bem sutil, 0.40 = moderado, 0.75 = bem vivo)
-  videoOpacity: 0.40,
-  // Escuridão da máscara espresso por cima (ex: 0.50 = mais claro, 0.85 = bem escuro)
-  overlayDarkness: 0.65,
-};
 
 const Hero = () => {
-  const { t } = useTranslation();
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoSources, setVideoSources] = useState<{ webm: string; mp4: string } | null>(null);
-
-  // Estados com controle manual em tempo real
-  const [videoOpacity, setVideoOpacity] = useState(HERO_BACKGROUND_CONFIG.videoOpacity);
-  const [overlayDarkness, setOverlayDarkness] = useState(HERO_BACKGROUND_CONFIG.overlayDarkness);
-  const [showTuner, setShowTuner] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -44,41 +26,23 @@ const Hero = () => {
       }
     };
 
-    // Delay de carregamento para não bloquear a renderização inicial crítica
-    const timer = setTimeout(loadVideo, 80);
+    const timer = setTimeout(loadVideo, 60);
     return () => {
       isMounted = false;
       clearTimeout(timer);
     };
   }, []);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 25, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring" as const,
-        damping: 20,
-        stiffness: 100,
-      },
-    },
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
-    <section className="relative w-full bg-espresso-deep text-paper-cream overflow-hidden">
-      {/* Background Video Layer */}
+    <section className="relative w-full min-h-[92vh] lg:min-h-screen bg-[#0D0B0A] text-[#F5F2EB] flex flex-col justify-between overflow-hidden">
+      {/* BACKGROUND VIDEO LAYER - RAW CINEMATIC GRADING */}
       <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
         {videoLoaded && videoSources && (
           <video
@@ -86,222 +50,154 @@ const Hero = () => {
             loop
             muted
             playsInline
-            className="w-full h-full object-cover scale-105 transition-opacity duration-300 ease-out"
-            style={{ opacity: videoOpacity }}
+            className="w-full h-full object-cover scale-105 opacity-60 filter brightness-90 contrast-110 transition-opacity duration-1000 ease-out"
           >
             <source src={videoSources.webm} type="video/webm" />
             <source src={videoSources.mp4} type="video/mp4" />
           </video>
         )}
-        {/* Overlays em degradê espresso com opacidade ajustável */}
-        <div
-          className="absolute inset-0 bg-gradient-to-b from-espresso-deep via-espresso-deep/75 to-espresso-deep transition-opacity duration-300"
-          style={{ opacity: overlayDarkness }}
-        />
-        <div className="absolute inset-0 bg-espresso-deep/20" />
+        {/* Subtle Matte Black Film Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0D0B0A] via-[#0D0B0A]/60 to-[#0D0B0A]/80" />
+        <div className="absolute inset-0 bg-[#0D0B0A]/40" />
       </div>
 
-      {/* Mini painel de ajuste manual interativo da opacidade */}
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-30 pointer-events-auto">
-        <button
-          onClick={() => setShowTuner(!showTuner)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-espresso-surface/85 hover:bg-espresso-surface border border-gold-bright/30 hover:border-gold-bright text-gold-bright text-[11px] font-sans tracking-wide shadow-lg backdrop-blur-sm transition-all"
-          title="Ajustar opacidade manualmente"
-        >
-          <span className="material-symbols-outlined text-[15px]">tune</span>
-          <span className="hidden sm:inline">Ajustar Opacidade</span>
-          <span className="font-mono text-[10px] text-paper-sand/80">({Math.round(videoOpacity * 100)}%)</span>
-        </button>
-
-        {showTuner && (
-          <div className="absolute right-0 mt-2 p-4 rounded-xl bg-espresso-surface/95 border border-gold-bright/40 shadow-2xl backdrop-blur-md w-72 text-left text-paper-cream animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between mb-3 border-b border-border-hairline/15 pb-2">
-              <div className="flex items-center gap-1.5 text-gold-bright">
-                <span className="material-symbols-outlined text-[16px]">opacity</span>
-                <span className="font-serif text-sm font-semibold">Opacidade do Hero</span>
-              </div>
-              <button
-                onClick={() => setShowTuner(false)}
-                className="text-paper-sand/60 hover:text-paper-cream text-xs px-1"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-4 font-sans text-xs">
-              <div>
-                <div className="flex justify-between mb-1.5">
-                  <span className="text-paper-sand/90">Vídeo de Fundo</span>
-                  <span className="font-mono text-gold-bright font-semibold">
-                    {Math.round(videoOpacity * 100)}%
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.05"
-                  value={videoOpacity}
-                  onChange={(e) => setVideoOpacity(parseFloat(e.target.value))}
-                  className="w-full accent-[#C2A763] cursor-pointer h-1.5 bg-espresso-deep rounded-lg"
-                />
-              </div>
-
-              <div>
-                <div className="flex justify-between mb-1.5">
-                  <span className="text-paper-sand/90">Escuridão da Máscara</span>
-                  <span className="font-mono text-gold-bright font-semibold">
-                    {Math.round(overlayDarkness * 100)}%
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.05"
-                  value={overlayDarkness}
-                  onChange={(e) => setOverlayDarkness(parseFloat(e.target.value))}
-                  className="w-full accent-[#C2A763] cursor-pointer h-1.5 bg-espresso-deep rounded-lg"
-                />
-              </div>
-
-              <div className="pt-2.5 border-t border-border-hairline/10 text-[10px] text-paper-sand/60 flex items-center justify-between">
-                <span>Valores para o código:</span>
-                <code className="text-gold-burnished font-mono bg-espresso-deep px-1.5 py-0.5 rounded border border-border-hairline/10">
-                  {videoOpacity} / {overlayDarkness}
-                </code>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Ambient micro-mesh atmospheric glows */}
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-gold-bright/15 via-gold-burnished/5 to-transparent blur-3xl pointer-events-none rounded-full z-0" />
-      <div className="absolute -bottom-24 right-0 w-[480px] h-[480px] bg-gradient-to-tl from-gold-bright/10 to-transparent blur-2xl pointer-events-none rounded-full z-0" />
-
-      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-12 pb-16 md:pt-20 md:pb-24 relative z-10 flex flex-col items-center text-center">
+      {/* TOP PROVENANCE STRIP (ARCHIVAL ATELIER) */}
+      <div className="relative z-10 max-w-7xl mx-auto w-full px-4 md:px-8 pt-16 sm:pt-18 md:pt-20">
         <motion.div
-          className="flex flex-col items-center max-w-4xl"
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 py-1.5 sm:py-2 border-b border-white/10 font-mono text-[9.5px] sm:text-[11px] text-paper-sand/70 uppercase tracking-widest"
         >
-          {/* Monogram Sub-badge */}
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 bg-gold-bright inline-block"></span>
+            <span>ORIGEM: PEQUIÁ, IÚNA — ES</span>
+          </div>
+          <div className="hidden sm:block">TERROIR PICO DA BANDEIRA // 1.400M MASL</div>
+          <div className="text-gold-bright font-bold">SAFRA 2024/2025 • LOTES LIMITADOS</div>
+        </motion.div>
+      </div>
+
+      {/* MAIN HERO CONTENT - ONYX ASYMMETRICAL EDITORIAL ARCHITECTURE */}
+      <div className="relative z-10 max-w-7xl mx-auto w-full px-4 md:px-8 py-5 sm:py-8 md:py-10 flex-1 flex flex-col justify-center">
+        <div className="max-w-4xl">
+          {/* Eyebrow Label */}
           <motion.div
-            variants={itemVariants}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-espresso-surface border border-gold-bright/30 text-gold-bright mb-6 shadow-sm"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6"
           >
-            <span
-              className="material-symbols-outlined text-[16px] text-gold-bright"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              local_cafe
+            <span className="font-mono text-[10.5px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.25em] text-gold-bright bg-white/5 border border-white/10 px-3 py-1">
+              Atelier &amp; Torrefação Artesanal
             </span>
-            <span className="font-sans text-[11px] tracking-[0.2em] uppercase font-bold text-gold-bright">
-              Caparaó Capixaba • Safra 2024/2025
+            <span className="hidden sm:inline font-mono text-xs text-paper-sand/50 tracking-widest">
+              // DESDE 1969
             </span>
           </motion.div>
 
-          {/* Expressive Editorial Headline */}
+          {/* Monumental Editorial Headline */}
           <motion.h1
-            variants={itemVariants}
-            className="font-serif text-3xl sm:text-5xl md:text-6xl text-paper-cream tracking-tight leading-[1.15] max-w-4xl"
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-[4.5rem] text-paper-cream tracking-tight leading-[1.08] mb-4 sm:mb-6"
           >
-            A Nobreza dos Cafés Especiais do{" "}
-            <span className="italic font-normal text-gold-bright">Caparaó Capixaba</span>
+            A Nobreza dos Cafés de Altitude{" "}
+            <span className="italic font-normal text-gold-bright block sm:inline">
+              do Caparaó.
+            </span>
           </motion.h1>
 
-          {/* Refined Subheading */}
+          {/* Editorial Subtext */}
           <motion.p
-            variants={itemVariants}
-            className="font-sans text-base sm:text-lg text-paper-sand/80 max-w-2xl mt-5 mb-10 leading-relaxed font-light"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="font-sans text-xs sm:text-base md:text-lg text-paper-sand/80 max-w-2xl font-light leading-relaxed mb-6 sm:mb-8"
           >
-            Tradição familiar desde 1969 em Pequiá, Iúna-ES. Grãos raros colhidos manualmente acima
-            de 1.350m e torrados artesanalmente com rigor sensorial impecável.
+            Cultivados nas encostas do Pico da Bandeira pela Família Dutra. Grãos raros colhidos
+            manualmente acima de 1.350m com pontuação SCA de 86 a 88.5+ pontos, torrados sob
+            demanda com precisão científica.
           </motion.p>
 
-          {/* Dual Action Buttons */}
+          {/* Action Row - Onyx Style Razor Buttons */}
           <motion.div
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4"
           >
             <Link
               to="/produtos"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-gold-burnished hover:bg-gold-bright text-espresso-deep font-sans text-xs tracking-wider uppercase transition-all duration-300 shadow-[0_0_24px_rgba(194,167,99,0.25)] hover:shadow-[0_0_32px_rgba(194,167,99,0.45)] font-bold flex items-center justify-center gap-2 group"
+              className="px-6 sm:px-8 py-3.5 sm:py-4 bg-gold-burnished hover:bg-gold-bright text-[#0D0B0A] font-mono text-[11px] sm:text-xs font-bold uppercase tracking-[0.18em] transition-all flex items-center justify-center gap-3 group shadow-lg"
             >
-              <span>Explorar Catálogo de Cafés</span>
-              <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
-                arrow_forward
-              </span>
+              <span>Explorar Cafés da Safra</span>
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
             </Link>
 
-            <a
-              href="https://wa.me/5528999921033?text=Ol%C3%A1%2C%20gostaria%20de%20consultoria%20sobre%20os%20caf%C3%A9s%20especiais%20da%20KDS."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-lg bg-espresso-surface/90 hover:bg-espresso-surface text-paper-cream font-sans text-xs tracking-wider uppercase border border-gold-bright/35 hover:border-gold-bright transition-all duration-200 flex items-center justify-center gap-2"
+            <button
+              onClick={() => scrollToSection("signature-collection")}
+              className="px-6 sm:px-8 py-3.5 sm:py-4 bg-transparent hover:bg-white/5 border border-white/20 hover:border-white/60 text-paper-cream font-mono text-[11px] sm:text-xs uppercase tracking-[0.18em] transition-all flex items-center justify-center gap-2 sm:gap-3"
             >
-              <span className="material-symbols-outlined text-[18px] text-gold-bright">
-                chat
-              </span>
-              <span>Consultoria no WhatsApp</span>
-            </a>
+              <span>Conhecer o Terroir</span>
+              <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
+            </button>
           </motion.div>
-        </motion.div>
+        </div>
+      </div>
 
-        {/* Floating Stats Bar */}
-        <div className="w-full max-w-5xl mt-14 md:mt-20 pt-8 border-t border-border-hairline/15 grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 text-left">
-          <div className="flex flex-col p-4 rounded-xl bg-espresso-surface/50 border border-border-hairline/10 hover:border-gold-bright/30 transition-colors">
-            <div className="flex items-center gap-1.5 text-gold-bright mb-1">
-              <span className="material-symbols-outlined text-[17px]">verified</span>
-              <span className="font-sans text-[10px] uppercase tracking-widest text-gold-burnished font-semibold">
-                Qualidade SCA
+      {/* BOTTOM SCIENTIFIC DATA STRIP (ONYX TRANSPARENCY BAR) */}
+      <div className="relative z-10 w-full border-t border-white/10 bg-[#0A0807]/90 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-3.5 sm:py-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+            <div className="flex flex-col border-l border-gold-bright/30 pl-2.5 sm:pl-3">
+              <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-gold-bright/80">
+                01. Terroir &amp; Altitude
+              </span>
+              <span className="font-serif text-base sm:text-lg md:text-xl text-paper-cream font-medium">
+                1.350m — 1.450m
+              </span>
+              <span className="font-sans text-[10px] sm:text-[11px] text-paper-sand/50">
+                Pequiá, Iúna • Caparaó
               </span>
             </div>
-            <span className="font-serif text-2xl text-paper-cream font-semibold">88+ Pontos</span>
-            <span className="font-sans text-xs text-paper-sand/60 mt-0.5">
-              Metodologia oficial SCA
-            </span>
-          </div>
 
-          <div className="flex flex-col p-4 rounded-xl bg-espresso-surface/50 border border-border-hairline/10 hover:border-gold-bright/30 transition-colors">
-            <div className="flex items-center gap-1.5 text-gold-bright mb-1">
-              <span className="material-symbols-outlined text-[17px]">terrain</span>
-              <span className="font-sans text-[10px] uppercase tracking-widest text-gold-burnished font-semibold">
-                Microclima
+            <div className="flex flex-col border-l border-gold-bright/30 pl-2.5 sm:pl-3">
+              <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-gold-bright/80">
+                02. Pontuação SCA
+              </span>
+              <span className="font-serif text-base sm:text-lg md:text-xl text-paper-cream font-medium">
+                86 a 88.5+ Pontos
+              </span>
+              <span className="font-sans text-[10px] sm:text-[11px] text-paper-sand/50">
+                Curadoria Q-Grader
               </span>
             </div>
-            <span className="font-serif text-2xl text-paper-cream font-semibold">1.350m MASL</span>
-            <span className="font-sans text-xs text-paper-sand/60 mt-0.5">
-              Maturação lenta na montanha
-            </span>
-          </div>
 
-          <div className="flex flex-col p-4 rounded-xl bg-espresso-surface/50 border border-border-hairline/10 hover:border-gold-bright/30 transition-colors">
-            <div className="flex items-center gap-1.5 text-gold-bright mb-1">
-              <span className="material-symbols-outlined text-[17px]">eco</span>
-              <span className="font-sans text-[10px] uppercase tracking-widest text-gold-burnished font-semibold">
-                Botânica
+            <div className="flex flex-col border-l border-gold-bright/30 pl-2.5 sm:pl-3">
+              <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-gold-bright/80">
+                03. Processo &amp; Safra
+              </span>
+              <span className="font-serif text-base sm:text-lg md:text-xl text-paper-cream font-medium">
+                Colheita Seletiva
+              </span>
+              <span className="font-sans text-[10px] sm:text-[11px] text-paper-sand/50">
+                Terreiro Suspenso
               </span>
             </div>
-            <span className="font-serif text-2xl text-paper-cream font-semibold">100% Arábica</span>
-            <span className="font-sans text-xs text-paper-sand/60 mt-0.5">
-              Catuaí, Arara e Caparaó Raro
-            </span>
-          </div>
 
-          <div className="flex flex-col p-4 rounded-xl bg-espresso-surface/50 border border-border-hairline/10 hover:border-gold-bright/30 transition-colors">
-            <div className="flex items-center gap-1.5 text-gold-bright mb-1">
-              <span className="material-symbols-outlined text-[17px]">history_edu</span>
-              <span className="font-sans text-[10px] uppercase tracking-widest text-gold-burnished font-semibold">
-                Legado Vivo
+            <div className="flex flex-col border-l border-gold-bright/30 pl-2.5 sm:pl-3">
+              <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-gold-bright/80">
+                04. Perfil de Torra
+              </span>
+              <span className="font-serif text-base sm:text-lg md:text-xl text-paper-cream font-medium">
+                Média-Clara
+              </span>
+              <span className="font-sans text-[10px] sm:text-[11px] text-paper-sand/50">
+                Torras Semanais
               </span>
             </div>
-            <span className="font-serif text-2xl text-paper-cream font-semibold">Desde 1969</span>
-            <span className="font-sans text-xs text-paper-sand/60 mt-0.5">
-              Mais de 55 anos de tradição
-            </span>
           </div>
         </div>
       </div>
